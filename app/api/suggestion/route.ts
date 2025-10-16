@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
+import { Resend } from "resend";
+
+// Inicializar Resend (solo si hay API key)
+const resend = process.env.RESEND_API_KEY
+  ? new Resend(process.env.RESEND_API_KEY)
+  : null;
 
 // Rate limiting simple en memoria (para producción usar Redis o similar)
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
@@ -144,45 +150,38 @@ Enviado desde Encumbra - https://encumbra.cl
       `.trim(),
     };
 
-    // Intentar enviar con fetch a un servicio de email (ejemplo con Resend)
-    // Necesitarías configurar RESEND_API_KEY en las variables de entorno
-    if (process.env.RESEND_API_KEY) {
+    // Intentar enviar con Resend
+    if (resend) {
       try {
-        const resendResponse = await fetch("https://api.resend.com/emails", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-          },
-          body: JSON.stringify({
-            from: "Encumbra <sugerencias@encumbra.cl>", // Necesitas verificar este dominio
-            reply_to: cleanEmail,
-            to: "kathcastillosanchez@gmail.com",
-            subject: emailData.subject,
-            html: emailData.html,
-          }),
+        await resend.emails.send({
+          from: "Encumbra <onboarding@resend.dev>", // Dominio verificado de Resend
+          replyTo: cleanEmail,
+          to: "kathcastillosanchez@gmail.com",
+          subject: emailData.subject,
+          html: emailData.html,
         });
-
-        if (!resendResponse.ok) {
-          throw new Error("Error al enviar email con Resend");
-        }
 
         return NextResponse.json({
           success: true,
           message: "¡Sugerencia enviada exitosamente!",
         });
       } catch (error) {
-        console.error("Error con Resend:", error);
-        // Fallback: continuar sin email
+        console.error("Error al enviar email con Resend:", error);
+        // Fallback: confirmar recepción sin email
       }
     }
 
     // Si no hay servicio de email configurado, solo confirmamos recepción
-    // En producción, podrías guardar en una base de datos
+    if (process.env.NODE_ENV === "development") {
+      console.log("📧 Sugerencia recibida (email no configurado):", {
+        email: cleanEmail,
+        suggestion: cleanSuggestion,
+      });
+    }
+
     return NextResponse.json({
       success: true,
-      message: "¡Sugerencia recibida! Te contactaremos pronto.",
-      note: "Email service not configured - suggestion logged",
+      message: "¡Sugerencia recibida! La revisaremos pronto.",
     });
   } catch (error) {
     console.error("Error al procesar sugerencia:", error);
