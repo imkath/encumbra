@@ -5,10 +5,11 @@ import { GeistMono } from "geist/font/mono";
 import { Analytics } from "@vercel/analytics/next";
 import { Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
+import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://encumbra.cl"),
+  metadataBase: new URL("https://encumbra.vercel.app"),
   title: {
     default: "Encumbra - Vuela cuando el viento es perfecto",
     template: "%s | Encumbra",
@@ -74,7 +75,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "es_CL",
-    url: "https://encumbra.cl",
+    url: "https://encumbra.vercel.app",
     siteName: "Encumbra",
     title: "Encumbra - Vuela cuando el viento es perfecto",
     description:
@@ -111,9 +112,9 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: "https://encumbra.cl",
+    canonical: "https://encumbra.vercel.app",
     languages: {
-      "es-CL": "https://encumbra.cl",
+      "es-CL": "https://encumbra.vercel.app",
     },
   },
   verification: {
@@ -127,13 +128,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
+    <html lang="es" suppressHydrationWarning>
       <body
         className={`font-sans ${GeistSans.variable} ${GeistMono.variable} antialiased`}
       >
-        <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
-        <Toaster />
-        <Analytics debug={false} />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
+          <Toaster />
+          <Analytics debug={false} />
+        </ThemeProvider>
       </body>
     </html>
   );

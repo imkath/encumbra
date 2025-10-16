@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  /* Volantín Design System v1 - Light Theme */
+  /* Volantín Design System v1 - Light Theme (original con azules) */
   --bg: #f7fafc;
   --card: #ffffff;
   --border: #e5e7eb;
@@ -23,23 +23,23 @@
   --radius: 1.25rem;
 }
 
-[data-theme="dark"] {
-  /* Volantín Design System v1 - Dark Theme */
-  --bg: #0b1220;
-  --card: #0f172a;
-  --border: #1f2937;
-  --text: #e5e7eb;
-  --text-secondary: #94a3b8;
-  --brand: #38bdf8;
-  --ok: #10b981;
-  --mid: #f59e0b;
-  --bad: #e11d48;
+.dark {
+  /* Volantín Design System v2 - Dark Theme moderno con grises suaves (accesible) */
+  --bg: #1a1a1a; /* Gris muy oscuro pero no negro absoluto */
+  --card: #262626; /* Gris oscuro para cards con contraste suficiente */
+  --border: #404040; /* Bordes visibles pero suaves */
+  --text: #e5e5e5; /* Texto claro pero no blanco puro */
+  --text-secondary: #a3a3a3; /* Texto secundario con buen contraste */
+  --brand: #8b5cf6; /* Púrpura vibrante moderno */
+  --ok: #22c55e; /* Verde del Q-Score */
+  --mid: #eab308; /* Amarillo del Q-Score */
+  --bad: #ef4444; /* Rojo del Q-Score */
 
   /* Semantic variables */
   --background: var(--bg);
   --foreground: var(--text);
   --card-bg: var(--card);
-  --muted: #1e293b;
+  --muted: #333333; /* Fondo muted más claro */
   --muted-foreground: var(--text-secondary);
 }
 
@@ -145,6 +145,14 @@ a,
   transform: translateY(-1px);
 }
 
+.dark .volant-card {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.dark .volant-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
 /* Focus styles for accessibility */
 :focus-visible {
   outline: 2px solid var(--brand);
@@ -179,29 +187,20 @@ a,
 }
 
 /* Dark theme scrollbar */
-[data-theme="dark"] .scrollbar-thin::-webkit-scrollbar-track {
-  background: #1e293b;
+.dark .scrollbar-thin::-webkit-scrollbar-track {
+  background: #262626;
 }
 
-[data-theme="dark"] .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #475569;
+.dark .scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #404040;
 }
 
-[data-theme="dark"] .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
+.dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #525252;
 }
 
-[data-theme="dark"] .scrollbar-thin {
-  scrollbar-color: #475569 #1e293b;
-}
-
-/* Dark theme optimizations */
-[data-theme="dark"] .volant-card {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-}
-
-[data-theme="dark"] .volant-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+.dark .scrollbar-thin {
+  scrollbar-color: #404040 #262626;
 }
 
 /* Smooth scroll utilities */

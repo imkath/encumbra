@@ -10,7 +10,6 @@ import { NearbyList } from "@/components/NearbyList";
 import { BestWindowPanel } from "@/components/BestWindowPanel";
 import { SettingsSheet } from "@/components/SettingsSheet";
 import { TemperatureWidget } from "@/components/TemperatureWidget";
-import { ParkCard } from "@/components/park-card";
 import { HourlyChart } from "@/components/HourlyChart";
 import { TopParksRanking } from "@/components/TopParksRanking";
 import { ScoreInfoTooltip } from "@/components/ScoreInfoTooltip";
@@ -20,6 +19,7 @@ import { SafetyBadges } from "@/components/SafetyBadges";
 import { EducationalWindows } from "@/components/EducationalWindows";
 import { SafetyCallout } from "@/components/SafetyCallout";
 import { WelcomeHero } from "@/components/WelcomeHero";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { AlertsList } from "@/components/AlertsList";
 import { Footer } from "@/components/Footer";
 import { FullPageSkeleton } from "@/components/LoadingSkeleton";
@@ -44,7 +44,7 @@ import {
   type HourPoint,
 } from "@/lib/find-windows";
 import { calculateVolantinScore } from "@/lib/volantin-score";
-import { Settings } from "lucide-react";
+import { Settings, MapPin, AlertTriangle } from "lucide-react";
 import {
   FaWind,
   FaCog,
@@ -124,6 +124,27 @@ export default function Home() {
   useEffect(() => {
     localStorage.setItem("windUnits", windUnits);
   }, [windUnits]);
+
+  // Manejar scroll al cargar página con hash (ej: /#parques)
+  useEffect(() => {
+    if (window.location.hash) {
+      // Esperar a que la página cargue completamente
+      setTimeout(() => {
+        const hash = window.location.hash.substring(1);
+        const element = document.getElementById(hash);
+        if (element) {
+          const headerHeight = 64; // h-16 del header
+          const padding = 16;
+          const top =
+            element.getBoundingClientRect().top +
+            window.scrollY -
+            headerHeight -
+            padding;
+          window.scrollTo({ top, behavior: "smooth" });
+        }
+      }, 500); // Esperar 500ms para asegurar que todo esté renderizado
+    }
+  }, []);
 
   // Cargar datos iniciales: obtiene clima de todos los parques y selecciona el más cercano
   useEffect(() => {
@@ -492,7 +513,7 @@ export default function Home() {
     name: "Encumbra",
     description:
       "Aplicación web para encontrar las mejores condiciones de viento para volar volantín en Santiago de Chile",
-    url: "https://encumbra.cl",
+    url: "https://encumbra.vercel.app",
     applicationCategory: "LifestyleApplication",
     operatingSystem: "Web Browser",
     offers: {
@@ -508,7 +529,7 @@ export default function Home() {
     author: {
       "@type": "Organization",
       name: "Encumbra",
-      url: "https://encumbra.cl",
+      url: "https://encumbra.vercel.app",
     },
     provider: {
       "@type": "Organization",
@@ -525,52 +546,112 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <main className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-slate-50">
+      <main className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-slate-50 dark:from-neutral-900 dark:via-neutral-950 dark:to-neutral-900">
         {/* Header */}
-        <header className="sticky top-0 z-40 backdrop-blur-xl bg-white/90 border-b border-neutral-200/50 shadow-lg shadow-black/5">
-          <div className="mx-auto max-w-7xl px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
-              <Link
-                href="/"
-                className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity cursor-pointer min-w-0 flex-shrink-0"
-              >
-                <div className="bg-gradient-to-r from-blue-500 to-cyan-500 p-2 sm:p-2.5 rounded-xl shadow-md flex-shrink-0">
-                  <FaWind className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+        <header className="sticky top-0 z-40 backdrop-blur-xl bg-white/90 dark:bg-neutral-900/90 border-b border-neutral-200/50 dark:border-neutral-700/50 shadow-lg shadow-black/5 dark:shadow-black/20">
+          <div className="mx-auto max-w-7xl px-3 sm:px-4 py-2.5 sm:py-4">
+            {/* Mobile: Layout de dos filas */}
+            <div className="sm:hidden">
+              {/* Fila 1: Logo + Theme + Settings */}
+              <div className="flex items-center justify-between gap-2">
+                <Link
+                  href="/"
+                  className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
+                >
+                  <div className="bg-gradient-to-r from-blue-500 to-cyan-500 dark:from-purple-600 dark:to-violet-600 p-2 rounded-lg shadow-md">
+                    <FaWind className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <h1 className="font-display font-bold text-lg bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-purple-400 dark:to-violet-400 bg-clip-text text-transparent">
+                      Encumbra
+                    </h1>
+                    <p className="text-[10px] text-neutral-500 dark:text-neutral-400 font-medium leading-tight">
+                      Vuela cuando el viento es perfecto
+                    </p>
+                  </div>
+                </Link>
+
+                <div className="flex items-center gap-2">
+                  <ThemeToggle />
+                  <button
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white/80 dark:bg-neutral-800/80 hover:bg-white dark:hover:bg-neutral-800 hover:shadow-md text-neutral-700 dark:text-neutral-200 font-medium transition-all duration-200 cursor-pointer text-sm"
+                    onClick={() => setSettingsOpen(true)}
+                    aria-label="Abrir ajustes"
+                  >
+                    <FaCog className="h-4 w-4" />
+                  </button>
                 </div>
-                <div className="min-w-0">
-                  <h1 className="font-display font-bold text-lg sm:text-2xl bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent truncate">
-                    Encumbra
-                  </h1>
-                  <p className="text-[10px] sm:text-xs text-neutral-500 font-medium hidden sm:block">
-                    Vuela cuando el viento es perfecto
-                  </p>
+              </div>{" "}
+              {/* Fila 2: Widgets + Loading */}
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                  <ScoreInfoTooltip />
+                  <TemperatureWidget
+                    latitude={latitude}
+                    longitude={longitude}
+                  />
                 </div>
-              </Link>
-              <div className="hidden md:flex items-center gap-2">
-                <ScoreInfoTooltip />
-                <TemperatureWidget latitude={latitude} longitude={longitude} />
+                {(loading || initialLoading) && (
+                  <div className="flex items-center gap-1.5 text-xs text-neutral-700 bg-blue-50 border border-blue-200 px-2 py-1 rounded-lg">
+                    <div className="w-2.5 h-2.5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                )}
               </div>
             </div>
-            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-              {error && (
-                <div className="hidden sm:block text-xs sm:text-sm text-red-100 bg-red-500/80 px-2 sm:px-3 py-1.5 sm:py-2 rounded-full border-2 border-red-300 font-medium">
-                  {error}
+
+            {/* Desktop: Todo en una línea (diseño original) */}
+            <div className="hidden sm:flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Link
+                  href="/"
+                  className="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer"
+                >
+                  <div className="bg-gradient-to-r from-blue-500 to-cyan-500 dark:from-purple-600 dark:to-violet-600 p-2.5 rounded-xl shadow-md">
+                    <FaWind className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h1 className="font-display font-bold text-2xl bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-purple-400 dark:to-violet-400 bg-clip-text text-transparent">
+                      Encumbra
+                    </h1>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
+                      Vuela cuando el viento es perfecto
+                    </p>
+                  </div>
+                </Link>
+
+                <div className="flex items-center gap-3">
+                  <ScoreInfoTooltip />
+                  <TemperatureWidget
+                    latitude={latitude}
+                    longitude={longitude}
+                  />
                 </div>
-              )}
-              {(loading || initialLoading) && (
-                <div className="text-xs sm:text-sm text-neutral-700 bg-blue-50 border border-blue-200 px-2 sm:px-4 py-1.5 sm:py-2 rounded-xl flex items-center gap-1.5 sm:gap-2">
-                  <div className="w-3 h-3 border-2 border-blue-500 border-t-transparent rounded-full animate-spin flex-shrink-0"></div>
-                  <span className="hidden sm:inline">{initialLoading ? "Cargando..." : "Actualizando..."}</span>
-                </div>
-              )}
-              <button
-                className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl border border-neutral-200 bg-white/80 hover:bg-white hover:shadow-md text-neutral-700 font-medium transition-all duration-200 cursor-pointer"
-                onClick={() => setSettingsOpen(true)}
-                aria-label="Abrir ajustes"
-              >
-                <FaCog className="h-4 w-4 flex-shrink-0" />
-                <span className="hidden sm:inline text-sm">Ajustes</span>
-              </button>
+              </div>
+
+              <div className="flex items-center gap-3">
+                {error && (
+                  <div className="text-sm text-red-100 bg-red-500/80 px-3 py-2 rounded-full border-2 border-red-300 font-medium">
+                    {error}
+                  </div>
+                )}
+                {(loading || initialLoading) && (
+                  <div className="text-sm text-neutral-700 dark:text-neutral-300 bg-blue-50 dark:bg-purple-500/10 border border-blue-200 dark:border-purple-500/30 px-4 py-2 rounded-xl flex items-center gap-2">
+                    <div className="w-3 h-3 border-2 border-blue-500 dark:border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+                    {initialLoading ? "Cargando..." : "Actualizando..."}
+                  </div>
+                )}
+
+                <ThemeToggle />
+
+                <button
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white/80 dark:bg-neutral-800/80 hover:bg-white dark:hover:bg-neutral-800 hover:shadow-md text-neutral-700 dark:text-neutral-200 font-medium transition-all duration-200 cursor-pointer text-sm"
+                  onClick={() => setSettingsOpen(true)}
+                  aria-label="Abrir ajustes"
+                >
+                  <FaCog className="h-4 w-4" />
+                  <span>Ajustes</span>
+                </button>
+              </div>
             </div>
           </div>
         </header>
@@ -610,7 +691,7 @@ export default function Home() {
               <div
                 id="parques"
                 data-top-parks
-                className="bg-gradient-to-br from-white via-sky-50 to-blue-50 rounded-3xl shadow-2xl p-8"
+                className="bg-gradient-to-br from-white via-sky-50 to-blue-50 dark:from-neutral-800 dark:via-neutral-850 dark:to-neutral-800 rounded-3xl shadow-2xl dark:shadow-black/40 p-8"
               >
                 <TopParksRanking
                   parks={rankingData}
@@ -641,14 +722,16 @@ export default function Home() {
                   className="grid grid-cols-1 lg:grid-cols-2 gap-6"
                 >
                   {/* Columna Izquierda: Gráfico Horario - Usa todo el espacio disponible */}
-                  <div className="bg-white rounded-3xl shadow-2xl p-6 overflow-hidden flex flex-col">
-                    <div className="flex items-center justify-between mb-4 flex-shrink-0">
-                      <h2 className="text-xl font-display font-bold text-neutral-900 flex items-center gap-2">
-                        <FaWind className="w-5 h-5 text-blue-600" />
-                        Condiciones por Hora
-                      </h2>
-                      <div className="text-xs font-bold text-blue-700 bg-blue-100 px-3 py-1 rounded-full border-2 border-blue-300">
-                        {selectedPark.name}
+                  <div className="bg-white dark:bg-neutral-800 rounded-3xl shadow-2xl dark:shadow-black/40 p-6 overflow-hidden flex flex-col border border-neutral-100 dark:border-neutral-700">
+                    <div className="mb-4 flex-shrink-0">
+                      <div className="flex items-center justify-between gap-3 flex-wrap">
+                        <h2 className="text-lg sm:text-xl font-display font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+                          <FaWind className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-purple-400" />
+                          Condiciones por Hora
+                        </h2>
+                        <div className="text-xs font-bold text-blue-700 dark:text-purple-300 bg-blue-100 dark:bg-purple-950/40 px-3 py-1 rounded-full border-2 border-blue-300 dark:border-purple-700/50 whitespace-nowrap">
+                          {selectedPark.name}
+                        </div>
                       </div>
                     </div>
                     <div className="flex-1 min-h-0">
@@ -663,7 +746,7 @@ export default function Home() {
                   {/* Columna Derecha: Decisión + Mejores Ventanas */}
                   <div className="space-y-6">
                     {/* Decisión Inmediata */}
-                    <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-neutral-200 p-6">
+                    <div className="bg-white/80 dark:bg-neutral-800/90 backdrop-blur-xl rounded-2xl shadow-lg dark:shadow-black/40 border border-neutral-200 dark:border-neutral-700 p-6">
                       <AtGlanceCard
                         key={`atglance-${selectedPark.id}`}
                         parkName={selectedPark.name}
@@ -677,11 +760,32 @@ export default function Home() {
 
                           if (!hasPermission) {
                             toast({
-                              title: "⚠️ Permisos necesarios",
-                              description:
-                                "Por favor habilita las notificaciones en tu navegador para recibir alertas cuando llegue el momento ideal de volar.",
+                              title: "Activa las notificaciones",
+                              description: (
+                                <div className="space-y-2 text-sm">
+                                  <p className="font-semibold">
+                                    Para recibir alertas, necesitas habilitar
+                                    las notificaciones:
+                                  </p>
+                                  <div className="bg-white/10 p-3 rounded-lg space-y-1">
+                                    <p className="text-xs">
+                                      <strong>En móvil:</strong> Ve a
+                                      Configuración → Notificaciones → Permite
+                                      notificaciones de este sitio
+                                    </p>
+                                    <p className="text-xs">
+                                      <strong>En escritorio:</strong> Click en
+                                      el candado/ícono junto a la URL → Permisos
+                                      → Notificaciones: Permitir
+                                    </p>
+                                  </div>
+                                  <p className="text-xs opacity-90">
+                                    Luego intenta crear la alerta nuevamente
+                                  </p>
+                                </div>
+                              ),
                               variant: "destructive",
-                              duration: 5000,
+                              duration: 10000,
                             });
                             return;
                           }
@@ -729,33 +833,33 @@ export default function Home() {
                             toast({
                               title: "¡Alerta Configurada!",
                               description: (
-                                <div className="mt-3 space-y-2.5 text-sm bg-gradient-to-br from-blue-50 to-cyan-50 p-4 rounded-lg border border-brand-200 shadow-sm">
-                                  <div className="flex items-center gap-2 pb-2 border-b border-brand-200 mb-2">
-                                    <div className="bg-blue-500 p-1.5 rounded-lg">
-                                      <FaBell className="w-4 h-4 text-white" />
+                                <div className="mt-2 sm:mt-3 space-y-2 sm:space-y-2.5 text-xs sm:text-sm bg-gradient-to-br from-blue-50 to-cyan-50 p-3 sm:p-4 rounded-lg border border-brand-200 shadow-sm">
+                                  <div className="flex items-center gap-2 pb-2 border-b border-brand-200 mb-1 sm:mb-2">
+                                    <div className="bg-blue-500 p-1 sm:p-1.5 rounded-lg">
+                                      <FaBell className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                                     </div>
-                                    <span className="font-bold text-neutral-900">
+                                    <span className="font-bold text-sm sm:text-base text-neutral-900">
                                       Detalles de tu alerta
                                     </span>
                                   </div>
-                                  <div className="flex items-start gap-2">
-                                    <div className="bg-red-500 p-1.5 rounded-lg">
-                                      <FaMapMarkerAlt className="w-3.5 h-3.5 text-white mt-0" />
+                                  <div className="flex items-start gap-1.5 sm:gap-2">
+                                    <div className="bg-red-500 p-1 sm:p-1.5 rounded-lg flex-shrink-0">
+                                      <FaMapMarkerAlt className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-white mt-0" />
                                     </div>
-                                    <div>
+                                    <div className="flex-1 min-w-0">
                                       <span className="font-semibold text-neutral-700">
                                         Parque:
                                       </span>{" "}
-                                      <span className="text-neutral-900">
+                                      <span className="text-neutral-900 break-words">
                                         {selectedPark.name}
                                       </span>
                                     </div>
                                   </div>
-                                  <div className="flex items-start gap-2">
-                                    <div className="bg-purple-500 p-1.5 rounded-lg">
-                                      <FaCalendarDay className="w-3.5 h-3.5 text-white mt-0" />
+                                  <div className="flex items-start gap-1.5 sm:gap-2">
+                                    <div className="bg-purple-500 p-1 sm:p-1.5 rounded-lg flex-shrink-0">
+                                      <FaCalendarDay className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-white mt-0" />
                                     </div>
-                                    <div>
+                                    <div className="flex-1 min-w-0">
                                       <span className="font-semibold text-neutral-700">
                                         Cuándo:
                                       </span>{" "}
@@ -764,28 +868,28 @@ export default function Home() {
                                       </span>
                                     </div>
                                   </div>
-                                  <div className="flex items-start gap-2">
-                                    <div className="bg-amber-500 p-1.5 rounded-lg">
-                                      <FaClock className="w-3.5 h-3.5 text-white mt-0" />
+                                  <div className="flex items-start gap-1.5 sm:gap-2">
+                                    <div className="bg-amber-500 p-1 sm:p-1.5 rounded-lg flex-shrink-0">
+                                      <FaClock className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-white mt-0" />
                                     </div>
-                                    <div>
+                                    <div className="flex-1 min-w-0">
                                       <span className="font-semibold text-neutral-700">
                                         Horario:
                                       </span>{" "}
-                                      <span className="text-neutral-900 font-mono">
+                                      <span className="text-neutral-900 font-mono text-[11px] sm:text-xs">
                                         {startTime} - {endTime}
                                       </span>
                                     </div>
                                   </div>
-                                  <div className="flex items-start gap-2">
-                                    <div className="bg-cyan-500 p-1.5 rounded-lg">
-                                      <FaWind className="w-3.5 h-3.5 text-white mt-0" />
+                                  <div className="flex items-start gap-1.5 sm:gap-2">
+                                    <div className="bg-cyan-500 p-1 sm:p-1.5 rounded-lg flex-shrink-0">
+                                      <FaWind className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-white mt-0" />
                                     </div>
-                                    <div>
+                                    <div className="flex-1 min-w-0">
                                       <span className="font-semibold text-neutral-700">
                                         Viento:
                                       </span>{" "}
-                                      <span className="text-neutral-900 font-mono">
+                                      <span className="text-neutral-900 font-mono text-[11px] sm:text-xs">
                                         {formatWindSpeed(
                                           bestWindow.meanS,
                                           windUnits,
@@ -794,11 +898,11 @@ export default function Home() {
                                       </span>
                                     </div>
                                   </div>
-                                  <div className="flex items-start gap-2">
-                                    <div className="bg-yellow-500 p-1.5 rounded-lg">
-                                      <FaStar className="w-3.5 h-3.5 text-white mt-0" />
+                                  <div className="flex items-start gap-1.5 sm:gap-2">
+                                    <div className="bg-yellow-500 p-1 sm:p-1.5 rounded-lg flex-shrink-0">
+                                      <FaStar className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-white mt-0" />
                                     </div>
-                                    <div>
+                                    <div className="flex-1 min-w-0">
                                       <span className="font-semibold text-neutral-700">
                                         Calidad:
                                       </span>{" "}
@@ -807,16 +911,16 @@ export default function Home() {
                                       </span>
                                     </div>
                                   </div>
-                                  <div className="mt-3 pt-3 border-t border-brand-200 bg-green-50 rounded-lg p-3">
-                                    <div className="flex items-start gap-2">
-                                      <div className="bg-green-500 p-1 rounded">
-                                        <FaBell className="w-3 h-3 text-white" />
+                                  <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-brand-200 bg-green-50 rounded-lg p-2 sm:p-3">
+                                    <div className="flex items-start gap-1.5 sm:gap-2">
+                                      <div className="bg-green-500 p-0.5 sm:p-1 rounded flex-shrink-0">
+                                        <FaBell className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" />
                                       </div>
-                                      <div className="flex-1">
-                                        <p className="text-xs font-semibold text-green-900 mb-1">
+                                      <div className="flex-1 min-w-0">
+                                        <p className="text-[10px] sm:text-xs font-semibold text-green-900 mb-0.5 sm:mb-1">
                                           ✅ Alerta activada exitosamente
                                         </p>
-                                        <p className="text-xs text-green-700">
+                                        <p className="text-[10px] sm:text-xs text-green-700">
                                           Recibirás una notificación{" "}
                                           <strong>30 minutos antes</strong> (
                                           {new Date(
@@ -873,8 +977,8 @@ export default function Home() {
                   </div>
 
                   {/* Ventanas recomendadas - Ancho completo abajo */}
-                  <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg border border-neutral-200 p-6">
-                    <h3 className="text-xl font-display font-bold text-neutral-900 mb-4">
+                  <div className="lg:col-span-2 bg-white dark:bg-neutral-800 rounded-2xl shadow-lg dark:shadow-black/40 border border-neutral-200 dark:border-neutral-700 p-6">
+                    <h3 className="text-xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-4">
                       Ventanas recomendadas
                     </h3>
                     <EducationalWindows
@@ -891,12 +995,12 @@ export default function Home() {
               {/* Mapa de parques */}
               <div
                 data-map-container
-                className="bg-white rounded-2xl shadow-lg border border-neutral-200 p-6 relative z-10"
+                className="bg-white dark:bg-neutral-800 rounded-2xl shadow-lg dark:shadow-black/40 border border-neutral-200 dark:border-neutral-700 p-6 relative z-10"
               >
-                <h2 className="text-2xl font-display font-bold text-neutral-900 mb-4">
+                <h2 className="text-2xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-4">
                   Mapa de Parques
                 </h2>
-                <div className="h-[500px] rounded-xl overflow-hidden border border-neutral-200 relative z-10">
+                <div className="h-[500px] rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-700 relative z-10">
                   <MapView
                     selectedPark={selectedPark}
                     onSelectPark={(park: Park) => {
@@ -910,11 +1014,11 @@ export default function Home() {
 
                 {/* Información del parque seleccionado */}
                 {selectedPark && (
-                  <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-200">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-1">
-                          <h3 className="text-lg font-bold text-neutral-900">
+                  <div className="mt-4 p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-purple-950/30 dark:to-violet-950/30 rounded-xl border border-blue-200 dark:border-purple-700/50">
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+                          <h3 className="text-base sm:text-lg font-bold text-neutral-900 dark:text-neutral-100 truncate">
                             {selectedPark.name}
                           </h3>
                           <TemperatureWidget
@@ -922,15 +1026,18 @@ export default function Home() {
                             longitude={selectedPark.lon}
                           />
                         </div>
-                        <p className="text-sm text-neutral-600 mb-2">
-                          📍 {selectedPark.comuna}, Santiago
+                        <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mb-2 flex items-center gap-1">
+                          <MapPin className="w-3 h-3" />
+                          {selectedPark.comuna}, Santiago
                         </p>
-                        <div className="flex items-center gap-2 text-xs text-neutral-500">
-                          <span className="bg-white px-2 py-1 rounded-md border border-neutral-200">
+                        <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
+                          <span className="bg-white dark:bg-neutral-700 px-2 py-1 rounded-md border border-neutral-200 dark:border-neutral-600 whitespace-nowrap">
                             Área: {selectedPark.area}
                           </span>
-                          <span className="text-neutral-400">•</span>
-                          <span>
+                          <span className="text-neutral-400 dark:text-neutral-500 hidden xs:inline">
+                            •
+                          </span>
+                          <span className="text-[10px] xs:text-xs">
                             {selectedPark.lat.toFixed(4)}°,{" "}
                             {selectedPark.lon.toFixed(4)}°
                           </span>
@@ -940,10 +1047,10 @@ export default function Home() {
                         href={`https://www.google.com/maps/search/?api=1&query=${selectedPark.lat},${selectedPark.lon}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-cyan-700 transition-all shadow-md hover:shadow-lg text-sm whitespace-nowrap"
+                        className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-purple-600 dark:to-violet-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-cyan-700 dark:hover:from-purple-700 dark:hover:to-violet-700 transition-all shadow-md hover:shadow-lg text-xs sm:text-sm whitespace-nowrap flex-shrink-0"
                       >
                         <svg
-                          className="w-4 h-4"
+                          className="w-3.5 h-3.5 sm:w-4 sm:h-4"
                           fill="currentColor"
                           viewBox="0 0 24 24"
                         >
@@ -954,11 +1061,12 @@ export default function Home() {
                     </div>
                     {selectedPark.warnings &&
                       selectedPark.warnings.length > 0 && (
-                        <div className="mt-3 pt-3 border-t border-blue-200">
-                          <p className="text-xs font-semibold text-amber-700 mb-1">
-                            ⚠️ Advertencias:
+                        <div className="mt-3 pt-3 border-t border-blue-200 dark:border-blue-700/50">
+                          <p className="text-xs font-semibold text-amber-700 dark:text-amber-400 mb-1 flex items-center gap-1">
+                            <AlertTriangle className="w-3 h-3" />
+                            Advertencias:
                           </p>
-                          <ul className="text-xs text-neutral-600 space-y-1">
+                          <ul className="text-xs text-neutral-600 dark:text-neutral-400 space-y-1">
                             {selectedPark.warnings.map((warning, idx) => (
                               <li key={idx}>• {warning}</li>
                             ))}
