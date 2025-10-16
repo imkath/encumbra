@@ -45,22 +45,22 @@ export function SafetyStrip() {
   const getAccentClasses = (color: string) => {
     const classes = {
       blue: {
-        border: "border-blue-200",
-        icon: "from-blue-500 to-cyan-500",
-        text: "text-blue-600",
-        dot: "bg-blue-500",
+        border: "border-blue-200 dark:border-blue-700/50",
+        icon: "from-blue-500 to-cyan-500 dark:from-blue-600 dark:to-cyan-600",
+        text: "text-blue-600 dark:text-blue-400",
+        dot: "bg-blue-500 dark:bg-blue-400",
       },
       green: {
-        border: "border-green-200",
-        icon: "from-green-500 to-emerald-500",
-        text: "text-green-600",
-        dot: "bg-green-500",
+        border: "border-green-200 dark:border-green-700/50",
+        icon: "from-green-500 to-emerald-500 dark:from-green-600 dark:to-emerald-600",
+        text: "text-green-600 dark:text-green-400",
+        dot: "bg-green-500 dark:bg-green-400",
       },
       orange: {
-        border: "border-orange-200",
-        icon: "from-orange-500 to-red-500",
-        text: "text-orange-600",
-        dot: "bg-orange-500",
+        border: "border-orange-200 dark:border-orange-700/50",
+        icon: "from-orange-500 to-red-500 dark:from-orange-600 dark:to-red-600",
+        text: "text-orange-600 dark:text-orange-400",
+        dot: "bg-orange-500 dark:bg-orange-400",
       },
     };
     return classes[color as keyof typeof classes];
@@ -72,11 +72,11 @@ export function SafetyStrip() {
         {/* Título de la sección */}
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-3">
-            <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-purple-500 dark:to-violet-500 bg-clip-text text-transparent">
               Vuela seguro, vuela feliz
             </span>
           </h2>
-          <p className="text-lg text-neutral-600 font-medium">
+          <p className="text-lg text-neutral-600 dark:text-neutral-300 font-medium">
             Tres reglas simples para disfrutar responsablemente
           </p>
         </div>
@@ -91,11 +91,11 @@ export function SafetyStrip() {
               <div
                 key={card.id}
                 className={`
-                  bg-white
+                  bg-white dark:bg-neutral-800
                   border ${accent.border}
                   rounded-2xl
                   p-6
-                  shadow-sm hover:shadow-lg
+                  shadow-sm hover:shadow-lg dark:hover:shadow-black/40
                   transition-all duration-200
                 `}
               >
@@ -127,7 +127,7 @@ export function SafetyStrip() {
                           mt-2 flex-shrink-0
                         `}
                       ></div>
-                      <span className="text-neutral-700 leading-relaxed text-sm">
+                      <span className="text-neutral-700 dark:text-neutral-300 leading-relaxed text-sm">
                         {item}
                       </span>
                     </li>
