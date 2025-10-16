@@ -22,14 +22,14 @@ interface NearbyListProps {
 export function NearbyList({ items, onSelect, selectedId }: NearbyListProps) {
   return (
     <div>
-      <p className="text-sm text-neutral-500 mb-4">
+      <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4">
         Ordenados por mejor ventana en próximas 3h
       </p>
 
       {items.length === 0 ? (
         <div className="text-center py-8">
-          <MapPin className="mx-auto h-8 w-8 text-neutral-400" />
-          <p className="mt-2 text-sm text-neutral-500">
+          <MapPin className="mx-auto h-8 w-8 text-neutral-400 dark:text-neutral-600" />
+          <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">
             No hay parques disponibles
           </p>
         </div>
@@ -39,28 +39,28 @@ export function NearbyList({ items, onSelect, selectedId }: NearbyListProps) {
             <li key={park.id}>
               <button
                 onClick={() => onSelect(park.id)}
-                className={`w-full text-left rounded-xl border p-4 transition-all duration-180 hover:shadow-card-hover focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 cursor-pointer ${
+                className={`w-full text-left rounded-xl border p-4 transition-all duration-180 hover:shadow-card-hover dark:hover:shadow-black/40 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:focus:ring-purple-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-900 cursor-pointer ${
                   selectedId === park.id
-                    ? "border-brand-500 bg-brand-50 shadow-card"
-                    : "border-neutral-200 bg-white hover:bg-neutral-50"
+                    ? "border-brand-500 dark:border-purple-500 bg-brand-50 dark:bg-purple-950/30 shadow-card"
+                    : "border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-750"
                 }`}
                 aria-pressed={selectedId === park.id}
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold text-neutral-900 truncate">
+                      <h3 className="font-semibold text-neutral-900 dark:text-neutral-100 truncate">
                         {park.name}
                       </h3>
                       {selectedId === park.id && (
                         <div
-                          className="flex-shrink-0 w-2 h-2 bg-brand-500 rounded-full"
+                          className="flex-shrink-0 w-2 h-2 bg-brand-500 dark:bg-purple-400 rounded-full"
                           aria-hidden="true"
                         />
                       )}
                     </div>
 
-                    <div className="flex items-center gap-2 text-xs text-neutral-500 mb-3">
+                    <div className="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 mb-3">
                       <span>{park.comuna ?? ""}</span>
                       {park.distance && (
                         <>
@@ -81,7 +81,7 @@ export function NearbyList({ items, onSelect, selectedId }: NearbyListProps) {
 
                     {park.best ? (
                       <div className="space-y-2">
-                        <div className="text-sm text-neutral-700">
+                        <div className="text-sm text-neutral-700 dark:text-neutral-300">
                           <span className="font-medium">Ventana: </span>
                           {formatTime(park.best.start)} -{" "}
                           {formatTime(park.best.end)}
@@ -93,7 +93,7 @@ export function NearbyList({ items, onSelect, selectedId }: NearbyListProps) {
                         />
                       </div>
                     ) : (
-                      <div className="text-sm text-neutral-500">
+                      <div className="text-sm text-neutral-500 dark:text-neutral-400">
                         Sin ventanas en próximas 12h
                       </div>
                     )}
@@ -114,7 +114,7 @@ export function NearbyList({ items, onSelect, selectedId }: NearbyListProps) {
 
       {items.length > 8 && (
         <div className="mt-6 text-center">
-          <button className="text-sm text-brand-600 hover:text-brand-700 font-medium cursor-pointer">
+          <button className="text-sm text-brand-600 dark:text-purple-400 hover:text-brand-700 dark:hover:text-purple-300 font-medium cursor-pointer">
             Ver parques
           </button>
         </div>
