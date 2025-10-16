@@ -72,13 +72,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!email || typeof email !== "string" || !isValidEmail(email)) {
+    // Validar email solo si se proporciona
+    if (email && (typeof email !== "string" || !isValidEmail(email))) {
       return NextResponse.json({ error: "Email inválido" }, { status: 400 });
     }
 
     // Sanitizar inputs
     const cleanSuggestion = sanitizeInput(suggestion);
-    const cleanEmail = sanitizeInput(email);
+    const cleanEmail = email ? sanitizeInput(email) : "No proporcionado";
 
     if (cleanSuggestion.length < 10) {
       return NextResponse.json(

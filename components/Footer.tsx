@@ -22,6 +22,7 @@ export function Footer() {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const formRef = useRef<HTMLDivElement>(null);
 
   // Alternar formulario y hacer scroll suave
@@ -64,27 +65,36 @@ export function Footer() {
 
       setIsSubmitting(false);
       setSubmitSuccess(true);
+      setSubmitError(null);
       setSuggestion("");
       setEmail("");
 
-      // Ocultar mensaje de éxito después de 3 segundos
+      // Ocultar mensaje de éxito después de 4 segundos
       setTimeout(() => {
         setSubmitSuccess(false);
         setShowSuggestionForm(false);
-      }, 3000);
+      }, 4000);
     } catch (error) {
       console.error("Error al enviar sugerencia:", error);
       setIsSubmitting(false);
-      alert(
+      setSubmitError(
         error instanceof Error
           ? error.message
           : "Error al enviar la sugerencia. Por favor intenta más tarde."
       );
+
+      // Ocultar mensaje de error después de 5 segundos
+      setTimeout(() => {
+        setSubmitError(null);
+      }, 5000);
     }
   };
 
   return (
-    <footer id="footer" className="relative bg-gradient-to-br from-neutral-50 to-blue-50 border-t border-neutral-200/50 mt-20">
+    <footer
+      id="footer"
+      className="relative bg-gradient-to-br from-neutral-50 to-blue-50 border-t border-neutral-200/50 mt-20"
+    >
       <div className="mx-auto max-w-7xl px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Columna 1: Branding */}
@@ -229,6 +239,14 @@ export function Footer() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmitSuggestion} className="space-y-4">
+                  {/* Mensaje de error */}
+                  {submitError && (
+                    <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4 animate-in fade-in slide-in-from-top-2">
+                      <p className="text-red-700 text-sm font-semibold">
+                        {submitError}
+                      </p>
+                    </div>
+                  )}
                   <div>
                     <label
                       htmlFor="suggestion"
