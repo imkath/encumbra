@@ -10,7 +10,6 @@ interface ContactFormProps {
   placeholder?: string;
   buttonText?: string;
   compact?: boolean; // Versión compacta para usar inline
-  emailOptional?: boolean; // Si el email es opcional (por defecto es obligatorio)
 }
 
 export function ContactForm({
@@ -20,7 +19,6 @@ export function ContactForm({
   placeholder = "Escribe tu mensaje aquí...",
   buttonText = "Enviar mensaje",
   compact = false,
-  emailOptional = false,
 }: ContactFormProps) {
   const [message, setMessage] = useState("");
   const [email, setEmail] = useState("");
@@ -67,13 +65,15 @@ export function ContactForm({
   if (submitSuccess) {
     return (
       <div className="text-center py-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4">
-          <FaPaperPlane className="w-8 h-8 text-green-600" />
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 dark:bg-green-950/30 mb-4">
+          <FaPaperPlane className="w-8 h-8 text-green-600 dark:text-green-400" />
         </div>
-        <p className="text-green-700 font-semibold text-lg">
+        <p className="text-green-700 dark:text-green-400 font-semibold text-lg">
           ¡Mensaje enviado!
         </p>
-        <p className="text-neutral-600 text-sm mt-2">Te responderemos pronto</p>
+        <p className="text-neutral-600 dark:text-neutral-400 text-sm mt-2">
+          Te responderemos pronto
+        </p>
       </div>
     );
   }
@@ -88,23 +88,30 @@ export function ContactForm({
             required
             rows={3}
             placeholder={placeholder}
-            className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors resize-none text-neutral-900"
+            className="w-full px-4 py-3 border-2 border-neutral-200 dark:border-neutral-700 dark:bg-neutral-900/50 rounded-xl focus:border-blue-500 dark:focus:border-purple-500 focus:outline-none transition-colors resize-none text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
           />
         </div>
 
         <div>
+          <label
+            htmlFor="compact-email"
+            className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-2"
+          >
+            Tu email <span className="text-red-500 dark:text-red-400">*</span>
+          </label>
           <input
             type="email"
+            id="compact-email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required={!emailOptional}
-            placeholder={emailOptional ? "Tu email (opcional)" : "Tu email"}
-            className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors text-neutral-900"
+            required
+            placeholder="tu@email.com"
+            className="w-full px-4 py-3 border-2 border-neutral-200 dark:border-neutral-700 dark:bg-neutral-900/50 rounded-xl focus:border-blue-500 dark:focus:border-purple-500 focus:outline-none transition-colors text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
           />
         </div>
 
         {error && (
-          <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3">
+          <div className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-700/50 rounded-lg p-3">
             {error}
           </div>
         )}
@@ -112,7 +119,7 @@ export function ContactForm({
         <button
           type="submit"
           disabled={isSubmitting || !message.trim()}
-          className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl font-bold hover:from-blue-600 hover:to-cyan-600 shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
+          className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 dark:from-purple-600 dark:to-violet-600 text-white rounded-xl font-bold hover:from-blue-600 hover:to-cyan-600 dark:hover:from-purple-700 dark:hover:to-violet-700 shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
         >
           {isSubmitting ? (
             <>
@@ -131,21 +138,25 @@ export function ContactForm({
   }
 
   return (
-    <div className="bg-white/80 backdrop-blur-xl rounded-2xl border-2 border-blue-200 p-6 shadow-lg">
+    <div className="bg-white/80 dark:bg-neutral-800/80 backdrop-blur-xl rounded-2xl border-2 border-blue-200 dark:border-purple-700 p-6 shadow-lg dark:shadow-black/40">
       <div className="flex items-center gap-2 mb-4">
-        <FaEnvelope className="w-5 h-5 text-blue-600" />
-        <h4 className="font-bold text-neutral-900 text-lg">{title}</h4>
+        <FaEnvelope className="w-5 h-5 text-blue-600 dark:text-purple-400" />
+        <h4 className="font-bold text-neutral-900 dark:text-neutral-100 text-lg">
+          {title}
+        </h4>
       </div>
 
       {description && (
-        <p className="text-sm text-neutral-600 mb-4">{description}</p>
+        <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
+          {description}
+        </p>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label
             htmlFor="contact-message"
-            className="block text-sm font-semibold text-neutral-700 mb-2"
+            className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-2"
           >
             Tu mensaje
           </label>
@@ -156,30 +167,30 @@ export function ContactForm({
             required
             rows={4}
             placeholder={placeholder}
-            className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors resize-none text-neutral-900"
+            className="w-full px-4 py-3 border-2 border-neutral-200 dark:border-neutral-700 dark:bg-neutral-900/50 rounded-xl focus:border-blue-500 dark:focus:border-purple-500 focus:outline-none transition-colors resize-none text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
           />
         </div>
 
         <div>
           <label
             htmlFor="contact-email"
-            className="block text-sm font-semibold text-neutral-700 mb-2"
+            className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-2"
           >
-            Tu email {emailOptional ? "(opcional)" : ""}
+            Tu email <span className="text-red-500 dark:text-red-400">*</span>
           </label>
           <input
             type="email"
             id="contact-email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required={!emailOptional}
+            required
             placeholder="tu@email.com"
-            className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors text-neutral-900"
+            className="w-full px-4 py-3 border-2 border-neutral-200 dark:border-neutral-700 dark:bg-neutral-900/50 rounded-xl focus:border-blue-500 dark:focus:border-purple-500 focus:outline-none transition-colors text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
           />
         </div>
 
         {error && (
-          <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3">
+          <div className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-700/50 rounded-lg p-3">
             {error}
           </div>
         )}
@@ -187,7 +198,7 @@ export function ContactForm({
         <button
           type="submit"
           disabled={isSubmitting || !message.trim()}
-          className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl font-bold hover:from-blue-600 hover:to-cyan-600 shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
+          className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 dark:from-purple-600 dark:to-violet-600 text-white rounded-xl font-bold hover:from-blue-600 hover:to-cyan-600 dark:hover:from-purple-700 dark:hover:to-violet-700 shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
         >
           {isSubmitting ? (
             <>
