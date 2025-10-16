@@ -69,9 +69,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "bash -c 'source ~/.nvm/nvm.sh && nvm use 20 && next dev'",
-    "build": "bash -c 'source ~/.nvm/nvm.sh && nvm use 20 && next build'",
-    "start": "bash -c 'source ~/.nvm/nvm.sh && nvm use 20 && next start'",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "lint": "next lint"
   }
 }
