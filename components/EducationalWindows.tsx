@@ -104,20 +104,26 @@ export function EducationalWindows({
           return (
             <div
               key={index}
-              className="bg-neutral-50 border border-neutral-200 rounded-xl p-5 opacity-60"
+              className="bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700 rounded-xl p-5 opacity-60"
             >
               <div className="flex items-center gap-3 mb-4">
-                <div className={`${card.iconBg} p-2 rounded-lg`}>
-                  <Icon className={`${card.iconColor} text-lg`} />
+                <div
+                  className={`${card.iconBg} dark:bg-neutral-700 p-2 rounded-lg`}
+                >
+                  <Icon
+                    className={`${card.iconColor} dark:text-purple-400 text-lg`}
+                  />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-neutral-900 text-sm">
+                  <h4 className="font-semibold text-neutral-900 dark:text-neutral-100 text-sm">
                     {card.title}
                   </h4>
-                  <p className="text-xs text-neutral-600">{card.subtitle}</p>
+                  <p className="text-xs text-neutral-600 dark:text-neutral-400">
+                    {card.subtitle}
+                  </p>
                 </div>
               </div>
-              <p className="text-sm text-neutral-500 text-center py-4">
+              <p className="text-sm text-neutral-500 dark:text-neutral-400 text-center py-4">
                 No disponible
               </p>
             </div>
@@ -131,52 +137,62 @@ export function EducationalWindows({
         return (
           <div
             key={index}
-            className="bg-white border-2 border-neutral-200 rounded-xl p-5 hover:shadow-lg transition-shadow"
+            className="bg-white dark:bg-neutral-800 border-2 border-neutral-200 dark:border-neutral-700 rounded-xl p-5 hover:shadow-lg dark:hover:shadow-black/40 transition-shadow"
           >
             <div className="flex items-center gap-3 mb-4">
-              <div className={`${card.iconBg} p-2 rounded-lg`}>
-                <Icon className={`${card.iconColor} text-lg`} />
+              <div
+                className={`${card.iconBg} dark:bg-neutral-700 p-2 rounded-lg`}
+              >
+                <Icon
+                  className={`${card.iconColor} dark:text-purple-400 text-lg`}
+                />
               </div>
               <div>
-                <h4 className="font-semibold text-neutral-900 text-sm">
+                <h4 className="font-semibold text-neutral-900 dark:text-neutral-100 text-sm">
                   {card.title}
                 </h4>
-                <p className="text-xs text-neutral-600">{card.subtitle}</p>
+                <p className="text-xs text-neutral-600 dark:text-neutral-400">
+                  {card.subtitle}
+                </p>
               </div>
             </div>
 
             <div className="space-y-3">
               {/* Franja horaria */}
               <div className="flex items-center justify-between">
-                <span className="text-xs text-neutral-600">Horario</span>
-                <span className="text-sm font-semibold text-neutral-900">
+                <span className="text-xs text-neutral-600 dark:text-neutral-400">
+                  Horario
+                </span>
+                <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
                   {formatTime(window.start)} - {formatTime(window.end)}
                 </span>
               </div>
 
               {/* Media de viento */}
               <div className="flex items-center justify-between">
-                <span className="text-xs text-neutral-600">
+                <span className="text-xs text-neutral-600 dark:text-neutral-400">
                   Viento promedio
                 </span>
-                <span className="text-sm font-semibold text-neutral-900">
+                <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
                   {formatWindSpeed(window.meanS, windUnits)}
                 </span>
               </div>
 
               {/* Etiqueta de calidad */}
               <div className="flex items-center justify-between">
-                <span className="text-xs text-neutral-600">Calidad</span>
+                <span className="text-xs text-neutral-600 dark:text-neutral-400">
+                  Calidad
+                </span>
                 <span
-                  className={`text-xs font-bold ${quality.color} bg-opacity-20 ${quality.textColor} px-3 py-1 rounded-full`}
+                  className={`text-xs font-bold ${quality.color} dark:bg-neutral-700 bg-opacity-20 ${quality.textColor} dark:text-purple-300 px-3 py-1 rounded-full`}
                 >
                   {quality.label}
                 </span>
               </div>
 
               {/* Línea educativa */}
-              <div className="pt-3 border-t border-neutral-200">
-                <p className="text-xs text-neutral-700 italic leading-relaxed">
+              <div className="pt-3 border-t border-neutral-200 dark:border-neutral-700">
+                <p className="text-xs text-neutral-700 dark:text-neutral-300 italic leading-relaxed">
                   {tip}
                 </p>
               </div>
