@@ -72,14 +72,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validar email solo si se proporciona
-    if (email && (typeof email !== "string" || !isValidEmail(email))) {
-      return NextResponse.json({ error: "Email inválido" }, { status: 400 });
+    // Email es obligatorio
+    if (!email || typeof email !== "string") {
+      return NextResponse.json(
+        { error: "El email es requerido" },
+        { status: 400 }
+      );
+    }
+
+    if (!isValidEmail(email)) {
+      return NextResponse.json(
+        { error: "Por favor ingresa un email válido" },
+        { status: 400 }
+      );
     }
 
     // Sanitizar inputs
     const cleanSuggestion = sanitizeInput(suggestion);
-    const cleanEmail = email ? sanitizeInput(email) : "No proporcionado";
+    const cleanEmail = sanitizeInput(email);
 
     if (cleanSuggestion.length < 10) {
       return NextResponse.json(

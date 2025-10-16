@@ -197,7 +197,7 @@ export function Footer() {
           <div>
             <h3 className="font-bold text-neutral-900 mb-4">¿Tienes ideas?</h3>
             <p className="text-sm text-neutral-600 mb-4">
-              Ayúdanos a mejorar Encumbra compartiendo tus sugerencias
+              Comparte tus sugerencias y te responderemos por email
             </p>
 
             {/* Botón de sugerencias */}
@@ -270,22 +270,26 @@ export function Footer() {
                       htmlFor="email"
                       className="block text-sm font-semibold text-neutral-700 mb-2"
                     >
-                      Tu email (opcional)
+                      Tu email <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="email"
                       id="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
+                      required
                       placeholder="tu@email.com"
                       className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors text-neutral-900"
                     />
+                    <p className="text-xs text-neutral-500 mt-1">
+                      Necesitamos tu email para responder tu sugerencia
+                    </p>
                   </div>
 
                   <div className="flex gap-3">
                     <button
                       type="submit"
-                      disabled={isSubmitting || !suggestion.trim()}
+                      disabled={isSubmitting || !suggestion.trim() || !email.trim()}
                       className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl font-bold hover:from-blue-600 hover:to-cyan-600 shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
                     >
                       {isSubmitting ? (
