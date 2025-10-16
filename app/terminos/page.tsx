@@ -13,20 +13,20 @@ export const metadata: Metadata = {
     follow: true,
   },
   alternates: {
-    canonical: "https://encumbra.cl/terminos",
+    canonical: "https://encumbra.vercel.app/terminos",
   },
 };
 
 export default function TerminosPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950">
       {/* Header */}
-      <header className="bg-white/90 backdrop-blur-xl border-b border-neutral-200 sticky top-0 z-40 shadow-sm">
+      <header className="bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl border-b border-neutral-200 dark:border-neutral-700 sticky top-0 z-40 shadow-sm">
         <div className="mx-auto max-w-4xl px-4 py-4">
           <div className="flex items-center justify-between">
             <Link
               href="/"
-              className="flex items-center gap-2 text-neutral-600 hover:text-blue-600 transition-colors"
+              className="flex items-center gap-2 text-neutral-600 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-purple-400 transition-colors"
             >
               <FaArrowLeft className="w-4 h-4" />
               <span className="font-semibold">Volver</span>
@@ -35,10 +35,10 @@ export default function TerminosPage() {
               href="/"
               className="flex items-center gap-2 hover:opacity-80 transition-opacity"
             >
-              <div className="bg-gradient-to-r from-blue-500 to-cyan-500 p-2 rounded-lg">
+              <div className="bg-gradient-to-r from-blue-500 to-cyan-500 dark:from-purple-600 dark:to-violet-600 p-2 rounded-xl">
                 <FaWind className="w-5 h-5 text-white" />
               </div>
-              <span className="font-display font-bold text-xl bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+              <span className="font-display font-bold text-xl bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-purple-400 dark:to-violet-400 bg-clip-text text-transparent">
                 Encumbra
               </span>
             </Link>
@@ -48,18 +48,18 @@ export default function TerminosPage() {
 
       {/* Contenido */}
       <main className="mx-auto max-w-4xl px-4 py-12">
-        <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-neutral-200 p-8 md:p-12">
-          <h1 className="text-4xl font-bold text-neutral-900 mb-4">
+        <div className="bg-white/80 dark:bg-neutral-800/80 backdrop-blur-xl rounded-2xl shadow-xl dark:shadow-black/60 border border-neutral-200 dark:border-neutral-700 p-8 md:p-12">
+          <h1 className="text-4xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">
             Términos y Condiciones
           </h1>
-          <p className="text-neutral-600 mb-8">
+          <p className="text-neutral-600 dark:text-neutral-400 mb-8">
             Última actualización: Octubre 2025
           </p>
 
-          <div className="space-y-8 text-neutral-700 leading-relaxed">
+          <div className="space-y-8 text-neutral-700 dark:text-neutral-300 leading-relaxed">
             {/* Sección 1 */}
             <section>
-              <h2 className="text-2xl font-bold text-neutral-900 mb-4">
+              <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">
                 1. Aceptación de los Términos
               </h2>
               <p>
@@ -71,7 +71,7 @@ export default function TerminosPage() {
 
             {/* Sección 2 */}
             <section>
-              <h2 className="text-2xl font-bold text-neutral-900 mb-4">
+              <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">
                 2. Descripción del Servicio
               </h2>
               <p className="mb-4">
@@ -89,7 +89,7 @@ export default function TerminosPage() {
 
             {/* Sección 3 */}
             <section>
-              <h2 className="text-2xl font-bold text-neutral-900 mb-4">
+              <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">
                 3. Uso del Servicio
               </h2>
               <p className="mb-4">Al utilizar Encumbra, te comprometes a:</p>
@@ -107,11 +107,13 @@ export default function TerminosPage() {
 
             {/* Sección 4 */}
             <section>
-              <h2 className="text-2xl font-bold text-neutral-900 mb-4">
+              <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">
                 4. Limitación de Responsabilidad
               </h2>
-              <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-6">
-                <p className="font-semibold text-amber-900 mb-3">Importante:</p>
+              <div className="bg-amber-50 dark:bg-amber-950/30 border-2 border-amber-200 dark:border-amber-700/50 rounded-xl p-6">
+                <p className="font-semibold text-amber-900 dark:text-amber-200 mb-3">
+                  Importante:
+                </p>
                 <p className="mb-3">
                   Los pronósticos y recomendaciones proporcionados por Encumbra
                   son de carácter informativo. No nos hacemos responsables por:
@@ -136,7 +138,7 @@ export default function TerminosPage() {
 
             {/* Sección 5 */}
             <section>
-              <h2 className="text-2xl font-bold text-neutral-900 mb-4">
+              <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">
                 5. Datos Meteorológicos
               </h2>
               <p>
@@ -149,7 +151,7 @@ export default function TerminosPage() {
 
             {/* Sección 6 */}
             <section>
-              <h2 className="text-2xl font-bold text-neutral-900 mb-4">
+              <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">
                 6. Propiedad Intelectual
               </h2>
               <p>
@@ -162,7 +164,7 @@ export default function TerminosPage() {
 
             {/* Sección 7 */}
             <section>
-              <h2 className="text-2xl font-bold text-neutral-900 mb-4">
+              <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">
                 7. Modificaciones del Servicio
               </h2>
               <p>
@@ -175,7 +177,7 @@ export default function TerminosPage() {
 
             {/* Sección 8 */}
             <section>
-              <h2 className="text-2xl font-bold text-neutral-900 mb-4">
+              <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">
                 8. Cambios en los Términos
               </h2>
               <p>
@@ -189,7 +191,7 @@ export default function TerminosPage() {
 
             {/* Sección 9 */}
             <section>
-              <h2 className="text-2xl font-bold text-neutral-900 mb-4">
+              <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">
                 9. Contacto
               </h2>
               <p className="mb-6">
@@ -204,10 +206,10 @@ export default function TerminosPage() {
           </div>
 
           {/* Botón de regreso */}
-          <div className="mt-12 pt-8 border-t border-neutral-200">
+          <div className="mt-12 pt-8 border-t border-neutral-200 dark:border-neutral-700">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl font-bold hover:from-blue-600 hover:to-cyan-600 shadow-lg hover:shadow-xl transition-all duration-200"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 dark:from-purple-600 dark:to-violet-600 text-white rounded-xl font-bold hover:from-blue-600 hover:to-cyan-600 dark:hover:from-purple-700 dark:hover:to-violet-700 shadow-lg hover:shadow-xl transition-all duration-200"
             >
               <FaArrowLeft className="w-4 h-4" />
               Volver al inicio
