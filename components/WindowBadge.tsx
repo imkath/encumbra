@@ -9,17 +9,20 @@ export function scoreColor(score: number): string {
 }
 
 export function scoreTextColor(score: number): string {
-  if (score >= 80) return "text-brand-600";
-  if (score >= 60) return "text-ok-600";
-  if (score >= 40) return "text-mid-600";
-  return "text-bad-600";
+  if (score >= 80) return "text-brand-600 dark:text-purple-400";
+  if (score >= 60) return "text-ok-600 dark:text-green-400";
+  if (score >= 40) return "text-mid-600 dark:text-yellow-400";
+  return "text-bad-600 dark:text-red-400";
 }
 
 export function scoreBgColor(score: number): string {
-  if (score >= 80) return "bg-brand-50 border-brand-200";
-  if (score >= 60) return "bg-ok-50 border-ok-200";
-  if (score >= 40) return "bg-mid-50 border-mid-200";
-  return "bg-bad-50 border-bad-200";
+  if (score >= 80)
+    return "bg-brand-50 dark:bg-purple-950/30 border-brand-200 dark:border-purple-700/30";
+  if (score >= 60)
+    return "bg-ok-50 dark:bg-green-950/30 border-ok-200 dark:border-green-700/30";
+  if (score >= 40)
+    return "bg-mid-50 dark:bg-yellow-950/30 border-mid-200 dark:border-yellow-700/30";
+  return "bg-bad-50 dark:bg-red-950/30 border-bad-200 dark:border-red-700/30";
 }
 
 interface WindowBadgeProps {
@@ -62,7 +65,9 @@ export function WindowBadge({ score, label, size = "md" }: WindowBadgeProps) {
           {Math.round(score)}
         </div>
         {label && (
-          <span className={`${classes.text} text-neutral-600 font-medium`}>
+          <span
+            className={`${classes.text} text-neutral-600 dark:text-neutral-300 font-medium`}
+          >
             {label}
           </span>
         )}
