@@ -43,68 +43,77 @@ export function useGeolocation() {
       setState({
         latitude: null,
         longitude: null,
-        error: null,
+        error: null, // No mostrar error, simplemente no tener ubicación
         loading: false,
       });
       return;
     }
 
-    // Si tenemos permisos y datos en caché, cargarlos inmediatamente
+    // Si tenemos permisos y datos en caché, usar esos datos SIN pedir ubicación
     if (cachedPermission === "granted" && cachedLocation) {
       try {
         const location = JSON.parse(cachedLocation);
+        const timestamp = location.timestamp || 0;
+        const now = Date.now();
+        const fiveMinutes = 5 * 60 * 1000;
+
+        // Si la ubicación tiene menos de 5 minutos, usarla directamente
+        if (now - timestamp < fiveMinutes) {
+          setState({
+            latitude: location.latitude,
+            longitude: location.longitude,
+            error: null,
+            loading: false,
+          });
+          return; // NO pedir ubicación de nuevo
+        }
+
+        // Si la ubicación es antigua (>5 min), actualizar en segundo plano
         setState({
           latitude: location.latitude,
           longitude: location.longitude,
           error: null,
-          loading: false,
+          loading: false, // Ya tenemos datos, no mostrar loading
         });
 
-        // Actualizar ubicación en segundo plano sin mostrar loading
+        // Actualizar silenciosamente sin mostrar popup (usar maximumAge)
         navigator.geolocation.getCurrentPosition(
           (position) => {
             const newLocation = {
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
+              timestamp: Date.now(),
             };
-            // Solo actualizar si la ubicación cambió significativamente (>100m)
-            const distance =
-              Math.sqrt(
-                Math.pow(position.coords.latitude - location.latitude, 2) +
-                  Math.pow(position.coords.longitude - location.longitude, 2)
-              ) * 111000; // Aprox. metros
-
-            if (distance > 100) {
-              localStorage.setItem(
-                LOCATION_DATA_KEY,
-                JSON.stringify(newLocation)
-              );
-              setState({
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-                error: null,
-                loading: false,
-              });
-            }
+            localStorage.setItem(
+              LOCATION_DATA_KEY,
+              JSON.stringify(newLocation)
+            );
+            setState({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              error: null,
+              loading: false,
+            });
           },
           (error) => {
-            // Silencioso - mantener ubicación en caché si falla la actualización
+            // Silencioso - mantener ubicación en caché si falla
+            console.log("No se pudo actualizar ubicación, usando caché");
           },
           {
             timeout: 5000,
-            maximumAge: 300000, // 5 minutos - aceptar ubicación de hasta 5 min atrás
+            maximumAge: 300000, // 5 minutos - usar ubicación antigua si está disponible
             enableHighAccuracy: false,
           }
         );
+        return;
       } catch (e) {
         console.error("Error al parsear ubicación en caché:", e);
-        // Si hay error parseando, solicitar ubicación de nuevo
-        requestLocation();
+        // Si hay error parseando, limpiar y solicitar de nuevo
+        localStorage.removeItem(LOCATION_DATA_KEY);
       }
-      return;
     }
 
-    // Solo solicitar geolocalización si no hay datos en caché
+    // Solo solicitar geolocalización si NO hay datos en caché
     requestLocation();
 
     function requestLocation() {
@@ -113,6 +122,7 @@ export function useGeolocation() {
           const locationData = {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
+            timestamp: Date.now(),
           };
 
           // Guardar permisos y ubicación en localStorage para persistencia
