@@ -84,7 +84,7 @@ export function Footer() {
   };
 
   return (
-    <footer className="relative bg-gradient-to-br from-neutral-50 to-blue-50 border-t border-neutral-200/50 mt-20">
+    <footer id="footer" className="relative bg-gradient-to-br from-neutral-50 to-blue-50 border-t border-neutral-200/50 mt-20">
       <div className="mx-auto max-w-7xl px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Columna 1: Branding */}
