@@ -37,7 +37,7 @@ export function ContactForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: message.trim(),
-          email: email.trim() || undefined,
+          email: email.trim(),
           subject,
         }),
       });

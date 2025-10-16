@@ -59,14 +59,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (email && typeof email === "string") {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        return NextResponse.json(
-          { error: "El email no es válido" },
-          { status: 400 }
-        );
-      }
+    // Email es ahora requerido
+    if (!email || typeof email !== "string") {
+      return NextResponse.json(
+        { error: "El email es requerido" },
+        { status: 400 }
+      );
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { error: "El email no es válido" },
+        { status: 400 }
+      );
     }
 
     // Log del mensaje solo en desarrollo
@@ -74,7 +80,7 @@ export async function POST(request: NextRequest) {
       console.log("\n=== NUEVO MENSAJE DE CONTACTO ===");
       console.log("Asunto:", subject);
       console.log("Mensaje:", message);
-      console.log("Email:", email || "No proporcionado");
+      console.log("Email:", email);
       console.log("Fecha:", new Date().toLocaleString("es-CL"));
       console.log("IP:", ip);
       console.log("================================\n");
@@ -97,16 +103,10 @@ export async function POST(request: NextRequest) {
                 <p style="color: #374151; line-height: 1.6; white-space: pre-wrap;">${message}</p>
               </div>
 
-              ${
-                email
-                  ? `
               <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
                 <h2 style="color: #1f2937; margin-top: 0; font-size: 16px; font-weight: 600;">Email del remitente:</h2>
                 <p style="color: #374151;"><a href="mailto:${email}" style="color: #3b82f6; text-decoration: none;">${email}</a></p>
               </div>
-              `
-                  : ""
-              }
 
               <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
                 <h2 style="color: #1f2937; margin-top: 0; font-size: 16px; font-weight: 600;">Información adicional:</h2>
@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
             to: "kathcastillosanchez@gmail.com",
             subject: `${subject} - Encumbra`,
             html: emailHtml,
-            reply_to: email || undefined,
+            reply_to: email,
           }),
         });
 
