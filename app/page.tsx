@@ -528,46 +528,48 @@ export default function Home() {
       <main className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-slate-50">
         {/* Header */}
         <header className="sticky top-0 z-40 backdrop-blur-xl bg-white/90 border-b border-neutral-200/50 shadow-lg shadow-black/5">
-          <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-4">
+          <div className="mx-auto max-w-7xl px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
               <Link
                 href="/"
-                className="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer"
+                className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity cursor-pointer min-w-0 flex-shrink-0"
               >
-                <div className="bg-gradient-to-r from-blue-500 to-cyan-500 p-2.5 rounded-xl shadow-md">
-                  <FaWind className="w-5 h-5 text-white" />
+                <div className="bg-gradient-to-r from-blue-500 to-cyan-500 p-2 sm:p-2.5 rounded-xl shadow-md flex-shrink-0">
+                  <FaWind className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </div>
-                <div>
-                  <h1 className="font-display font-bold text-2xl bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                <div className="min-w-0">
+                  <h1 className="font-display font-bold text-lg sm:text-2xl bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent truncate">
                     Encumbra
                   </h1>
-                  <p className="text-xs text-neutral-500 font-medium">
+                  <p className="text-[10px] sm:text-xs text-neutral-500 font-medium hidden sm:block">
                     Vuela cuando el viento es perfecto
                   </p>
                 </div>
               </Link>
-              <ScoreInfoTooltip />
-              <TemperatureWidget latitude={latitude} longitude={longitude} />
+              <div className="hidden md:flex items-center gap-2">
+                <ScoreInfoTooltip />
+                <TemperatureWidget latitude={latitude} longitude={longitude} />
+              </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
               {error && (
-                <div className="text-sm text-red-100 mr-4 bg-red-500/80 px-3 py-2 rounded-full border-2 border-red-300 font-medium">
+                <div className="hidden sm:block text-xs sm:text-sm text-red-100 bg-red-500/80 px-2 sm:px-3 py-1.5 sm:py-2 rounded-full border-2 border-red-300 font-medium">
                   {error}
                 </div>
               )}
               {(loading || initialLoading) && (
-                <div className="text-sm text-neutral-700 bg-blue-50 border border-blue-200 px-4 py-2 rounded-xl flex items-center gap-2">
-                  <div className="w-3 h-3 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                  {initialLoading ? "Cargando..." : "Actualizando..."}
+                <div className="text-xs sm:text-sm text-neutral-700 bg-blue-50 border border-blue-200 px-2 sm:px-4 py-1.5 sm:py-2 rounded-xl flex items-center gap-1.5 sm:gap-2">
+                  <div className="w-3 h-3 border-2 border-blue-500 border-t-transparent rounded-full animate-spin flex-shrink-0"></div>
+                  <span className="hidden sm:inline">{initialLoading ? "Cargando..." : "Actualizando..."}</span>
                 </div>
               )}
               <button
-                className="flex items-center gap-2 px-4 py-2 rounded-xl border border-neutral-200 bg-white/80 hover:bg-white hover:shadow-md text-neutral-700 font-medium transition-all duration-200 cursor-pointer"
+                className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl border border-neutral-200 bg-white/80 hover:bg-white hover:shadow-md text-neutral-700 font-medium transition-all duration-200 cursor-pointer"
                 onClick={() => setSettingsOpen(true)}
                 aria-label="Abrir ajustes"
               >
-                <FaCog className="h-4 w-4" />
-                <span className="hidden sm:inline">Ajustes</span>
+                <FaCog className="h-4 w-4 flex-shrink-0" />
+                <span className="hidden sm:inline text-sm">Ajustes</span>
               </button>
             </div>
           </div>
