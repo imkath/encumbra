@@ -80,7 +80,7 @@ export function BestWindowPanelSkeleton() {
           {[1, 2].map((i) => (
             <div
               key={i}
-              className="p-4 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-750"
+              className="p-4 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900"
             >
               <div className="flex items-center justify-between mb-3">
                 <Skeleton className="h-5 w-24" />
@@ -132,7 +132,7 @@ export function EducationalWindowsSkeleton() {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-750"
+              className="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-900"
             >
               <div className="flex items-start gap-3">
                 <Skeleton className="h-12 w-12 rounded-lg" />
