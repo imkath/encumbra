@@ -97,16 +97,22 @@ export function TipCard({
   const Icon = icon;
 
   return (
-    <div className={`${bgColor} ${borderColor} border-2 rounded-xl p-4 mt-4`}>
+    <div
+      className={`${bgColor} dark:bg-neutral-800/50 ${borderColor} dark:border-neutral-700 border-2 rounded-xl p-4 mt-4`}
+    >
       <div className="flex items-start gap-3">
-        <div className={`${iconColor} text-xl mt-0.5 flex-shrink-0`}>
+        <div
+          className={`${iconColor} dark:text-purple-400 text-xl mt-0.5 flex-shrink-0`}
+        >
           <Icon />
         </div>
         <div className="flex-1">
-          <p className="text-sm font-medium text-neutral-900 mb-1">
+          <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100 mb-1">
             Consejo del momento
           </p>
-          <p className="text-sm text-neutral-700 leading-relaxed">{tip}</p>
+          <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
+            {tip}
+          </p>
         </div>
       </div>
     </div>
