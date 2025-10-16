@@ -49,67 +49,28 @@ export function useGeolocation() {
       return;
     }
 
-    // Si tenemos permisos y datos en caché, usar esos datos SIN pedir ubicación
+    // Si tenemos permisos y datos en caché, SIEMPRE usar esos datos sin pedir ubicación
     if (cachedPermission === "granted" && cachedLocation) {
       try {
         const location = JSON.parse(cachedLocation);
-        const timestamp = location.timestamp || 0;
-        const now = Date.now();
-        const fiveMinutes = 5 * 60 * 1000;
 
-        // Si la ubicación tiene menos de 5 minutos, usarla directamente
-        if (now - timestamp < fiveMinutes) {
-          setState({
-            latitude: location.latitude,
-            longitude: location.longitude,
-            error: null,
-            loading: false,
-          });
-          return; // NO pedir ubicación de nuevo
-        }
-
-        // Si la ubicación es antigua (>5 min), actualizar en segundo plano
+        // Usar ubicación guardada independientemente de la edad
+        // El usuario puede refrescar manualmente si quiere actualizar
         setState({
           latitude: location.latitude,
           longitude: location.longitude,
           error: null,
-          loading: false, // Ya tenemos datos, no mostrar loading
+          loading: false,
         });
 
-        // Actualizar silenciosamente sin mostrar popup (usar maximumAge)
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const newLocation = {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-              timestamp: Date.now(),
-            };
-            localStorage.setItem(
-              LOCATION_DATA_KEY,
-              JSON.stringify(newLocation)
-            );
-            setState({
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-              error: null,
-              loading: false,
-            });
-          },
-          (error) => {
-            // Silencioso - mantener ubicación en caché si falla
-            console.log("No se pudo actualizar ubicación, usando caché");
-          },
-          {
-            timeout: 5000,
-            maximumAge: 300000, // 5 minutos - usar ubicación antigua si está disponible
-            enableHighAccuracy: false,
-          }
-        );
+        // IMPORTANTE: NO llamar a getCurrentPosition() aquí
+        // Esto evita que se muestre el popup del navegador
         return;
       } catch (e) {
         console.error("Error al parsear ubicación en caché:", e);
         // Si hay error parseando, limpiar y solicitar de nuevo
         localStorage.removeItem(LOCATION_DATA_KEY);
+        localStorage.removeItem(LOCATION_STORAGE_KEY);
       }
     }
 
