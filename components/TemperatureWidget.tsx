@@ -70,8 +70,10 @@ export function TemperatureWidget({
   if (loading) {
     return (
       <div className="flex items-center gap-2 px-3 py-1.5">
-        <Thermometer className="w-4 h-4 text-orange-500 animate-pulse" />
-        <span className="text-sm font-medium text-neutral-600">--°</span>
+        <Thermometer className="w-4 h-4 text-orange-500 dark:text-amber-400 animate-pulse" />
+        <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
+          --°
+        </span>
       </div>
     );
   }
@@ -82,13 +84,13 @@ export function TemperatureWidget({
 
   return (
     <div className="flex items-center gap-2 px-3 py-1.5">
-      <Thermometer className="w-4 h-4 text-orange-500" />
-      <span className="text-sm font-bold text-orange-700">
+      <Thermometer className="w-4 h-4 text-orange-500 dark:text-amber-400" />
+      <span className="text-sm font-bold text-orange-700 dark:text-amber-400">
         {Math.round(temperature)}°C
       </span>
-      <div className="w-px h-4 bg-orange-300" />
-      <MapPin className="w-3.5 h-3.5 text-orange-600" />
-      <span className="text-xs font-medium text-orange-600">
+      <div className="w-px h-4 bg-orange-300 dark:bg-amber-600" />
+      <MapPin className="w-3.5 h-3.5 text-orange-600 dark:text-amber-500" />
+      <span className="text-xs font-medium text-orange-600 dark:text-amber-400">
         {locationName}
       </span>
     </div>
