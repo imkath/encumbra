@@ -19,6 +19,7 @@ export function InteractiveMap({
 }: InteractiveMapProps) {
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<L.Marker[]>([]);
+  const hasZoomedRef = useRef(false); // Track if we've zoomed to a park
 
   useEffect(() => {
     if (!mapRef.current) {
@@ -31,6 +32,7 @@ export function InteractiveMap({
       }).addTo(map);
 
       mapRef.current = map;
+      hasZoomedRef.current = false; // Reset zoom tracking on init
     }
 
     // Limpiar marcadores anteriores
@@ -152,15 +154,19 @@ export function InteractiveMap({
       markersRef.current.push(userMarker);
     }
 
-    // Solo hacer zoom al parque seleccionado si hay uno, sino mantener vista de Santiago
-    if (selectedPark && selectedPark !== null) {
-      mapRef.current.setView([selectedPark.lat, selectedPark.lon], 14, {
-        animate: true,
-      });
-    } else {
-      // Vista completa de Santiago para ver todos los parques
+    // No hacer zoom automático la primera vez que se carga el mapa
+    // Solo hacer zoom si el usuario hace click en un parque después de cargar
+    // Esto mantiene la vista completa de Santiago al abrir "Elegir parque"
+    if (!hasZoomedRef.current) {
+      // Primera carga: mantener vista de Santiago completa
       mapRef.current.setView([-33.4489, -70.6693], 11, {
         animate: false,
+      });
+      hasZoomedRef.current = true;
+    } else if (selectedPark && selectedPark !== null) {
+      // Después de la primera carga, hacer zoom al parque seleccionado
+      mapRef.current.setView([selectedPark.lat, selectedPark.lon], 14, {
+        animate: true,
       });
     }
   }, [selectedPark, onSelectPark, userLocation]);

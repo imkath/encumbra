@@ -70,6 +70,11 @@ export function saveAlert(
   alerts.push(newAlert);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(alerts));
 
+  // Disparar evento personalizado para sincronizar en la misma pestaña
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("alertsChanged"));
+  }
+
   return newAlert;
 }
 
@@ -110,6 +115,11 @@ export function markAlertAsNotified(alertId: string) {
     alert.id === alertId ? { ...alert, notified: true } : alert
   );
   localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+
+  // Disparar evento personalizado para sincronizar
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("alertsChanged"));
+  }
 }
 
 /**
@@ -119,6 +129,11 @@ export function deleteAlert(alertId: string) {
   const alerts = getAlerts();
   const filtered = alerts.filter((alert) => alert.id !== alertId);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+
+  // Disparar evento personalizado para sincronizar
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("alertsChanged"));
+  }
 }
 
 /**
@@ -134,7 +149,15 @@ export function cleanupOldAlerts() {
     return windowStart > oneDayAgo;
   });
 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(active));
+  // Solo actualizar si realmente eliminamos alertas
+  if (active.length < alerts.length) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(active));
+
+    // Disparar evento personalizado para sincronizar
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("alertsChanged"));
+    }
+  }
 }
 
 /**

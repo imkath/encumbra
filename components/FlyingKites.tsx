@@ -389,12 +389,21 @@ const Kite = ({
 
 export function FlyingKites() {
   const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+    // Detectar si es mobile
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  const kites = [
+  // Configuración desktop: 12 volantines, velocidad normal
+  const desktopKites = [
     {
       type: "C" as const,
       x: "15%",
@@ -415,8 +424,6 @@ export function FlyingKites() {
       depth: 0.95,
       initialRotate: 15,
     },
-
-    // Capa media-cercana - mezclados
     {
       type: "D" as const,
       x: "45%",
@@ -447,8 +454,6 @@ export function FlyingKites() {
       depth: 0.65,
       initialRotate: -35,
     },
-
-    // Capa media-lejana - variados
     {
       type: "B" as const,
       x: "62%",
@@ -479,8 +484,6 @@ export function FlyingKites() {
       depth: 0.6,
       initialRotate: 5,
     },
-
-    // Capa lejana - difuminados (detrás de todo)
     {
       type: "B" as const,
       x: "35%",
@@ -488,7 +491,7 @@ export function FlyingKites() {
       duration: 16,
       yOffset: "70%",
       scale: 0.5,
-      depth: 0.3, // Muy lejano
+      depth: 0.3,
       initialRotate: -20,
     },
     {
@@ -522,6 +525,56 @@ export function FlyingKites() {
       initialRotate: 18,
     },
   ];
+
+  // Configuración mobile: 4 volantines en los extremos, más lentos y difuminados
+  const mobileKites = [
+    // Esquina superior izquierda
+    {
+      type: "C" as const,
+      x: "8%",
+      delay: 0,
+      duration: 28, // Muy lento
+      yOffset: "5%",
+      scale: 0.7, // Más pequeños
+      depth: 0.4, // Más difuminados
+      initialRotate: -20,
+    },
+    // Esquina superior derecha
+    {
+      type: "B" as const,
+      x: "88%",
+      delay: 3,
+      duration: 30,
+      yOffset: "8%",
+      scale: 0.65,
+      depth: 0.35,
+      initialRotate: 15,
+    },
+    // Medio-bajo izquierda
+    {
+      type: "D" as const,
+      x: "5%",
+      delay: 6,
+      duration: 32,
+      yOffset: "70%",
+      scale: 0.55,
+      depth: 0.3,
+      initialRotate: -15,
+    },
+    // Medio-bajo derecha
+    {
+      type: "A" as const,
+      x: "90%",
+      delay: 9,
+      duration: 34,
+      yOffset: "75%",
+      scale: 0.5,
+      depth: 0.28,
+      initialRotate: 20,
+    },
+  ];
+
+  const kites = isMobile ? mobileKites : desktopKites;
 
   // No renderizar en el servidor para evitar problemas de hidratación
   if (!mounted) {
