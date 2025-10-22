@@ -26,7 +26,7 @@ Cada página tiene su propia metadata optimizada:
 2. **/seguridad**
 
    - Schema.org: `HowTo` con 4 pasos detallados
-   - Keywords: seguridad, Ley 20.299, cables eléctricos, SAMU
+   - Keywords: seguridad, Ley 20.700 y su reglamento, cables eléctricos, SAMU
    - Optimizada para búsquedas de seguridad
 
 3. **/como-funciona**

@@ -15,12 +15,12 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Guía de Seguridad para Volar Volantín",
   description:
-    "Guía completa de seguridad para volar volantines en Chile. Aprende dónde elevar, qué materiales usar, qué hacer si se enreda y primeros auxilios. Información sobre Ley 20.299 y prevención de accidentes eléctricos.",
+    "Guía completa de seguridad para volar volantines en Chile. Aprende dónde elevar, qué materiales usar, qué hacer si se enreda y primeros auxilios. Información sobre Ley 20.700 y su reglamento, además de prevención de accidentes eléctricos.",
   keywords: [
     "seguridad volantines",
     "hilo de algodón",
     "hilo curado prohibido",
-    "Ley 20.299",
+    "Ley 20.700",
     "cables eléctricos",
     "accidentes volantines",
     "primeros auxilios",
@@ -56,7 +56,7 @@ export default function SeguridadPage() {
       {
         "@type": "HowToStep",
         name: "Usar materiales seguros",
-        text: "Hilo de algodón o nylon no conductor. Prohibido hilo curado o metálico (Ley 20.299).",
+        text: "Hilo de algodón o nylon no conductor. Prohibido hilo curado o metálico (Ley 20.700 y su reglamento).",
       },
       {
         "@type": "HowToStep",
@@ -272,7 +272,16 @@ export default function SeguridadPage() {
                 <div className="bg-amber-50 dark:bg-amber-950/30 border-2 border-amber-300 dark:border-amber-700/50 rounded-xl p-6">
                   <p className="text-amber-900 dark:text-amber-200 leading-relaxed">
                     <strong>Importante:</strong> El hilo curado está prohibido
-                    en Chile (Ley 20.299). Además de ser ilegal, es
+                    en Chile según la{" "}
+                    <a
+                      href="https://www.bcn.cl/leychile/navegar?idNorma=1054358"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-semibold underline text-blue-800 hover:text-blue-900 dark:text-blue-300 dark:hover:text-blue-200"
+                    >
+                      Ley 20.700
+                    </a>{" "}
+                    y su reglamento. Además de ser ilegal, es
                     extremadamente peligroso y puede causar lesiones graves a
                     personas, animales y ciclistas.
                   </p>

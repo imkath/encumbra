@@ -17,6 +17,7 @@ import { SafetyStrip } from "@/components/SafetyStrip";
 import { TipCard } from "@/components/TipCard";
 import { SafetyBadges } from "@/components/SafetyBadges";
 import { EducationalWindows } from "@/components/EducationalWindows";
+import { SafetyTrafficLight } from "@/components/SafetyTrafficLight";
 import { SafetyCallout } from "@/components/SafetyCallout";
 import { WelcomeHero } from "@/components/WelcomeHero";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -976,11 +977,28 @@ export default function Home() {
                     </div>
                   </div>
 
+                  {/* Modo Volantín Seguro - Ancho completo */}
+                  <div className="lg:col-span-2">
+                    <SafetyTrafficLight
+                      hourlyData={hourlyForecastWithRecalculatedScores}
+                      profile={kiteProfile}
+                      windUnits={windUnits}
+                      hoursToShow={12}
+                      parkName={selectedPark.name}
+                    />
+                  </div>
+
                   {/* Ventanas recomendadas - Ancho completo abajo */}
                   <div className="lg:col-span-2 bg-white dark:bg-neutral-800 rounded-2xl shadow-lg dark:shadow-black/40 border border-neutral-200 dark:border-neutral-700 p-6">
-                    <h3 className="text-xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-4">
-                      Ventanas recomendadas
-                    </h3>
+                    <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
+                      <h3 className="text-xl font-display font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+                        <FaCalendarDay className="w-4 h-4 text-blue-600 dark:text-purple-400" />
+                        Ventanas recomendadas
+                      </h3>
+                      <div className="text-xs font-bold text-blue-700 dark:text-purple-300 bg-blue-100 dark:bg-purple-950/40 px-3 py-1 rounded-full border-2 border-blue-300 dark:border-purple-700/50 whitespace-nowrap">
+                        {selectedPark.name}
+                      </div>
+                    </div>
                     <EducationalWindows
                       nextWindow={nextToday || undefined}
                       bestWindow={bestToday || undefined}
