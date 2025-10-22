@@ -121,6 +121,10 @@ export function ScoreTooltip({
   const resolvedSide = isTouch ? "top" : side;
   const resolvedAlign = isTouch ? "center" : align;
 
+  // Attach native touch listeners for the trigger element on touch devices.
+  useAttachNativeTouchHandlers(triggerRef, isTouch, (v) => setOpen(v),
+    focusTrigger);
+
   return (
     <Tooltip
       open={isTouch ? open : undefined}
@@ -131,7 +135,10 @@ export function ScoreTooltip({
           ref={triggerRef}
           tabIndex={0}
           role="button"
-          onClick={!isTouch ? undefined : (event) => event.preventDefault()}
+          /* For touch devices we attach native listeners with passive:false
+             so we can call preventDefault without triggering the browser warning.
+             Avoid calling preventDefault from React synthetic handlers because
+             they may be registered as passive. */
           onKeyDown={(event) => {
             if (isTouch) return;
             if (event.key === "Enter" || event.key === " ") {
@@ -139,17 +146,7 @@ export function ScoreTooltip({
               setOpen((prev) => !prev);
             }
           }}
-          onTouchStart={(event) => {
-            if (!isTouch) return;
-            event.preventDefault();
-            event.stopPropagation();
-            focusTrigger();
-            handleTriggerClick();
-          }}
-          onTouchMove={(event) => {
-            if (!isTouch) return;
-            event.preventDefault();
-          }}
+          // touch handlers moved to a native listener (see useEffect below)
           className="inline-flex items-center gap-1 cursor-help text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-sm group touch-manipulation"
           aria-expanded={isTouch ? open : undefined}
           aria-haspopup="true"
@@ -163,14 +160,8 @@ export function ScoreTooltip({
         align={resolvedAlign}
         sideOffset={6}
         collisionPadding={16}
-        onTouchStart={(event) => {
-          if (!isTouch) return;
-          event.stopPropagation();
-        }}
-        onTouchMove={(event) => {
-          if (!isTouch) return;
-          event.preventDefault();
-        }}
+        /* TooltipContent touch handlers are unnecessary because the trigger
+           has native touch listeners attached to the trigger element. */
         className="max-w-xs bg-neutral-900 text-white border-neutral-700"
       >
         <div className="space-y-1">
@@ -197,3 +188,44 @@ export function ScoreTooltip({
     </Tooltip>
   );
 }
+
+// Attach native touch listeners to trigger element when on touch devices.
+// We'll add the listeners in a separate effect so we can use passive: false.
+// This avoids the browser warning when calling event.preventDefault().
+function useAttachNativeTouchHandlers(
+  ref: React.RefObject<HTMLElement | null>,
+  isTouchDevice: boolean,
+  setOpenState: (v: boolean) => void,
+  focusFn: () => void
+) {
+  useEffect(() => {
+    const node = ref.current;
+    if (!node || !isTouchDevice) return;
+
+    const onTouchStart = (event: TouchEvent) => {
+      // Prevent default to avoid page scroll while interacting with tooltip
+      event.preventDefault();
+      event.stopPropagation();
+      focusFn();
+      setOpenState(true);
+    };
+
+    const onTouchMove = (event: TouchEvent) => {
+      // Prevent accidental scrolling when moving finger over trigger
+      event.preventDefault();
+    };
+
+    node.addEventListener("touchstart", onTouchStart, { passive: false });
+    node.addEventListener("touchmove", onTouchMove, { passive: false });
+
+    return () => {
+      node.removeEventListener("touchstart", onTouchStart as EventListener);
+      node.removeEventListener("touchmove", onTouchMove as EventListener);
+    };
+    // We intentionally exclude focusFn from deps because it's stable in this
+    // component; include only values that matter.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ref, isTouchDevice, setOpenState]);
+}
+
+// Hook definition is below. The usage is inside the component above.
