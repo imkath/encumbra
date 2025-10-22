@@ -69,14 +69,17 @@ export function AtGlanceCard({
   }, []);
   return (
     <section aria-labelledby="agl">
-      <div className="text-center mb-4">
+      <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <h2
           id="agl"
-          className="text-xl font-display font-bold text-neutral-900 dark:text-neutral-100 flex items-center justify-center gap-2"
+          className="text-xl font-display font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2"
         >
           <FaBullseye className="w-5 h-5 text-brand-500 dark:text-purple-500" />
           <span>Decisión Rápida</span>
         </h2>
+        <div className="text-xs font-bold text-blue-700 dark:text-purple-300 bg-blue-100 dark:bg-purple-950/40 px-3 py-1 rounded-full border-2 border-blue-300 dark:border-purple-700/50 whitespace-nowrap">
+          {parkName}
+        </div>
       </div>
 
       <div className="space-y-3">

@@ -238,7 +238,7 @@ export function HourlyChart({
                           style={{ width: `${Math.max(scorePercent, 5)}%` }}
                         />
                         <div className="absolute inset-0 flex items-center justify-end pr-1">
-                          <span className="text-[9px] font-bold text-white dark:text-white drop-shadow-sm">
+                          <span className="text-[9px] font-bold text-neutral-900 dark:text-neutral-100 bg-white/80 dark:bg-neutral-900/70 px-1 py-0.5 rounded">
                             Q{Math.round(hour.score)}
                           </span>
                         </div>

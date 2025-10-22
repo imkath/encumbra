@@ -8,11 +8,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import {
-  FaMapMarkerAlt,
-  FaCheckCircle,
-  FaExclamationTriangle,
-} from "react-icons/fa";
+import { FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
 import { formatWindSpeed, type WindUnits } from "@/lib/utils";
 
 interface WindowInfo {
@@ -37,22 +33,22 @@ export function BestWindowPanel({
   return (
     <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-lg dark:shadow-black/40 border border-neutral-200 dark:border-neutral-700 h-full">
       <div className="p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Clock className="h-5 w-5 text-blue-600 dark:text-purple-400" />
-          <h2
-            id="best"
-            className="text-xl font-semibold text-neutral-900 dark:text-neutral-100"
-          >
-            Ventanas próximas
-          </h2>
+        <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
+          <div className="flex items-center gap-2">
+            <Clock className="h-5 w-5 text-blue-600 dark:text-purple-400" />
+            <h2
+              id="best"
+              className="text-xl font-semibold text-neutral-900 dark:text-neutral-100"
+            >
+              Ventanas próximas
+            </h2>
+          </div>
+          {parkName && (
+            <div className="text-xs font-bold text-blue-700 dark:text-purple-300 bg-blue-100 dark:bg-purple-950/40 px-3 py-1 rounded-full border-2 border-blue-300 dark:border-purple-700/50 whitespace-nowrap">
+              {parkName}
+            </div>
+          )}
         </div>
-
-        {parkName && (
-          <p className="text-sm text-neutral-600 dark:text-neutral-200 mb-6 bg-neutral-50 dark:bg-purple-950/40 px-3 py-2 rounded-lg border border-neutral-200 dark:border-purple-700/50 flex items-center gap-2">
-            <FaMapMarkerAlt className="w-3 h-3 text-brand-500 dark:text-purple-400" />
-            <span>{parkName}</span>
-          </p>
-        )}
 
         {windows.length === 0 ? (
           <div className="text-center py-12">
