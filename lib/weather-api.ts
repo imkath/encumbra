@@ -8,34 +8,68 @@ export async function fetchWeatherForecast(
 ): Promise<HourlyWind[]> {
   const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=wind_speed_10m,wind_gusts_10m,wind_direction_10m&forecast_days=${forecastDays}&timezone=auto`;
 
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error("Failed to fetch weather data");
+  // Helper: sleep ms
+  const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+  const maxAttempts = 3;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const response = await fetch(url);
+
+      if (response.status === 429) {
+        // Too many requests: respect Retry-After if provided
+        const ra = response.headers.get("Retry-After");
+        const waitSec = ra ? parseInt(ra, 10) || 1 : Math.pow(2, attempt);
+        const waitMs = Math.max(500, waitSec * 1000);
+        console.warn(`[v0] Open-Meteo 429 received. Retrying after ${waitMs}ms (attempt ${attempt})`);
+        if (attempt < maxAttempts) await sleep(waitMs + Math.random() * 200);
+        else throw new Error("Open-Meteo: too many requests (429)");
+        continue;
+      }
+
+      if (!response.ok) {
+        // For 5xx or other errors, attempt retry with backoff
+        const errText = await response.text().catch(() => "");
+        const status = response.status;
+        const msg = `Open-Meteo error ${status}: ${errText}`;
+        if (attempt < maxAttempts) {
+          const backoff = Math.pow(2, attempt) * 300 + Math.random() * 200;
+          console.warn(`[v0] ${msg}. Retrying in ${backoff}ms (attempt ${attempt})`);
+          await sleep(backoff);
+          continue;
+        }
+        throw new Error(msg);
+      }
+
+      const data: WeatherForecast = await response.json();
+
+      // Transform API response into HourlyWind array with scores
+      const hourlyData: HourlyWind[] = data.hourly.time.map((time, index) => {
+        const windSpeed = data.hourly.wind_speed_10m[index];
+        const gustSpeed = data.hourly.wind_gusts_10m[index];
+        const direction = data.hourly.wind_direction_10m[index];
+
+        return {
+          time,
+          wind_speed_10m: windSpeed,
+          wind_gusts_10m: gustSpeed,
+          wind_direction_10m: direction,
+          score: calculateVolantinScore(windSpeed, gustSpeed),
+        };
+      });
+
+      return hourlyData;
+    } catch (error) {
+      console.error(`[v0] Error fetching weather data (attempt ${attempt}):`, error);
+      if (attempt >= maxAttempts) throw error;
+      const backoff = Math.pow(2, attempt) * 300 + Math.random() * 200;
+      await sleep(backoff);
     }
-
-    const data: WeatherForecast = await response.json();
-
-    // Transform API response into HourlyWind array with scores
-    const hourlyData: HourlyWind[] = data.hourly.time.map((time, index) => {
-      const windSpeed = data.hourly.wind_speed_10m[index];
-      const gustSpeed = data.hourly.wind_gusts_10m[index];
-      const direction = data.hourly.wind_direction_10m[index];
-
-      return {
-        time,
-        wind_speed_10m: windSpeed,
-        wind_gusts_10m: gustSpeed,
-        wind_direction_10m: direction,
-        score: calculateVolantinScore(windSpeed, gustSpeed),
-      };
-    });
-
-    return hourlyData;
-  } catch (error) {
-    console.error("[v0] Error fetching weather data:", error);
-    throw error;
   }
+
+  // Shouldn't reach here, but TypeScript needs a return
+  throw new Error("Failed to fetch weather data after retries");
 }
 
 export function getBestHoursToday(
@@ -60,21 +94,32 @@ export async function fetchMultiParkWeather(
   parks: Array<{ id: string; lat: number; lon: number }>,
   forecastDays = 3
 ): Promise<Record<string, HourlyWind[]>> {
-  const weatherPromises = parks.map(async (park) => {
-    try {
-      const forecast = await fetchWeatherForecast(
-        park.lat,
-        park.lon,
-        forecastDays
-      );
-      return { parkId: park.id, forecast };
-    } catch (error) {
-      console.error(`Failed to fetch weather for park ${park.id}:`, error);
-      return { parkId: park.id, forecast: [] };
-    }
-  });
+  // Process parks in small batches and use cache to avoid bursts
+  const results: Array<{ parkId: string; forecast: HourlyWind[] }> = [];
 
-  const results = await Promise.all(weatherPromises);
+  const chunkSize = 4; // concurrent requests
+  for (let i = 0; i < parks.length; i += chunkSize) {
+    const chunk = parks.slice(i, i + chunkSize);
+    const chunkPromises = chunk.map(async (park) => {
+      try {
+        const forecast = await fetchWeatherWithCache(
+          park.lat,
+          park.lon,
+          forecastDays
+        );
+        return { parkId: park.id, forecast };
+      } catch (error) {
+        console.error(`Failed to fetch weather for park ${park.id}:`, error);
+        return { parkId: park.id, forecast: [] };
+      }
+    });
+
+    const chunkResults = await Promise.all(chunkPromises);
+    results.push(...chunkResults);
+
+    // small pause between chunks to avoid bursting the API
+    if (i + chunkSize < parks.length) await new Promise((r) => setTimeout(r, 200));
+  }
 
   return results.reduce((acc, { parkId, forecast }) => {
     acc[parkId] = forecast;
