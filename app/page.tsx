@@ -24,6 +24,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { AlertsList } from "@/components/AlertsList";
 import { Footer } from "@/components/Footer";
 import { FullPageSkeleton } from "@/components/LoadingSkeleton";
+import { MobileTabBar, type MobileTabKey } from "@/components/MobileTabBar";
 import { SANTIAGO_PARKS } from "@/lib/parks-data";
 import type { Park, HourlyWind } from "@/lib/types";
 import { useGeolocation } from "@/hooks/use-geolocation";
@@ -55,7 +56,7 @@ import {
   FaClock,
   FaStar,
 } from "react-icons/fa";
-import { formatWindSpeed } from "@/lib/utils";
+import { cn, formatWindSpeed } from "@/lib/utils";
 
 // Función helper para hacer scroll con offset del header
 const scrollToElementWithOffset = (element: Element | null) => {
@@ -89,6 +90,8 @@ export default function Home() {
     "liviano" | "estandar" | "acrobatico"
   >("estandar");
   const [windUnits, setWindUnits] = useState<"kmh" | "ms" | "kn">("kmh");
+  const [isMobile, setIsMobile] = useState(false);
+  const [mobileTab, setMobileTab] = useState<MobileTabKey>("summary");
 
   const { latitude, longitude, error } = useGeolocation();
   const { toast } = useToast();
@@ -125,6 +128,39 @@ export default function Home() {
   useEffect(() => {
     localStorage.setItem("windUnits", windUnits);
   }, [windUnits]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
+
+    const applyMatch = (matches: boolean) => {
+      setIsMobile(matches);
+      if (!matches) {
+        setMobileTab("summary");
+      }
+    };
+
+    applyMatch(mediaQuery.matches);
+
+    const handler = (event: MediaQueryListEvent) => {
+      applyMatch(event.matches);
+    };
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", handler);
+    } else {
+      mediaQuery.addListener(handler);
+    }
+
+    return () => {
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener("change", handler);
+      } else {
+        mediaQuery.removeListener(handler);
+      }
+    };
+  }, []);
 
   // Manejar scroll al cargar página con hash (ej: /#parques)
   useEffect(() => {
@@ -547,7 +583,12 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <main className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-slate-50 dark:from-neutral-900 dark:via-neutral-950 dark:to-neutral-900">
+      <main
+        className={cn(
+          "min-h-screen bg-gradient-to-br from-neutral-50 via-white to-slate-50 dark:from-neutral-900 dark:via-neutral-950 dark:to-neutral-900",
+          isMobile ? "pb-24" : ""
+        )}
+      >
         {/* Header */}
         <header className="sticky top-0 z-40 backdrop-blur-xl bg-white/90 dark:bg-neutral-900/90 border-b border-neutral-200/50 dark:border-neutral-700/50 shadow-lg shadow-black/5 dark:shadow-black/20">
           <div className="mx-auto max-w-7xl px-3 sm:px-4 py-2.5 sm:py-4">
@@ -559,7 +600,7 @@ export default function Home() {
                   href="/"
                   className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
                 >
-                  <div className="bg-gradient-to-r from-blue-500 to-cyan-500 dark:from-purple-600 dark:to-violet-600 p-2 rounded-lg shadow-md">
+                  <div className="bg-gradient-to-r from-blue-500 to-cyan-500 dark:from-purple-600 dark:to-violet-600 p-2.5 rounded-xl shadow-md">
                     <FaWind className="w-4 h-4 text-white" />
                   </div>
                   <div>
@@ -658,30 +699,34 @@ export default function Home() {
         </header>
 
         {/* Welcome Hero */}
-        <WelcomeHero
-          hasLocation={!!(latitude && longitude)}
-          onUseLocation={() => {
-            // Geolocation is already active via useGeolocation hook
-            // Just scroll to the top parks section
-            const topParksSection = document.querySelector(
-              ".bg-gradient-to-br.from-white.via-sky-50"
-            );
-            scrollToElementWithOffset(topParksSection);
-          }}
-          onChoosePark={() => {
-            // Scroll to the map section
-            const mapSection = document.querySelector("[data-map-container]");
-            scrollToElementWithOffset(mapSection);
-          }}
-        />
+        {(!isMobile || mobileTab === "summary") && (
+          <WelcomeHero
+            hasLocation={!!(latitude && longitude)}
+            onUseLocation={() => {
+              // Geolocation is already active via useGeolocation hook
+              // Just scroll to the top parks section
+              const topParksSection = document.querySelector(
+                ".bg-gradient-to-br.from-white.via-sky-50"
+              );
+              scrollToElementWithOffset(topParksSection);
+            }}
+            onChoosePark={() => {
+              // Scroll to the map section
+              const mapSection = document.querySelector("[data-map-container]");
+              scrollToElementWithOffset(mapSection);
+            }}
+          />
+        )}
 
         {/* Alertas Activas */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <AlertsList />
-        </div>
+        {(!isMobile || mobileTab === "alerts") && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <AlertsList />
+          </div>
+        )}
 
         {/* Safety Strip - Franja educativa */}
-        <SafetyStrip />
+        {(!isMobile || mobileTab === "summary") && <SafetyStrip />}
 
         <div className="mx-auto max-w-7xl px-4 py-6">
           {initialLoading ? (
@@ -692,7 +737,10 @@ export default function Home() {
               <div
                 id="parques"
                 data-top-parks
-                className="bg-gradient-to-br from-white via-sky-50 to-blue-50 dark:from-neutral-800 dark:via-neutral-850 dark:to-neutral-800 rounded-3xl shadow-2xl dark:shadow-black/40 p-8"
+                className={cn(
+                  "bg-gradient-to-br from-white via-sky-50 to-blue-50 dark:from-neutral-800 dark:via-neutral-850 dark:to-neutral-800 rounded-3xl shadow-2xl dark:shadow-black/40 p-8",
+                  isMobile && mobileTab !== "windows" ? "hidden" : ""
+                )}
               >
                 <TopParksRanking
                   parks={rankingData}
@@ -720,10 +768,21 @@ export default function Home() {
               {selectedPark && (
                 <div
                   data-park-details
-                  className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+                  className={cn(
+                    "grid grid-cols-1 lg:grid-cols-2",
+                    isMobile ? "gap-4" : "gap-6",
+                    isMobile && !["summary", "windows"].includes(mobileTab)
+                      ? "hidden"
+                      : ""
+                  )}
                 >
                   {/* Columna Izquierda: Gráfico Horario - Usa todo el espacio disponible */}
-                  <div className="bg-white dark:bg-neutral-800 rounded-3xl shadow-2xl dark:shadow-black/40 p-6 overflow-hidden flex flex-col border border-neutral-100 dark:border-neutral-700">
+                  <div
+                    className={cn(
+                      "bg-white dark:bg-neutral-800 rounded-3xl shadow-2xl dark:shadow-black/40 p-6 overflow-hidden flex flex-col border border-neutral-100 dark:border-neutral-700",
+                      isMobile && mobileTab !== "windows" ? "hidden" : ""
+                    )}
+                  >
                     <div className="mb-4 flex-shrink-0">
                       <div className="flex items-center justify-between gap-3 flex-wrap">
                         <h2 className="text-lg sm:text-xl font-display font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
@@ -745,9 +804,14 @@ export default function Home() {
                   </div>
 
                   {/* Columna Derecha: Decisión + Mejores Ventanas */}
-                  <div className="space-y-6">
+                  <div className={cn(isMobile ? "space-y-4" : "space-y-6")}>
                     {/* Decisión Inmediata */}
-                    <div className="bg-white/80 dark:bg-neutral-800/90 backdrop-blur-xl rounded-2xl shadow-lg dark:shadow-black/40 border border-neutral-200 dark:border-neutral-700 p-6">
+                    <div
+                      className={cn(
+                        "bg-white/80 dark:bg-neutral-800/90 backdrop-blur-xl rounded-2xl shadow-lg dark:shadow-black/40 border border-neutral-200 dark:border-neutral-700 p-6",
+                        isMobile && mobileTab !== "summary" ? "hidden" : ""
+                      )}
+                    >
                       <AtGlanceCard
                         key={`atglance-${selectedPark.id}`}
                         parkName={selectedPark.name}
@@ -968,7 +1032,12 @@ export default function Home() {
                     </div>
 
                     {/* Mejores Ventanas */}
-                    <div className="bg-white rounded-2xl shadow-lg border border-neutral-200">
+                    <div
+                      className={cn(
+                        "bg-white rounded-2xl shadow-lg border border-neutral-200",
+                        isMobile && mobileTab !== "windows" ? "hidden" : ""
+                      )}
+                    >
                       <BestWindowPanel
                         windows={windowsData}
                         parkName={selectedPark.name}
@@ -978,7 +1047,12 @@ export default function Home() {
                   </div>
 
                   {/* Modo Volantín Seguro - Ancho completo */}
-                  <div className="lg:col-span-2">
+                  <div
+                    className={cn(
+                      "lg:col-span-2",
+                      isMobile && mobileTab !== "summary" ? "hidden" : ""
+                    )}
+                  >
                     <SafetyTrafficLight
                       hourlyData={hourlyForecastWithRecalculatedScores}
                       profile={kiteProfile}
@@ -989,7 +1063,12 @@ export default function Home() {
                   </div>
 
                   {/* Ventanas recomendadas - Ancho completo abajo */}
-                  <div className="lg:col-span-2 bg-white dark:bg-neutral-800 rounded-2xl shadow-lg dark:shadow-black/40 border border-neutral-200 dark:border-neutral-700 p-6">
+                  <div
+                    className={cn(
+                      "lg:col-span-2 bg-white dark:bg-neutral-800 rounded-2xl shadow-lg dark:shadow-black/40 border border-neutral-200 dark:border-neutral-700 p-6",
+                      isMobile && mobileTab !== "windows" ? "hidden" : ""
+                    )}
+                  >
                     <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
                       <h3 className="text-xl font-display font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
                         <FaCalendarDay className="w-4 h-4 text-blue-600 dark:text-purple-400" />

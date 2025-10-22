@@ -83,7 +83,7 @@ export default function NotFound() {
 
         {/* Encumbra logo abajo */}
         <div className="mt-8 flex items-center justify-center gap-2 opacity-60">
-          <div className="bg-gradient-to-r from-blue-500 to-cyan-500 p-2 rounded-lg">
+          <div className="bg-gradient-to-r from-blue-500 to-cyan-500 p-2.5 rounded-xl">
             <FaWind className="w-4 h-4 text-white" />
           </div>
           <span className="font-display font-bold text-lg bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
