@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function TopParksRankingSkeleton() {
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 overflow-x-hidden">
       <div className="flex items-center justify-between mb-4">
         <Skeleton className="h-6 w-48" />
         <Skeleton className="h-4 w-24" />
@@ -24,7 +24,7 @@ export function TopParksRankingSkeleton() {
           >
             <div className="flex items-start gap-4">
               <Skeleton className="w-12 h-12 rounded-full" />
-              <div className="flex-1 space-y-3">
+              <div className="flex-1 min-w-0 space-y-3">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 space-y-2">
                     <Skeleton className="h-5 w-40" />
@@ -55,10 +55,10 @@ export function TopParksRankingSkeleton() {
 
 export function AtGlanceCardSkeleton() {
   return (
-    <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-lg p-6 border-2 border-neutral-100 dark:border-neutral-700">
+    <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-lg p-6 border-2 border-neutral-100 dark:border-neutral-700 overflow-x-hidden">
       <div className="space-y-4">
         <Skeleton className="h-6 w-32" />
-        <div className="flex items-center justify-center py-6">
+        <div className="flex items-center justify-center py-6 min-w-0">
           <Skeleton className="h-24 w-24 rounded-full" />
         </div>
         <div className="space-y-2">
@@ -73,14 +73,14 @@ export function AtGlanceCardSkeleton() {
 
 export function BestWindowPanelSkeleton() {
   return (
-    <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-lg p-6 border-2 border-neutral-100 dark:border-neutral-700">
+    <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-lg p-6 border-2 border-neutral-100 dark:border-neutral-700 overflow-x-hidden">
       <div className="space-y-4">
         <Skeleton className="h-6 w-40" />
         <div className="space-y-3">
           {[1, 2].map((i) => (
             <div
               key={i}
-              className="p-4 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900"
+              className="p-4 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 min-w-0"
             >
               <div className="flex items-center justify-between mb-3">
                 <Skeleton className="h-5 w-24" />
@@ -100,13 +100,13 @@ export function BestWindowPanelSkeleton() {
 
 export function HourlyChartSkeleton() {
   return (
-    <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-lg p-6 border-2 border-neutral-100 dark:border-neutral-700">
+    <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-lg p-6 border-2 border-neutral-100 dark:border-neutral-700 overflow-x-hidden">
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <Skeleton className="h-6 w-48" />
           <Skeleton className="h-8 w-24 rounded-lg" />
         </div>
-        <Skeleton className="h-[300px] w-full rounded-lg" />
+  <Skeleton className="h-[300px] max-w-full w-full rounded-lg" />
       </div>
     </div>
   );
@@ -114,10 +114,10 @@ export function HourlyChartSkeleton() {
 
 export function MapViewSkeleton() {
   return (
-    <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-lg p-6 border-2 border-neutral-100 dark:border-neutral-700">
+    <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-lg p-6 border-2 border-neutral-100 dark:border-neutral-700 overflow-x-hidden">
       <div className="space-y-4">
         <Skeleton className="h-6 w-32" />
-        <Skeleton className="h-[400px] w-full rounded-xl" />
+  <Skeleton className="h-[400px] max-w-full w-full rounded-xl" />
       </div>
     </div>
   );
@@ -125,14 +125,14 @@ export function MapViewSkeleton() {
 
 export function EducationalWindowsSkeleton() {
   return (
-    <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-lg p-6 border-2 border-neutral-100 dark:border-neutral-700">
+    <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-lg p-6 border-2 border-neutral-100 dark:border-neutral-700 overflow-x-hidden">
       <div className="space-y-4">
         <Skeleton className="h-6 w-48" />
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-900"
+              className="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-900 min-w-0"
             >
               <div className="flex items-start gap-3">
                 <Skeleton className="h-12 w-12 rounded-lg" />
