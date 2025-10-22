@@ -78,7 +78,7 @@ export function EducationalWindows({
     },
     {
       title: "Mejor ventana del día",
-      subtitle: "Mayor calidad",
+      subtitle: parkName || "Parque seleccionado",
       window: bestWindow,
       icon: FaStar,
       iconColor: "text-yellow-600",
@@ -86,7 +86,7 @@ export function EducationalWindows({
     },
     {
       title: "Alternativa cercana",
-      subtitle: "Opción adicional",
+      subtitle: parkName || "Parque seleccionado",
       window: alternativeWindow,
       icon: FaMapMarkerAlt,
       iconColor: "text-purple-600",
