@@ -412,28 +412,40 @@ export default function PreguntasFrecuentesPage() {
                       ¿Puedo usar mi ubicación actual?
                     </h3>
                     <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed mb-3">
-                      Actualmente, Encumbra muestra parques verificados en
-                      Santiago para garantizar tu seguridad. En el futuro
-                      agregaremos la opción de:
+                      Sí. Encumbra ya puede usar tu ubicación actual para
+                      recomendarte el parque verificado más cercano en Santiago.
+                      Cuando presionas <strong>"Usar ubicación"</strong> te
+                      pediremos permiso al navegador y recordaremos tu elección
+                      para tus próximas visitas.
                     </p>
                     <ul className="space-y-2 text-neutral-700 dark:text-neutral-300">
                       <li className="flex items-start gap-2">
                         <span className="text-cyan-600 dark:text-cyan-400">
                           ○
                         </span>
-                        <span>Usar tu ubicación GPS actual</span>
+                        <span>
+                          Permite el acceso desde el botón{" "}
+                          <strong>"Usar ubicación"</strong> y detectaremos tus
+                          coordenadas actuales.
+                        </span>
                       </li>
                       <li className="flex items-start gap-2">
                         <span className="text-cyan-600 dark:text-cyan-400">
                           ○
                         </span>
-                        <span>Buscar cualquier dirección</span>
+                        <span>
+                          Guardamos tu preferencia localmente para no volver a
+                          pedir el permiso cada vez.
+                        </span>
                       </li>
                       <li className="flex items-start gap-2">
                         <span className="text-cyan-600 dark:text-cyan-400">
                           ○
                         </span>
-                        <span>Agregar más ciudades de Chile</span>
+                        <span>
+                          Usamos la ubicación solo para sugerirte parques
+                          cercanos y nunca la enviamos a servidores.
+                        </span>
                       </li>
                     </ul>
                   </div>
