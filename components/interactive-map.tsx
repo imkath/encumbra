@@ -24,11 +24,28 @@ export function InteractiveMap({
   useEffect(() => {
     if (!mapRef.current) {
       // Inicializar mapa centrado en Santiago con zoom que muestre toda la ciudad
-      const map = L.map("map").setView([-33.4489, -70.6693], 11);
+      // Mobile-optimized options
+      const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
+      const map = L.map("map", {
+        // Disable double-tap zoom delay for better mobile UX
+        tap: true,
+        tapTolerance: 15,
+        // Improve touch interactions
+        touchZoom: true,
+        scrollWheelZoom: !isMobile, // Disable scroll zoom on mobile
+        doubleClickZoom: true,
+        // Smoother animations
+        zoomAnimation: true,
+        markerZoomAnimation: true,
+      }).setView([-33.4489, -70.6693], 11);
 
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution:
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        // Improve tile loading on mobile
+        detectRetina: true,
+        maxZoom: 18,
       }).addTo(map);
 
       mapRef.current = map;
@@ -40,16 +57,22 @@ export function InteractiveMap({
     markersRef.current = [];
 
     // Añadir marcadores de parques con colores estilo Google Maps
+    // Larger markers on mobile for better tap targets
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    const markerSize = isMobile ? 36 : 24;
+    const selectedMarkerSize = isMobile ? 44 : 32;
+
     SANTIAGO_PARKS.forEach((park) => {
       const isSelected = selectedPark?.id === park.id;
+      const size = isSelected ? selectedMarkerSize : markerSize;
 
       const icon = L.divIcon({
         className: "custom-marker",
         html: `
           <div style="
             position: relative;
-            width: ${isSelected ? "32px" : "24px"};
-            height: ${isSelected ? "32px" : "24px"};
+            width: ${size}px;
+            height: ${size}px;
           ">
             <div style="
               position: absolute;
@@ -66,17 +89,18 @@ export function InteractiveMap({
               display: flex;
               align-items: center;
               justify-content: center;
+              touch-action: manipulation;
             ">
               ${
                 isSelected
-                  ? '<div style="color: white; font-size: 16px; font-weight: bold;">★</div>'
+                  ? `<div style="color: white; font-size: ${isMobile ? 20 : 16}px; font-weight: bold;">★</div>`
                   : ""
               }
             </div>
           </div>
         `,
-        iconSize: [isSelected ? 32 : 24, isSelected ? 32 : 24],
-        iconAnchor: [isSelected ? 16 : 12, isSelected ? 16 : 12],
+        iconSize: [size, size],
+        iconAnchor: [size / 2, size / 2],
       });
 
       const marker = L.marker([park.lat, park.lon], { icon })
