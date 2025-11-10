@@ -575,11 +575,11 @@ export default function Home() {
                 <div className="flex items-center gap-2">
                   <ThemeToggle />
                   <button
-                    className="flex items-center gap-2 px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white/80 dark:bg-neutral-800/80 hover:bg-white dark:hover:bg-neutral-800 hover:shadow-md text-neutral-700 dark:text-neutral-200 font-medium transition-all duration-200 cursor-pointer text-sm"
+                    className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white/80 dark:bg-neutral-800/80 hover:bg-white dark:hover:bg-neutral-800 hover:shadow-md text-neutral-700 dark:text-neutral-200 font-medium transition-all duration-200 cursor-pointer text-sm touch-manipulation active:scale-95"
                     onClick={() => setSettingsOpen(true)}
                     aria-label="Abrir ajustes"
                   >
-                    <FaCog className="h-4 w-4" />
+                    <FaCog className="h-5 w-5" />
                   </button>
                 </div>
               </div>{" "}
@@ -645,7 +645,7 @@ export default function Home() {
                 <ThemeToggle />
 
                 <button
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white/80 dark:bg-neutral-800/80 hover:bg-white dark:hover:bg-neutral-800 hover:shadow-md text-neutral-700 dark:text-neutral-200 font-medium transition-all duration-200 cursor-pointer text-sm"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white/80 dark:bg-neutral-800/80 hover:bg-white dark:hover:bg-neutral-800 hover:shadow-md text-neutral-700 dark:text-neutral-200 font-medium transition-all duration-200 cursor-pointer text-sm touch-manipulation active:scale-95"
                   onClick={() => setSettingsOpen(true)}
                   aria-label="Abrir ajustes"
                 >
@@ -1018,7 +1018,7 @@ export default function Home() {
                 <h2 className="text-2xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-4">
                   Mapa de Parques
                 </h2>
-                <div className="h-[500px] rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-700 relative z-10">
+                <div className="h-[300px] sm:h-[400px] lg:h-[500px] rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-700 relative z-10">
                   <MapView
                     selectedPark={selectedPark}
                     onSelectPark={(park: Park) => {

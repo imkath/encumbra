@@ -229,7 +229,7 @@ export function SafetyTrafficLight({
         ))}
       </div>
 
-      <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-72 overflow-y-auto overflow-x-hidden pr-1">
+      <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[60vh] sm:max-h-72 overflow-y-auto overflow-x-hidden pr-1">
         {upcoming.map((hour) => {
           const safety = evaluateHourSafety(hour, profile);
           const styles = LEVEL_STYLES[safety.level];

@@ -21,6 +21,12 @@
   --muted: #f1f5f9;
   --muted-foreground: var(--text-secondary);
   --radius: 1.25rem;
+
+  /* Safe area insets for notched devices */
+  --safe-area-inset-top: env(safe-area-inset-top);
+  --safe-area-inset-right: env(safe-area-inset-right);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom);
+  --safe-area-inset-left: env(safe-area-inset-left);
 }
 
 .dark {
@@ -85,6 +91,8 @@ body {
   line-height: 1.6;
   margin: 0;
   padding: 0;
+  padding-left: var(--safe-area-inset-left);
+  padding-right: var(--safe-area-inset-right);
   min-height: 100vh;
   transition: background-color 150ms ease, color 150ms ease;
   overflow-x: hidden; /* Prevenir scroll horizontal */
@@ -220,5 +228,164 @@ a,
 @supports (-webkit-overflow-scrolling: touch) {
   body {
     -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Safe area insets support for sticky header */
+header[class*="sticky"] {
+  padding-top: var(--safe-area-inset-top);
+}
+
+/* Bottom padding for content to avoid home indicator */
+footer {
+  padding-bottom: max(1.5rem, var(--safe-area-inset-bottom));
+}
+
+/* Mobile touch optimizations */
+@media (hover: none) and (pointer: coarse) {
+  /* Ensure minimum tap target size (44x44px recommended by Apple/Google) */
+  button,
+  a[role="button"],
+  [role="button"],
+  input[type="button"],
+  input[type="submit"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Better touch feedback */
+  button:active,
+  a[role="button"]:active,
+  [role="button"]:active {
+    opacity: 0.7;
+    transform: scale(0.98);
+  }
+
+  /* Prevent text selection on touch */
+  button,
+  a[role="button"],
+  [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    user-select: none;
+  }
+
+  /* Larger spacing for interactive elements in mobile */
+  .interactive-spacing {
+    gap: 0.75rem;
+  }
+}
+
+/* Extra small screens optimization (320px - 375px) */
+@media (max-width: 375px) {
+  /* Reduce padding on containers */
+  .max-w-7xl {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  /* Optimize heading sizes for very small screens */
+  h1 {
+    font-size: 1.875rem; /* 30px instead of 36px */
+    line-height: 1.2;
+  }
+
+  h2 {
+    font-size: 1.5rem; /* 24px instead of 30px */
+  }
+
+  h3 {
+    font-size: 1.25rem; /* 20px instead of 24px */
+  }
+
+  /* Reduce button padding on small screens */
+  button {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  /* Make cards more compact */
+  .card-compact {
+    padding: 0.75rem;
+  }
+}
+
+/* Mobile UX enhancements */
+@media (max-width: 768px) {
+  /* Smoother scrolling on mobile */
+  * {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Better scroll snap for sections */
+  .snap-section {
+    scroll-snap-align: start;
+    scroll-margin-top: 5rem;
+  }
+
+  /* Optimize animations for mobile performance */
+  @supports (will-change: transform) {
+    .will-animate {
+      will-change: transform, opacity;
+    }
+  }
+
+  /* Loading pulse animation optimized for mobile */
+  @keyframes mobile-pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.6;
+    }
+  }
+
+  .mobile-loading {
+    animation: mobile-pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Card hover effects for touch */
+  .touch-card {
+    transition: all 0.2s ease;
+  }
+
+  .touch-card:active {
+    transform: scale(0.98);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Pull-to-refresh feel (visual only) */
+@media (max-width: 768px) {
+  body {
+    overscroll-behavior-y: contain;
+  }
+
+  /* Prevent bounce on iOS Safari */
+  html, body {
+    height: 100%;
+    overflow-x: hidden;
+    position: relative;
+  }
+}
+
+/* Improve focus visibility on mobile */
+@media (hover: none) {
+  :focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+  }
+}
+
+/* Optimize fixed elements on mobile */
+@media (max-width: 768px) {
+  .mobile-fixed {
+    position: -webkit-sticky;
+    position: sticky;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform: translateZ(0);
   }
 }
