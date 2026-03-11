@@ -103,11 +103,11 @@ export function Footer() {
               href="/"
               className="flex items-center gap-3 mb-4 hover:opacity-80 transition-opacity w-fit"
             >
-              <div className="bg-gradient-to-r from-blue-500 to-cyan-500 dark:from-purple-600 dark:to-violet-600 p-3 rounded-xl shadow-md">
+              <div className="bg-gradient-to-r from-primary to-cyan-500 dark:from-primary dark:to-violet-500 p-3 rounded-xl shadow-md">
                 <FaWind className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h2 className="font-display font-bold text-2xl bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-purple-400 dark:to-violet-400 bg-clip-text text-transparent">
+                <h2 className="font-display font-bold text-2xl bg-gradient-to-r from-primary to-cyan-600 dark:from-primary dark:to-violet-400 bg-clip-text text-transparent">
                   Encumbra
                 </h2>
                 <p className="text-sm text-neutral-600 dark:text-neutral-400">
@@ -151,7 +151,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/como-funciona"
-                  className="text-neutral-600 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-purple-400 transition-colors text-sm"
+                  className="text-neutral-600 dark:text-neutral-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
                 >
                   Cómo funciona
                 </Link>
@@ -159,7 +159,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/seguridad"
-                  className="text-neutral-600 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-purple-400 transition-colors text-sm"
+                  className="text-neutral-600 dark:text-neutral-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
                 >
                   Seguridad
                 </Link>
@@ -191,7 +191,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/preguntas-frecuentes"
-                  className="text-neutral-600 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-purple-400 transition-colors text-sm"
+                  className="text-neutral-600 dark:text-neutral-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
                 >
                   Preguntas frecuentes
                 </Link>
@@ -211,7 +211,7 @@ export function Footer() {
             {/* Botón de sugerencias */}
             <button
               onClick={handleToggleSuggestionForm}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-purple-950/30 dark:to-violet-950/30 border border-blue-200 dark:border-purple-700 hover:from-blue-100 hover:to-cyan-100 dark:hover:from-purple-950/50 dark:hover:to-violet-950/50 transition-all duration-200 hover:shadow-md text-sm font-semibold text-blue-700 dark:text-purple-300 cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-50 to-cyan-50 dark:from-brand-900/30 dark:to-violet-950/30 border border-brand-200 dark:border-brand-700 hover:from-brand-100 hover:to-cyan-100 dark:hover:from-brand-900/50 dark:hover:to-violet-950/50 transition-all duration-200 hover:shadow-md text-sm font-semibold text-primary dark:text-brand-300 cursor-pointer"
             >
               <FaLightbulb className="w-4 h-4" />
               <span>Enviar sugerencia</span>
@@ -225,9 +225,9 @@ export function Footer() {
             ref={formRef}
             className="mt-6 animate-in fade-in slide-in-from-top-2 duration-200"
           >
-            <div className="bg-white/80 dark:bg-neutral-800/80 backdrop-blur-xl rounded-2xl border-2 border-blue-200 dark:border-purple-700 p-6 shadow-lg dark:shadow-black/40">
+            <div className="bg-white/80 dark:bg-neutral-800/80 backdrop-blur-xl rounded-2xl border-2 border-brand-200 dark:border-brand-700 p-6 shadow-lg dark:shadow-black/40">
               <div className="flex items-center gap-2 mb-4">
-                <FaLightbulb className="w-5 h-5 text-blue-600 dark:text-purple-400" />
+                <FaLightbulb className="w-5 h-5 text-primary dark:text-primary" />
                 <h4 className="font-bold text-neutral-900 dark:text-neutral-100 text-lg">
                   ¿Tienes una idea para mejorar Encumbra?
                 </h4>
@@ -269,7 +269,7 @@ export function Footer() {
                       required
                       rows={3}
                       placeholder="Cuéntanos tu idea o sugerencia..."
-                      className="w-full px-4 py-3 border-2 border-neutral-200 dark:border-neutral-700 dark:bg-neutral-900/50 rounded-xl focus:border-blue-500 dark:focus:border-purple-500 focus:outline-none transition-colors resize-none text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
+                      className="w-full px-4 py-3 border-2 border-neutral-200 dark:border-neutral-700 dark:bg-neutral-900/50 rounded-xl focus:border-primary dark:focus:border-primary focus:outline-none transition-colors resize-none text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
                     />
                   </div>
 
@@ -288,7 +288,7 @@ export function Footer() {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                       placeholder="tu@email.com"
-                      className="w-full px-4 py-3 border-2 border-neutral-200 dark:border-neutral-700 dark:bg-neutral-900/50 rounded-xl focus:border-blue-500 dark:focus:border-purple-500 focus:outline-none transition-colors text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
+                      className="w-full px-4 py-3 border-2 border-neutral-200 dark:border-neutral-700 dark:bg-neutral-900/50 rounded-xl focus:border-primary dark:focus:border-primary focus:outline-none transition-colors text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
                     />
                     <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
                       Necesitamos tu email para responder tu sugerencia
@@ -301,7 +301,7 @@ export function Footer() {
                       disabled={
                         isSubmitting || !suggestion.trim() || !email.trim()
                       }
-                      className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 dark:from-purple-600 dark:to-violet-600 text-white rounded-xl font-bold hover:from-blue-600 hover:to-cyan-600 dark:hover:from-purple-700 dark:hover:to-violet-700 shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
+                      className="flex-1 px-6 py-3 bg-gradient-to-r from-primary to-cyan-500 dark:from-primary dark:to-violet-500 text-white rounded-xl font-bold hover:from-brand-600 hover:to-cyan-600 dark:hover:from-brand-700 dark:hover:to-violet-600 shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
                     >
                       {isSubmitting ? (
                         <>
@@ -340,14 +340,14 @@ export function Footer() {
 
           {/* Créditos meteorológicos */}
           <div className="flex items-center gap-2 bg-white/80 dark:bg-neutral-800/80 backdrop-blur-sm border border-neutral-200 dark:border-neutral-700 rounded-xl px-4 py-2 shadow-sm dark:shadow-black/20">
-            <FaCloudSun className="w-4 h-4 text-blue-600 dark:text-purple-400" />
+            <FaCloudSun className="w-4 h-4 text-primary dark:text-primary" />
             <span className="text-xs text-neutral-600 dark:text-neutral-400">
               Datos meteorológicos por{" "}
               <a
                 href="https://open-meteo.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-semibold text-blue-600 dark:text-purple-400 hover:underline"
+                className="font-semibold text-primary dark:text-primary hover:underline"
               >
                 Open-Meteo
               </a>
@@ -358,13 +358,13 @@ export function Footer() {
           <div className="flex gap-4 text-xs text-neutral-500 dark:text-neutral-400">
             <Link
               href="/privacidad"
-              className="hover:text-neutral-900 dark:hover:text-purple-400 transition-colors"
+              className="hover:text-neutral-900 dark:hover:text-primary transition-colors"
             >
               Privacidad
             </Link>
             <Link
               href="/terminos"
-              className="hover:text-neutral-900 dark:hover:text-purple-400 transition-colors"
+              className="hover:text-neutral-900 dark:hover:text-primary transition-colors"
             >
               Términos
             </Link>
@@ -373,7 +373,7 @@ export function Footer() {
       </div>
 
       {/* Decorative gradient at bottom */}
-      <div className="h-1 bg-gradient-to-r from-blue-500 via-cyan-500 to-blue-500 dark:from-purple-600 dark:via-violet-600 dark:to-purple-600"></div>
+      <div className="h-1 bg-gradient-to-r from-primary via-cyan-500 to-primary dark:from-primary dark:via-violet-500 dark:to-primary"></div>
     </footer>
   );
 }

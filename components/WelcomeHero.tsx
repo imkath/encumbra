@@ -15,23 +15,23 @@ export function WelcomeHero({
   onChoosePark,
 }: WelcomeHeroProps) {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-sky-50 to-cyan-50 dark:from-purple-950/30 dark:via-neutral-900 dark:to-violet-950/30">
+    <section className="relative overflow-hidden bg-gradient-to-br from-brand-50 via-sky-50 to-cyan-50 dark:from-brand-900/30 dark:via-background dark:to-violet-950/30">
       {/* Decoración de fondo sutil */}
       <div className="absolute inset-0 overflow-hidden opacity-40 dark:opacity-20">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-blue-200 to-cyan-200 dark:from-purple-500 dark:to-violet-500 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-sky-200 to-blue-200 dark:from-violet-500 dark:to-purple-500 rounded-full blur-3xl"></div>
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-brand-200 to-cyan-200 dark:from-brand-500 dark:to-violet-500 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-sky-200 to-brand-200 dark:from-violet-500 dark:to-brand-500 rounded-full blur-3xl"></div>
       </div>
 
       {/* Volantines volando */}
       <FlyingKites />
 
-      <div className="relative mx-auto max-w-7xl px-4 py-20 md:py-28">
+      <div className="relative mx-auto max-w-7xl px-4 py-12 md:py-28">
         <div className="text-center space-y-8">
           {/* Icono principal */}
           <div className="flex justify-center mb-6">
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-500 dark:from-purple-500 dark:to-violet-500 rounded-full blur-xl opacity-30 dark:opacity-40"></div>
-              <div className="relative bg-gradient-to-r from-blue-500 to-cyan-500 dark:from-purple-600 dark:to-violet-600 p-5 rounded-2xl shadow-lg">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary to-cyan-500 dark:from-primary dark:to-violet-500 rounded-full blur-xl opacity-30 dark:opacity-40"></div>
+              <div className="relative bg-gradient-to-r from-primary to-cyan-500 dark:from-primary dark:to-violet-500 p-5 rounded-2xl shadow-lg">
                 <FaWind className="w-12 h-12 text-white" />
               </div>
             </div>
@@ -39,7 +39,7 @@ export function WelcomeHero({
 
           {/* Título principal con gradiente */}
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-            <span className="bg-gradient-to-r from-blue-600 via-sky-600 to-cyan-600 dark:from-purple-400 dark:via-violet-400 dark:to-purple-300 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-primary via-sky-600 to-cyan-600 dark:from-primary dark:via-violet-400 dark:to-brand-300 bg-clip-text text-transparent">
               Encuentra el momento perfecto
             </span>
           </h1>
@@ -70,7 +70,7 @@ export function WelcomeHero({
             {/* Botón primario con gradiente */}
             <button
               onClick={onUseLocation}
-              className="group relative px-8 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 dark:from-purple-600 dark:to-violet-600 text-white rounded-xl font-semibold text-lg shadow-lg shadow-blue-500/25 dark:shadow-purple-500/25 hover:shadow-xl hover:shadow-blue-500/30 dark:hover:shadow-purple-500/30 transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 flex items-center gap-3 min-w-[240px] justify-center cursor-pointer"
+              className="group relative px-8 py-4 bg-gradient-to-r from-primary to-cyan-500 dark:from-primary dark:to-violet-500 text-white rounded-xl font-semibold text-lg shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 flex items-center gap-3 min-w-[240px] justify-center cursor-pointer"
             >
               <FaMapMarkerAlt className="w-5 h-5 group-hover:scale-110 transition-transform" />
               <span>Usar ubicación</span>

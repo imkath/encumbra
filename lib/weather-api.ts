@@ -22,7 +22,9 @@ export async function fetchWeatherForecast(
         const ra = response.headers.get("Retry-After");
         const waitSec = ra ? parseInt(ra, 10) || 1 : Math.pow(2, attempt);
         const waitMs = Math.max(500, waitSec * 1000);
-        console.warn(`[v0] Open-Meteo 429 received. Retrying after ${waitMs}ms (attempt ${attempt})`);
+        console.warn(
+          `[v0] Open-Meteo 429 received. Retrying after ${waitMs}ms (attempt ${attempt})`
+        );
         if (attempt < maxAttempts) await sleep(waitMs + Math.random() * 200);
         else throw new Error("Open-Meteo: too many requests (429)");
         continue;
@@ -35,7 +37,9 @@ export async function fetchWeatherForecast(
         const msg = `Open-Meteo error ${status}: ${errText}`;
         if (attempt < maxAttempts) {
           const backoff = Math.pow(2, attempt) * 300 + Math.random() * 200;
-          console.warn(`[v0] ${msg}. Retrying in ${backoff}ms (attempt ${attempt})`);
+          console.warn(
+            `[v0] ${msg}. Retrying in ${backoff}ms (attempt ${attempt})`
+          );
           await sleep(backoff);
           continue;
         }
@@ -61,7 +65,10 @@ export async function fetchWeatherForecast(
 
       return hourlyData;
     } catch (error) {
-      console.error(`[v0] Error fetching weather data (attempt ${attempt}):`, error);
+      console.error(
+        `[v0] Error fetching weather data (attempt ${attempt}):`,
+        error
+      );
       if (attempt >= maxAttempts) throw error;
       const backoff = Math.pow(2, attempt) * 300 + Math.random() * 200;
       await sleep(backoff);
@@ -118,7 +125,8 @@ export async function fetchMultiParkWeather(
     results.push(...chunkResults);
 
     // small pause between chunks to avoid bursting the API
-    if (i + chunkSize < parks.length) await new Promise((r) => setTimeout(r, 200));
+    if (i + chunkSize < parks.length)
+      await new Promise((r) => setTimeout(r, 200));
   }
 
   return results.reduce((acc, { parkId, forecast }) => {

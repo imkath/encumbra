@@ -40,6 +40,10 @@ export function InteractiveMap({
     markersRef.current = [];
 
     // Añadir marcadores de parques con colores estilo Google Maps
+    const isMobile =
+      typeof window !== "undefined" &&
+      window.matchMedia("(max-width: 767px)").matches;
+
     SANTIAGO_PARKS.forEach((park) => {
       const isSelected = selectedPark?.id === park.id;
 
@@ -82,7 +86,14 @@ export function InteractiveMap({
       const marker = L.marker([park.lat, park.lon], { icon })
         .addTo(mapRef.current!)
         .bindPopup(
-          `<strong>${park.name}</strong><br/>${park.comuna}<br/><small>Click para ver detalles</small>`
+          // Only show the inline "Crear alerta" CTA on non-mobile (desktop) to avoid duplicating mobile UI flows
+          `<div style="line-height:1.1"><strong>${park.name}</strong><br/>${
+            park.comuna
+          }<br/><small>Click para ver detalles</small>${
+            !isMobile
+              ? `<div style="margin-top:6px"><a href='#' class='create-alert' data-park-id='${park.id}' style='display:inline-block;padding:6px 8px;border-radius:8px;background:#06b6d4;color:white;text-decoration:none;font-size:13px'>Crear alerta</a></div>`
+              : ""
+          }</div>`
         )
         .on("click", () => {
           onSelectPark(park);
@@ -154,6 +165,30 @@ export function InteractiveMap({
       markersRef.current.push(userMarker);
     }
 
+    // Delegated handler for create-alert links inside Leaflet popups
+    const handleDocClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      const el =
+        target.closest &&
+        (target.closest(".create-alert") as HTMLElement | null);
+      if (el && el.dataset && el.dataset.parkId) {
+        e.preventDefault();
+        try {
+          // Use a distinct event name to signal the intent to create+save an alert
+          window.dispatchEvent(
+            new CustomEvent("createAlertAndSave", {
+              detail: { parkId: el.dataset.parkId },
+            })
+          );
+        } catch (err) {
+          window.location.hash = "#parques";
+        }
+      }
+    };
+
+    document.addEventListener("click", handleDocClick);
+
     // No hacer zoom automático la primera vez que se carga el mapa
     // Solo hacer zoom si el usuario hace click en un parque después de cargar
     // Esto mantiene la vista completa de Santiago al abrir "Elegir parque"
@@ -169,6 +204,10 @@ export function InteractiveMap({
         animate: true,
       });
     }
+
+    return () => {
+      document.removeEventListener("click", handleDocClick);
+    };
   }, [selectedPark, onSelectPark, userLocation]);
 
   return <div id="map" style={{ height: "100%", width: "100%" }} />;

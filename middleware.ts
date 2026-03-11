@@ -36,8 +36,9 @@ export function middleware(request: NextRequest) {
     "Referrer-Policy": "strict-origin-when-cross-origin",
 
     // Permissions Policy (antes Feature Policy)
-    "Permissions-Policy":
-      "camera=(), microphone=(), geolocation=(self), interest-cohort=()",
+    // 'interest-cohort' was removed because modern browsers don't recognize it
+    // and will log warnings. Keep only supported directives.
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=(self)",
 
     // Strict Transport Security (HSTS) - solo en producción con HTTPS
     ...(process.env.NODE_ENV === "production" && {

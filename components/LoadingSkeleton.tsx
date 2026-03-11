@@ -106,7 +106,7 @@ export function HourlyChartSkeleton() {
           <Skeleton className="h-6 w-48" />
           <Skeleton className="h-8 w-24 rounded-lg" />
         </div>
-  <Skeleton className="h-[300px] max-w-full w-full rounded-lg" />
+        <Skeleton className="h-[300px] max-w-full w-full rounded-lg" />
       </div>
     </div>
   );
@@ -117,7 +117,7 @@ export function MapViewSkeleton() {
     <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-lg p-6 border-2 border-neutral-100 dark:border-neutral-700 overflow-x-hidden">
       <div className="space-y-4">
         <Skeleton className="h-6 w-32" />
-  <Skeleton className="h-[400px] max-w-full w-full rounded-xl" />
+        <Skeleton className="h-[400px] max-w-full w-full rounded-xl" />
       </div>
     </div>
   );

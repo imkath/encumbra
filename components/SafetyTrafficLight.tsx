@@ -53,7 +53,8 @@ const LEVEL_STYLES: Record<
   }
 > = {
   safe: {
-    badge: "bg-green-50 border-green-200 dark:bg-green-950/30 dark:border-green-700/40",
+    badge:
+      "bg-green-50 border-green-200 dark:bg-green-950/30 dark:border-green-700/40",
     badgeText: "text-green-700 dark:text-green-300",
     dot: "bg-green-500 dark:bg-green-400",
     border: "border-green-200 dark:border-green-700/60",
@@ -61,7 +62,8 @@ const LEVEL_STYLES: Record<
     label: "Seguro",
   },
   caution: {
-    badge: "bg-amber-50 border-amber-200 dark:bg-amber-950/30 dark:border-amber-700/40",
+    badge:
+      "bg-amber-50 border-amber-200 dark:bg-amber-950/30 dark:border-amber-700/40",
     badgeText: "text-amber-700 dark:text-amber-300",
     dot: "bg-amber-500 dark:bg-amber-400",
     border: "border-amber-200 dark:border-amber-700/60",
@@ -152,7 +154,11 @@ export function SafetyTrafficLight({
 }: SafetyTrafficLightProps) {
   if (!hourlyData.length) return null;
 
-  const upcoming = hourlyData.slice(0, hoursToShow);
+  // Filtrar solo horas futuras desde ahora
+  const now = new Date();
+  const upcoming = hourlyData
+    .filter((hour) => new Date(hour.time) >= now)
+    .slice(0, hoursToShow);
 
   let peakGust = 0;
   let peakHour = "";
@@ -164,7 +170,8 @@ export function SafetyTrafficLight({
     }
   }
 
-  const unitLabel = windUnits === "kmh" ? "km/h" : windUnits === "ms" ? "m/s" : "kt";
+  const unitLabel =
+    windUnits === "kmh" ? "km/h" : windUnits === "ms" ? "m/s" : "kt";
 
   const peakGustDisplay = convertWindSpeed(peakGust, windUnits).toFixed(1);
 
@@ -200,7 +207,8 @@ export function SafetyTrafficLight({
             )}
           </div>
           <p className="text-sm text-neutral-600 dark:text-neutral-300 mt-1">
-            Semáforo horario según {PROFILE_CONFIG[profile].label.toLowerCase()}.
+            Semáforo horario según {PROFILE_CONFIG[profile].label.toLowerCase()}
+            .
           </p>
         </div>
         <div className="text-sm text-neutral-600 dark:text-neutral-300">
@@ -218,9 +226,7 @@ export function SafetyTrafficLight({
         {(["safe", "caution", "danger"] as SafetyLevel[]).map((level) => (
           <div key={level} className="flex items-center gap-1.5">
             <span
-              className={`w-2 h-2 rounded-full ${
-                LEVEL_STYLES[level].dot
-              }`}
+              className={`w-2 h-2 rounded-full ${LEVEL_STYLES[level].dot}`}
             />
             <span className="font-semibold text-neutral-600 dark:text-neutral-300">
               {LEVEL_STYLES[level].label}
