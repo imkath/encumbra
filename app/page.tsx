@@ -162,6 +162,117 @@ export default function Home() {
     };
   }, []);
 
+  // Listen for createAlertAndSave events from map popups (desktop quick-create) or other components
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handler = async (e: Event) => {
+      try {
+        const custom = e as CustomEvent<{ parkId: string }>;
+        const parkId = custom?.detail?.parkId;
+        if (!parkId) return;
+        const park = SANTIAGO_PARKS.find((p) => p.id === parkId);
+        if (!park) return;
+
+        setSelectedPark(park);
+
+        if (isMobile) {
+          setMobileTab("alerts");
+          setTimeout(() => {
+            const alertsEl = document.getElementById("alerts-section");
+            if (alertsEl)
+              alertsEl.scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 150);
+          return;
+        }
+
+        try {
+          const hasPermission = await requestNotificationPermission();
+          if (!hasPermission) {
+            toast({
+              title: "Permisos de notificación denegados",
+              variant: "destructive",
+            });
+            return;
+          }
+
+          let parkWeather = allParksWeather[park.id];
+          if (!parkWeather || parkWeather.length === 0) {
+            parkWeather = await fetchWeatherWithCache(park.lat, park.lon, 3);
+            setAllParksWeather((prev) => ({ ...prev, [park.id]: parkWeather }));
+          }
+
+          const parkHourlyData = (parkWeather || []).map((h) => ({
+            time: h.time,
+            speed: h.wind_speed_10m,
+            gust: h.wind_gusts_10m,
+            score: calculateVolantinScore(
+              h.wind_speed_10m,
+              h.wind_gusts_10m,
+              kiteProfile
+            ),
+          }));
+
+          const parkWindows = findWindows(
+            parkHourlyData,
+            profileOpts(kiteProfile)
+          );
+          const bestWindow =
+            getBestToday(parkWindows) ||
+            getBestTomorrow(parkWindows) ||
+            parkWindows[0];
+
+          if (!bestWindow) {
+            toast({
+              title: "No se encontró una ventana",
+              variant: "destructive",
+            });
+            return;
+          }
+
+          const windowStart = new Date(bestWindow.start);
+          const notifyAt = new Date(windowStart.getTime() - 30 * 60 * 1000);
+
+          saveAlert({
+            parkName: park.name,
+            parkId: park.id,
+            windowStart: bestWindow.start,
+            windowEnd: bestWindow.end,
+            meanSpeed: (bestWindow as any).meanS ?? 0,
+            score: normalizeQScore(
+              (bestWindow as any).Q ?? (bestWindow as any).score ?? 0
+            ),
+            notifyAt: notifyAt.toISOString(),
+          });
+
+          toast({
+            title: "Alerta creada",
+            description: `Alerta creada para ${park.name}`,
+            duration: 6000,
+          });
+
+          setTimeout(() => {
+            const alertsEl = document.getElementById("alerts-section");
+            if (alertsEl)
+              alertsEl.scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 150);
+        } catch (err) {
+          console.error("Error creating alert from map:", err);
+          toast({ title: "Error", variant: "destructive" });
+        }
+      } catch (err) {
+        // ignore
+      }
+    };
+
+    window.addEventListener("createAlertAndSave", handler as EventListener);
+    return () =>
+      window.removeEventListener(
+        "createAlertAndSave",
+        handler as EventListener
+      );
+  }, [isMobile, allParksWeather, kiteProfile, toast, windUnits]);
+
   // Manejar scroll al cargar página con hash (ej: /#parques)
   useEffect(() => {
     if (window.location.hash) {
@@ -623,9 +734,10 @@ export default function Home() {
                     <FaCog className="h-4 w-4" />
                   </button>
                 </div>
-              </div>{" "}
+              </div>
+
               {/* Fila 2: Widgets + Loading */}
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center justify-between gap-2 mt-2">
                 <div className="flex items-center gap-2 flex-1 min-w-0">
                   <ScoreInfoTooltip />
                   <TemperatureWidget
@@ -704,23 +816,45 @@ export default function Home() {
             hasLocation={!!(latitude && longitude)}
             onUseLocation={() => {
               // Geolocation is already active via useGeolocation hook
-              // Just scroll to the top parks section
-              const topParksSection = document.querySelector(
-                ".bg-gradient-to-br.from-white.via-sky-50"
-              );
-              scrollToElementWithOffset(topParksSection);
+              if (isMobile) {
+                // En mobile, navegar a la tab de ranking
+                setMobileTab("summary");
+                setTimeout(() => {
+                  const topParksSection = document.querySelector(
+                    ".bg-gradient-to-br.from-white.via-sky-50"
+                  );
+                  scrollToElementWithOffset(topParksSection);
+                }, 100);
+              } else {
+                // En desktop, solo hacer scroll
+                const topParksSection = document.querySelector(
+                  ".bg-gradient-to-br.from-white.via-sky-50"
+                );
+                scrollToElementWithOffset(topParksSection);
+              }
             }}
             onChoosePark={() => {
-              // Scroll to the map section
-              const mapSection = document.querySelector("[data-map-container]");
-              scrollToElementWithOffset(mapSection);
+              if (isMobile) {
+                // En mobile, navegar a la tab del mapa
+                setMobileTab("map");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              } else {
+                // En desktop, hacer scroll al mapa
+                const mapSection = document.querySelector(
+                  "[data-map-container]"
+                );
+                scrollToElementWithOffset(mapSection);
+              }
             }}
           />
         )}
 
         {/* Alertas Activas */}
         {(!isMobile || mobileTab === "alerts") && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div
+            id="alerts-section"
+            className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6"
+          >
             <AlertsList />
           </div>
         )}
@@ -728,473 +862,483 @@ export default function Home() {
         {/* Safety Strip - Franja educativa */}
         {(!isMobile || mobileTab === "summary") && <SafetyStrip />}
 
+        {/* Mapa de parques */}
+        {/* Mobile: Solo en tab "map" | Desktop: Siempre visible */}
+        {(!isMobile || mobileTab === "map") && (
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+            <div
+              data-map-container
+              className="bg-white dark:bg-neutral-800 rounded-2xl shadow-lg dark:shadow-black/40 border border-neutral-200 dark:border-neutral-700 p-6 relative z-10"
+            >
+              <h2 className="text-2xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-4">
+                Mapa de Parques
+              </h2>
+              <div className="h-[500px] rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-700 relative z-10">
+                <MapView
+                  selectedPark={selectedPark}
+                  onSelectPark={(park: Park) => {
+                    setSelectedPark(park);
+                  }}
+                  userLocation={
+                    latitude && longitude ? { latitude, longitude } : null
+                  }
+                />
+              </div>
+
+              {/* Información del parque seleccionado */}
+              {selectedPark && (
+                <div className="mt-4 p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-purple-950/30 dark:to-violet-950/30 rounded-xl border border-blue-200 dark:border-purple-700/50">
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+                        <h3 className="text-base sm:text-lg font-bold text-neutral-900 dark:text-neutral-100 truncate">
+                          {selectedPark.name}
+                        </h3>
+                        <TemperatureWidget
+                          latitude={selectedPark.lat}
+                          longitude={selectedPark.lon}
+                        />
+                      </div>
+                      <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mb-2 flex items-center gap-1">
+                        <MapPin className="w-3 h-3" />
+                        {selectedPark.comuna}, Santiago
+                      </p>
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
+                        <span className="bg-white dark:bg-neutral-700 px-2 py-1 rounded-md border border-neutral-200 dark:border-neutral-600 whitespace-nowrap">
+                          Área: {selectedPark.area}
+                        </span>
+                        <span className="text-neutral-400 dark:text-neutral-500 hidden xs:inline">
+                          •
+                        </span>
+                        <span className="text-[10px] xs:text-xs">
+                          {selectedPark.lat.toFixed(4)}°,{" "}
+                          {selectedPark.lon.toFixed(4)}°
+                        </span>
+                      </div>
+                    </div>
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${selectedPark.lat},${selectedPark.lon}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-purple-600 dark:to-violet-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-cyan-700 dark:hover:from-purple-700 dark:hover:to-violet-700 transition-all shadow-md hover:shadow-lg text-xs sm:text-sm whitespace-nowrap flex-shrink-0"
+                    >
+                      <svg
+                        className="w-3.5 h-3.5 sm:w-4 sm:h-4"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                      </svg>
+                      Cómo llegar
+                    </a>
+                  </div>
+                  {selectedPark.warnings &&
+                    selectedPark.warnings.length > 0 && (
+                      <div className="mt-3 pt-3 border-t border-blue-200 dark:border-blue-700/50">
+                        <p className="text-xs font-semibold text-amber-700 dark:text-amber-400 mb-1 flex items-center gap-1">
+                          <AlertTriangle className="w-3 h-3" />
+                          Advertencias:
+                        </p>
+                        <ul className="text-xs text-neutral-600 dark:text-neutral-400 space-y-1">
+                          {selectedPark.warnings.map((warning, idx) => (
+                            <li key={idx}>• {warning}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         <div className="mx-auto max-w-7xl px-4 py-6">
           {initialLoading ? (
             <FullPageSkeleton />
           ) : (
             <div className="space-y-8">
               {/* Sección 1: Top Parques - FULL WIDTH */}
-              <div
-                id="parques"
-                data-top-parks
-                className={cn(
-                  "bg-gradient-to-br from-white via-sky-50 to-blue-50 dark:from-neutral-800 dark:via-neutral-850 dark:to-neutral-800 rounded-3xl shadow-2xl dark:shadow-black/40 p-8",
-                  isMobile && mobileTab !== "windows" ? "hidden" : ""
-                )}
-              >
-                <TopParksRanking
-                  parks={rankingData}
-                  onSelectPark={(id) => {
-                    const park = SANTIAGO_PARKS.find((p) => p.id === id);
-                    if (park) {
-                      setSelectedPark(park);
+              {/* Mobile: Solo en tab "summary" | Desktop: Siempre visible */}
+              {(!isMobile || mobileTab === "summary") && (
+                <div
+                  id="parques"
+                  data-top-parks
+                  className="bg-gradient-to-br from-white via-sky-50 to-blue-50 dark:from-neutral-800 dark:via-neutral-850 dark:to-neutral-800 rounded-3xl shadow-2xl dark:shadow-black/40 p-8"
+                >
+                  <TopParksRanking
+                    parks={rankingData}
+                    onSelectPark={(id) => {
+                      const park = SANTIAGO_PARKS.find((p) => p.id === id);
+                      if (park) {
+                        setSelectedPark(park);
 
-                      // Scroll suave a la sección de detalles con offset por el header
-                      setTimeout(() => {
-                        const detailsSection = document.querySelector(
-                          "[data-park-details]"
-                        );
-                        scrollToElementWithOffset(detailsSection);
-                      }, 100); // Pequeño delay para asegurar que el DOM se actualizó
-                    }
-                  }}
-                  selectedId={selectedPark?.id}
-                  windUnits={windUnits}
-                  nearestParkId={nearestParkId}
-                />
-              </div>
+                        // Scroll suave a la sección de detalles con offset por el header
+                        setTimeout(() => {
+                          const detailsSection = document.querySelector(
+                            "[data-park-details]"
+                          );
+                          scrollToElementWithOffset(detailsSection);
+                        }, 100); // Pequeño delay para asegurar que el DOM se actualizó
+                      }
+                    }}
+                    selectedId={selectedPark?.id}
+                    windUnits={windUnits}
+                    nearestParkId={nearestParkId}
+                  />
+                </div>
+              )}
 
               {/* Sección 2: Detalles del Parque Seleccionado - 2 COLUMNAS */}
+              {/* Mobile: Dividido entre tabs "summary" (AtGlanceCard+SafetyTrafficLight) y "windows" (Charts+Panels) */}
+              {/* Desktop: Todo visible siempre */}
               {selectedPark && (
                 <div
                   data-park-details
                   className={cn(
                     "grid grid-cols-1 lg:grid-cols-2",
-                    isMobile ? "gap-4" : "gap-6",
-                    isMobile && !["summary", "windows"].includes(mobileTab)
-                      ? "hidden"
-                      : ""
+                    isMobile ? "gap-4" : "gap-6"
                   )}
                 >
                   {/* Columna Izquierda: Gráfico Horario - Usa todo el espacio disponible */}
-                  <div
-                    className={cn(
-                      "bg-white dark:bg-neutral-800 rounded-3xl shadow-2xl dark:shadow-black/40 p-6 overflow-hidden flex flex-col border border-neutral-100 dark:border-neutral-700",
-                      isMobile && mobileTab !== "windows" ? "hidden" : ""
+                  {/* Mobile: Solo en tab "windows" | Desktop: Siempre visible */}
+                  {(!isMobile || mobileTab === "windows") && (
+                    <div className="bg-white dark:bg-neutral-800 rounded-3xl shadow-2xl dark:shadow-black/40 p-6 overflow-hidden flex flex-col border border-neutral-100 dark:border-neutral-700">
+                      <div className="mb-4 flex-shrink-0">
+                        <div className="flex items-center justify-between gap-3 flex-wrap">
+                          <h2 className="text-lg sm:text-xl font-display font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+                            <FaWind className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-purple-400" />
+                            Condiciones por Hora
+                          </h2>
+                          <div className="text-xs font-bold text-blue-700 dark:text-purple-300 bg-blue-100 dark:bg-purple-950/40 px-3 py-1 rounded-full border-2 border-blue-300 dark:border-purple-700/50 whitespace-nowrap">
+                            {selectedPark.name}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex-1 min-h-0">
+                        <HourlyChart
+                          hourlyData={hourlyForecastWithRecalculatedScores}
+                          maxHours={20}
+                          windUnits={windUnits}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Columna Derecha: Decisión + Mejores Ventanas */}
+                  <div className={cn(isMobile ? "space-y-4" : "space-y-6")}>
+                    {/* Decisión Inmediata - Crear Alertas */}
+                    {/* Mobile: Solo en tab "alerts" (para crear alertas) | Desktop: Siempre visible */}
+                    {(!isMobile || mobileTab === "alerts") && (
+                      <div className="bg-white/80 dark:bg-neutral-800/90 backdrop-blur-xl rounded-2xl shadow-lg dark:shadow-black/40 border border-neutral-200 dark:border-neutral-700 p-6">
+                        <AtGlanceCard
+                          key={`atglance-${selectedPark.id}`}
+                          parkName={selectedPark.name}
+                          now={atGlanceData.now}
+                          today={atGlanceData.today}
+                          tomorrow={atGlanceData.tomorrow}
+                          onCreateAlert={async () => {
+                            // Solicitar permiso para notificaciones
+                            const hasPermission =
+                              await requestNotificationPermission();
+
+                            if (!hasPermission) {
+                              toast({
+                                title: "Activa las notificaciones",
+                                description: (
+                                  <div className="space-y-2 text-sm">
+                                    <p className="font-semibold">
+                                      Para recibir alertas, necesitas habilitar
+                                      las notificaciones:
+                                    </p>
+                                    <div className="bg-white/10 p-3 rounded-lg space-y-1">
+                                      <p className="text-xs">
+                                        <strong>En móvil:</strong> Ve a
+                                        Configuración → Notificaciones → Permite
+                                        notificaciones de este sitio
+                                      </p>
+                                      <p className="text-xs">
+                                        <strong>En escritorio:</strong> Click en
+                                        el candado/ícono junto a la URL →
+                                        Permisos → Notificaciones: Permitir
+                                      </p>
+                                    </div>
+                                    <p className="text-xs opacity-90">
+                                      Luego intenta crear la alerta nuevamente
+                                    </p>
+                                  </div>
+                                ),
+                                variant: "destructive",
+                                duration: 10000,
+                              });
+                              return;
+                            }
+
+                            // Obtener información de la mejor ventana
+                            const bestWindow =
+                              atGlanceData.today || atGlanceData.tomorrow;
+                            const windowType = atGlanceData.today
+                              ? "hoy"
+                              : "mañana";
+
+                            if (bestWindow) {
+                              // Calcular cuándo notificar (30 min antes)
+                              const windowStart = new Date(bestWindow.start);
+                              const notifyAt = new Date(
+                                windowStart.getTime() - 30 * 60 * 1000
+                              );
+
+                              // Guardar la alerta
+                              const alert = saveAlert({
+                                parkName: selectedPark.name,
+                                parkId: selectedPark.id,
+                                windowStart: bestWindow.start,
+                                windowEnd: bestWindow.end,
+                                meanSpeed: bestWindow.meanS,
+                                score: bestWindow.score,
+                                notifyAt: notifyAt.toISOString(),
+                              });
+
+                              const startTime = new Date(
+                                bestWindow.start
+                              ).toLocaleTimeString("es-CL", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: false,
+                              });
+                              const endTime = new Date(
+                                bestWindow.end
+                              ).toLocaleTimeString("es-CL", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: false,
+                              });
+
+                              toast({
+                                title: "¡Alerta Configurada!",
+                                description: (
+                                  <div className="mt-2 sm:mt-3 space-y-2 sm:space-y-2.5 text-xs sm:text-sm bg-gradient-to-br from-blue-50 to-cyan-50 p-3 sm:p-4 rounded-lg border border-brand-200 shadow-sm">
+                                    <div className="flex items-center gap-2 pb-2 border-b border-brand-200 mb-1 sm:mb-2">
+                                      <div className="bg-blue-500 p-1 sm:p-1.5 rounded-lg">
+                                        <FaBell className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                                      </div>
+                                      <span className="font-bold text-sm sm:text-base text-neutral-900">
+                                        Detalles de tu alerta
+                                      </span>
+                                    </div>
+                                    <div className="flex items-start gap-1.5 sm:gap-2">
+                                      <div className="bg-red-500 p-1 sm:p-1.5 rounded-lg flex-shrink-0">
+                                        <FaMapMarkerAlt className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-white mt-0" />
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        <span className="font-semibold text-neutral-700">
+                                          Parque:
+                                        </span>{" "}
+                                        <span className="text-neutral-900 break-words">
+                                          {selectedPark.name}
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-start gap-1.5 sm:gap-2">
+                                      <div className="bg-purple-500 p-1 sm:p-1.5 rounded-lg flex-shrink-0">
+                                        <FaCalendarDay className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-white mt-0" />
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        <span className="font-semibold text-neutral-700">
+                                          Cuándo:
+                                        </span>{" "}
+                                        <span className="text-neutral-900 capitalize">
+                                          {windowType}
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-start gap-1.5 sm:gap-2">
+                                      <div className="bg-amber-500 p-1 sm:p-1.5 rounded-lg flex-shrink-0">
+                                        <FaClock className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-white mt-0" />
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        <span className="font-semibold text-neutral-700">
+                                          Horario:
+                                        </span>{" "}
+                                        <span className="text-neutral-900 font-mono text-[11px] sm:text-xs">
+                                          {startTime} - {endTime}
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-start gap-1.5 sm:gap-2">
+                                      <div className="bg-cyan-500 p-1 sm:p-1.5 rounded-lg flex-shrink-0">
+                                        <FaWind className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-white mt-0" />
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        <span className="font-semibold text-neutral-700">
+                                          Viento:
+                                        </span>{" "}
+                                        <span className="text-neutral-900 font-mono text-[11px] sm:text-xs">
+                                          {formatWindSpeed(
+                                            bestWindow.meanS,
+                                            windUnits,
+                                            0
+                                          )}
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-start gap-1.5 sm:gap-2">
+                                      <div className="bg-yellow-500 p-1 sm:p-1.5 rounded-lg flex-shrink-0">
+                                        <FaStar className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-white mt-0" />
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        <span className="font-semibold text-neutral-700">
+                                          Calidad:
+                                        </span>{" "}
+                                        <span className="text-brand-600 font-bold">
+                                          {Math.round(bestWindow.score)}/100
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-brand-200 bg-green-50 rounded-lg p-2 sm:p-3">
+                                      <div className="flex items-start gap-1.5 sm:gap-2">
+                                        <div className="bg-green-500 p-0.5 sm:p-1 rounded flex-shrink-0">
+                                          <FaBell className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                          <p className="text-[10px] sm:text-xs font-semibold text-green-900 mb-0.5 sm:mb-1">
+                                            ✅ Alerta activada exitosamente
+                                          </p>
+                                          <p className="text-[10px] sm:text-xs text-green-700">
+                                            Recibirás una notificación{" "}
+                                            <strong>30 minutos antes</strong> (
+                                            {new Date(
+                                              notifyAt
+                                            ).toLocaleTimeString("es-CL", {
+                                              hour: "2-digit",
+                                              minute: "2-digit",
+                                              hour12: false,
+                                            })}
+                                            ) para que no pierdas esta ventana
+                                            ideal.
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ),
+                                duration: 8000,
+                              });
+
+                              // Scroll a la sección de alertas en mobile
+                              if (isMobile) {
+                                setTimeout(() => {
+                                  const alertsSection =
+                                    document.getElementById("alerts-section");
+                                  if (alertsSection) {
+                                    alertsSection.scrollIntoView({
+                                      behavior: "smooth",
+                                      block: "start",
+                                    });
+                                  }
+                                }, 100);
+                              }
+                            }
+                          }}
+                          windSpeed={hourlyForecast[0]?.wind_speed_10m || 0}
+                          gustFactor={
+                            hourlyForecast[0]?.wind_speed_10m > 0
+                              ? hourlyForecast[0].wind_gusts_10m /
+                                hourlyForecast[0].wind_speed_10m
+                              : 1
+                          }
+                          precipProb={0}
+                          nextWindowTime={
+                            nextToday?.start && !atGlanceData.now?.ok
+                              ? new Date(nextToday.start).toLocaleTimeString(
+                                  "es-CL",
+                                  {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    hour12: false,
+                                  }
+                                )
+                              : undefined
+                          }
+                          windUnits={windUnits}
+                        />
+                      </div>
                     )}
-                  >
-                    <div className="mb-4 flex-shrink-0">
-                      <div className="flex items-center justify-between gap-3 flex-wrap">
-                        <h2 className="text-lg sm:text-xl font-display font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
-                          <FaWind className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-purple-400" />
-                          Condiciones por Hora
-                        </h2>
+
+                    {/* Mejores Ventanas */}
+                    {/* Mobile: Solo en tab "windows" | Desktop: Siempre visible */}
+                    {(!isMobile || mobileTab === "windows") && (
+                      <div className="bg-white rounded-2xl shadow-lg border border-neutral-200">
+                        <BestWindowPanel
+                          windows={windowsData}
+                          parkName={selectedPark.name}
+                          windUnits={windUnits}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Modo Volantín Seguro - Ancho completo */}
+                  {/* Mobile: Solo en tab "summary" | Desktop: Siempre visible */}
+                  {(!isMobile || mobileTab === "summary") && (
+                    <div className="lg:col-span-2">
+                      <SafetyTrafficLight
+                        hourlyData={hourlyForecastWithRecalculatedScores}
+                        profile={kiteProfile}
+                        windUnits={windUnits}
+                        hoursToShow={12}
+                        parkName={selectedPark.name}
+                      />
+                    </div>
+                  )}
+
+                  {/* Ventanas recomendadas - Ancho completo abajo */}
+                  {/* Mobile: Solo en tab "windows" | Desktop: Siempre visible */}
+                  {(!isMobile || mobileTab === "windows") && (
+                    <div className="lg:col-span-2 bg-white dark:bg-neutral-800 rounded-2xl shadow-lg dark:shadow-black/40 border border-neutral-200 dark:border-neutral-700 p-6">
+                      <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
+                        <h3 className="text-xl font-display font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+                          <FaCalendarDay className="w-4 h-4 text-blue-600 dark:text-purple-400" />
+                          Ventanas recomendadas
+                        </h3>
                         <div className="text-xs font-bold text-blue-700 dark:text-purple-300 bg-blue-100 dark:bg-purple-950/40 px-3 py-1 rounded-full border-2 border-blue-300 dark:border-purple-700/50 whitespace-nowrap">
                           {selectedPark.name}
                         </div>
                       </div>
-                    </div>
-                    <div className="flex-1 min-h-0">
-                      <HourlyChart
-                        hourlyData={hourlyForecastWithRecalculatedScores}
-                        maxHours={20}
-                        windUnits={windUnits}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Columna Derecha: Decisión + Mejores Ventanas */}
-                  <div className={cn(isMobile ? "space-y-4" : "space-y-6")}>
-                    {/* Decisión Inmediata */}
-                    <div
-                      className={cn(
-                        "bg-white/80 dark:bg-neutral-800/90 backdrop-blur-xl rounded-2xl shadow-lg dark:shadow-black/40 border border-neutral-200 dark:border-neutral-700 p-6",
-                        isMobile && mobileTab !== "summary" ? "hidden" : ""
-                      )}
-                    >
-                      <AtGlanceCard
-                        key={`atglance-${selectedPark.id}`}
-                        parkName={selectedPark.name}
-                        now={atGlanceData.now}
-                        today={atGlanceData.today}
-                        tomorrow={atGlanceData.tomorrow}
-                        onCreateAlert={async () => {
-                          // Solicitar permiso para notificaciones
-                          const hasPermission =
-                            await requestNotificationPermission();
-
-                          if (!hasPermission) {
-                            toast({
-                              title: "Activa las notificaciones",
-                              description: (
-                                <div className="space-y-2 text-sm">
-                                  <p className="font-semibold">
-                                    Para recibir alertas, necesitas habilitar
-                                    las notificaciones:
-                                  </p>
-                                  <div className="bg-white/10 p-3 rounded-lg space-y-1">
-                                    <p className="text-xs">
-                                      <strong>En móvil:</strong> Ve a
-                                      Configuración → Notificaciones → Permite
-                                      notificaciones de este sitio
-                                    </p>
-                                    <p className="text-xs">
-                                      <strong>En escritorio:</strong> Click en
-                                      el candado/ícono junto a la URL → Permisos
-                                      → Notificaciones: Permitir
-                                    </p>
-                                  </div>
-                                  <p className="text-xs opacity-90">
-                                    Luego intenta crear la alerta nuevamente
-                                  </p>
-                                </div>
-                              ),
-                              variant: "destructive",
-                              duration: 10000,
-                            });
-                            return;
-                          }
-
-                          // Obtener información de la mejor ventana
-                          const bestWindow =
-                            atGlanceData.today || atGlanceData.tomorrow;
-                          const windowType = atGlanceData.today
-                            ? "hoy"
-                            : "mañana";
-
-                          if (bestWindow) {
-                            // Calcular cuándo notificar (30 min antes)
-                            const windowStart = new Date(bestWindow.start);
-                            const notifyAt = new Date(
-                              windowStart.getTime() - 30 * 60 * 1000
-                            );
-
-                            // Guardar la alerta
-                            const alert = saveAlert({
-                              parkName: selectedPark.name,
-                              parkId: selectedPark.id,
-                              windowStart: bestWindow.start,
-                              windowEnd: bestWindow.end,
-                              meanSpeed: bestWindow.meanS,
-                              score: bestWindow.score,
-                              notifyAt: notifyAt.toISOString(),
-                            });
-
-                            const startTime = new Date(
-                              bestWindow.start
-                            ).toLocaleTimeString("es-CL", {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: false,
-                            });
-                            const endTime = new Date(
-                              bestWindow.end
-                            ).toLocaleTimeString("es-CL", {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: false,
-                            });
-
-                            toast({
-                              title: "¡Alerta Configurada!",
-                              description: (
-                                <div className="mt-2 sm:mt-3 space-y-2 sm:space-y-2.5 text-xs sm:text-sm bg-gradient-to-br from-blue-50 to-cyan-50 p-3 sm:p-4 rounded-lg border border-brand-200 shadow-sm">
-                                  <div className="flex items-center gap-2 pb-2 border-b border-brand-200 mb-1 sm:mb-2">
-                                    <div className="bg-blue-500 p-1 sm:p-1.5 rounded-lg">
-                                      <FaBell className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
-                                    </div>
-                                    <span className="font-bold text-sm sm:text-base text-neutral-900">
-                                      Detalles de tu alerta
-                                    </span>
-                                  </div>
-                                  <div className="flex items-start gap-1.5 sm:gap-2">
-                                    <div className="bg-red-500 p-1 sm:p-1.5 rounded-lg flex-shrink-0">
-                                      <FaMapMarkerAlt className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-white mt-0" />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                      <span className="font-semibold text-neutral-700">
-                                        Parque:
-                                      </span>{" "}
-                                      <span className="text-neutral-900 break-words">
-                                        {selectedPark.name}
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <div className="flex items-start gap-1.5 sm:gap-2">
-                                    <div className="bg-purple-500 p-1 sm:p-1.5 rounded-lg flex-shrink-0">
-                                      <FaCalendarDay className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-white mt-0" />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                      <span className="font-semibold text-neutral-700">
-                                        Cuándo:
-                                      </span>{" "}
-                                      <span className="text-neutral-900 capitalize">
-                                        {windowType}
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <div className="flex items-start gap-1.5 sm:gap-2">
-                                    <div className="bg-amber-500 p-1 sm:p-1.5 rounded-lg flex-shrink-0">
-                                      <FaClock className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-white mt-0" />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                      <span className="font-semibold text-neutral-700">
-                                        Horario:
-                                      </span>{" "}
-                                      <span className="text-neutral-900 font-mono text-[11px] sm:text-xs">
-                                        {startTime} - {endTime}
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <div className="flex items-start gap-1.5 sm:gap-2">
-                                    <div className="bg-cyan-500 p-1 sm:p-1.5 rounded-lg flex-shrink-0">
-                                      <FaWind className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-white mt-0" />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                      <span className="font-semibold text-neutral-700">
-                                        Viento:
-                                      </span>{" "}
-                                      <span className="text-neutral-900 font-mono text-[11px] sm:text-xs">
-                                        {formatWindSpeed(
-                                          bestWindow.meanS,
-                                          windUnits,
-                                          0
-                                        )}
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <div className="flex items-start gap-1.5 sm:gap-2">
-                                    <div className="bg-yellow-500 p-1 sm:p-1.5 rounded-lg flex-shrink-0">
-                                      <FaStar className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-white mt-0" />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                      <span className="font-semibold text-neutral-700">
-                                        Calidad:
-                                      </span>{" "}
-                                      <span className="text-brand-600 font-bold">
-                                        {Math.round(bestWindow.score)}/100
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-brand-200 bg-green-50 rounded-lg p-2 sm:p-3">
-                                    <div className="flex items-start gap-1.5 sm:gap-2">
-                                      <div className="bg-green-500 p-0.5 sm:p-1 rounded flex-shrink-0">
-                                        <FaBell className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" />
-                                      </div>
-                                      <div className="flex-1 min-w-0">
-                                        <p className="text-[10px] sm:text-xs font-semibold text-green-900 mb-0.5 sm:mb-1">
-                                          ✅ Alerta activada exitosamente
-                                        </p>
-                                        <p className="text-[10px] sm:text-xs text-green-700">
-                                          Recibirás una notificación{" "}
-                                          <strong>30 minutos antes</strong> (
-                                          {new Date(
-                                            notifyAt
-                                          ).toLocaleTimeString("es-CL", {
-                                            hour: "2-digit",
-                                            minute: "2-digit",
-                                            hour12: false,
-                                          })}
-                                          ) para que no pierdas esta ventana
-                                          ideal.
-                                        </p>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              ),
-                              duration: 8000,
-                            });
-                          }
-                        }}
-                        windSpeed={hourlyForecast[0]?.wind_speed_10m || 0}
-                        gustFactor={
-                          hourlyForecast[0]?.wind_speed_10m > 0
-                            ? hourlyForecast[0].wind_gusts_10m /
-                              hourlyForecast[0].wind_speed_10m
-                            : 1
-                        }
-                        precipProb={0}
-                        nextWindowTime={
-                          nextToday?.start && !atGlanceData.now?.ok
-                            ? new Date(nextToday.start).toLocaleTimeString(
-                                "es-CL",
-                                {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                  hour12: false,
-                                }
-                              )
-                            : undefined
-                        }
-                        windUnits={windUnits}
-                      />
-                    </div>
-
-                    {/* Mejores Ventanas */}
-                    <div
-                      className={cn(
-                        "bg-white rounded-2xl shadow-lg border border-neutral-200",
-                        isMobile && mobileTab !== "windows" ? "hidden" : ""
-                      )}
-                    >
-                      <BestWindowPanel
-                        windows={windowsData}
+                      <EducationalWindows
+                        nextWindow={nextToday || undefined}
+                        bestWindow={bestToday || undefined}
+                        alternativeWindow={fallbackWindows[1]}
                         parkName={selectedPark.name}
                         windUnits={windUnits}
                       />
                     </div>
-                  </div>
-
-                  {/* Modo Volantín Seguro - Ancho completo */}
-                  <div
-                    className={cn(
-                      "lg:col-span-2",
-                      isMobile && mobileTab !== "summary" ? "hidden" : ""
-                    )}
-                  >
-                    <SafetyTrafficLight
-                      hourlyData={hourlyForecastWithRecalculatedScores}
-                      profile={kiteProfile}
-                      windUnits={windUnits}
-                      hoursToShow={12}
-                      parkName={selectedPark.name}
-                    />
-                  </div>
-
-                  {/* Ventanas recomendadas - Ancho completo abajo */}
-                  <div
-                    className={cn(
-                      "lg:col-span-2 bg-white dark:bg-neutral-800 rounded-2xl shadow-lg dark:shadow-black/40 border border-neutral-200 dark:border-neutral-700 p-6",
-                      isMobile && mobileTab !== "windows" ? "hidden" : ""
-                    )}
-                  >
-                    <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
-                      <h3 className="text-xl font-display font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
-                        <FaCalendarDay className="w-4 h-4 text-blue-600 dark:text-purple-400" />
-                        Ventanas recomendadas
-                      </h3>
-                      <div className="text-xs font-bold text-blue-700 dark:text-purple-300 bg-blue-100 dark:bg-purple-950/40 px-3 py-1 rounded-full border-2 border-blue-300 dark:border-purple-700/50 whitespace-nowrap">
-                        {selectedPark.name}
-                      </div>
-                    </div>
-                    <EducationalWindows
-                      nextWindow={nextToday || undefined}
-                      bestWindow={bestToday || undefined}
-                      alternativeWindow={fallbackWindows[1]}
-                      parkName={selectedPark.name}
-                      windUnits={windUnits}
-                    />
-                  </div>
+                  )}
                 </div>
               )}
-
-              {/* Mapa de parques */}
-              <div
-                data-map-container
-                className="bg-white dark:bg-neutral-800 rounded-2xl shadow-lg dark:shadow-black/40 border border-neutral-200 dark:border-neutral-700 p-6 relative z-10"
-              >
-                <h2 className="text-2xl font-display font-bold text-neutral-900 dark:text-neutral-100 mb-4">
-                  Mapa de Parques
-                </h2>
-                <div className="h-[500px] rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-700 relative z-10">
-                  <MapView
-                    selectedPark={selectedPark}
-                    onSelectPark={(park: Park) => {
-                      setSelectedPark(park);
-                    }}
-                    userLocation={
-                      latitude && longitude ? { latitude, longitude } : null
-                    }
-                  />
-                </div>
-
-                {/* Información del parque seleccionado */}
-                {selectedPark && (
-                  <div className="mt-4 p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-purple-950/30 dark:to-violet-950/30 rounded-xl border border-blue-200 dark:border-purple-700/50">
-                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
-                          <h3 className="text-base sm:text-lg font-bold text-neutral-900 dark:text-neutral-100 truncate">
-                            {selectedPark.name}
-                          </h3>
-                          <TemperatureWidget
-                            latitude={selectedPark.lat}
-                            longitude={selectedPark.lon}
-                          />
-                        </div>
-                        <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mb-2 flex items-center gap-1">
-                          <MapPin className="w-3 h-3" />
-                          {selectedPark.comuna}, Santiago
-                        </p>
-                        <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
-                          <span className="bg-white dark:bg-neutral-700 px-2 py-1 rounded-md border border-neutral-200 dark:border-neutral-600 whitespace-nowrap">
-                            Área: {selectedPark.area}
-                          </span>
-                          <span className="text-neutral-400 dark:text-neutral-500 hidden xs:inline">
-                            •
-                          </span>
-                          <span className="text-[10px] xs:text-xs">
-                            {selectedPark.lat.toFixed(4)}°,{" "}
-                            {selectedPark.lon.toFixed(4)}°
-                          </span>
-                        </div>
-                      </div>
-                      <a
-                        href={`https://www.google.com/maps/search/?api=1&query=${selectedPark.lat},${selectedPark.lon}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-purple-600 dark:to-violet-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-cyan-700 dark:hover:from-purple-700 dark:hover:to-violet-700 transition-all shadow-md hover:shadow-lg text-xs sm:text-sm whitespace-nowrap flex-shrink-0"
-                      >
-                        <svg
-                          className="w-3.5 h-3.5 sm:w-4 sm:h-4"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
-                        </svg>
-                        Cómo llegar
-                      </a>
-                    </div>
-                    {selectedPark.warnings &&
-                      selectedPark.warnings.length > 0 && (
-                        <div className="mt-3 pt-3 border-t border-blue-200 dark:border-blue-700/50">
-                          <p className="text-xs font-semibold text-amber-700 dark:text-amber-400 mb-1 flex items-center gap-1">
-                            <AlertTriangle className="w-3 h-3" />
-                            Advertencias:
-                          </p>
-                          <ul className="text-xs text-neutral-600 dark:text-neutral-400 space-y-1">
-                            {selectedPark.warnings.map((warning, idx) => (
-                              <li key={idx}>• {warning}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                  </div>
-                )}
-              </div>
 
               {/* Mensaje si no hay parque seleccionado */}
-              {!selectedPark && (
-                <div className="bg-white rounded-2xl shadow-lg border border-neutral-200 p-12 text-center">
-                  <div className="text-6xl mb-4">
-                    <svg
-                      className="w-16 h-16 mx-auto text-brand-500"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                    </svg>
+              {/* Mobile: En tabs "summary" y "map" | Desktop: Siempre visible */}
+              {!selectedPark &&
+                (!isMobile || ["summary", "map"].includes(mobileTab)) && (
+                  <div className="bg-white rounded-2xl shadow-lg border border-neutral-200 p-12 text-center">
+                    <div className="text-6xl mb-4">
+                      <svg
+                        className="w-16 h-16 mx-auto text-brand-500"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                      </svg>
+                    </div>
+                    <h3 className="text-2xl font-bold text-neutral-900 mb-2">
+                      Selecciona un Parque
+                    </h3>
+                    <p className="text-neutral-600">
+                      Elige un parque del ranking o del mapa para ver las
+                      condiciones detalladas
+                    </p>
                   </div>
-                  <h3 className="text-2xl font-bold text-neutral-900 mb-2">
-                    Selecciona un Parque
-                  </h3>
-                  <p className="text-neutral-600">
-                    Elige un parque del ranking o del mapa para ver las
-                    condiciones detalladas
-                  </p>
-                </div>
-              )}
+                )}
             </div>
           )}
         </div>
@@ -1214,6 +1358,17 @@ export default function Home() {
           units={windUnits}
           setUnits={setWindUnits}
         />
+
+        {/* Mobile Navigation */}
+        {isMobile && (
+          <MobileTabBar
+            activeTab={mobileTab}
+            onChange={(tab: MobileTabKey) => {
+              setMobileTab(tab);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+          />
+        )}
       </main>
     </>
   );

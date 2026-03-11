@@ -21,7 +21,7 @@ export function ScoreTooltip({
 }: ScoreTooltipProps) {
   const [isTouch, setIsTouch] = useState(false);
   const [open, setOpen] = useState(false);
-  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const triggerRef = useRef<HTMLSpanElement | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -103,12 +103,6 @@ export function ScoreTooltip({
     });
   }, [isTouch, open]);
 
-  const handleTriggerClick = () => {
-    if (isTouch) {
-      setOpen((prev) => !prev);
-    }
-  };
-
   const focusTrigger = () => {
     if (!triggerRef.current) return;
     try {
@@ -121,9 +115,7 @@ export function ScoreTooltip({
   const resolvedSide = isTouch ? "top" : side;
   const resolvedAlign = isTouch ? "center" : align;
 
-  // Attach native touch listeners for the trigger element on touch devices.
-  useAttachNativeTouchHandlers(triggerRef, isTouch, (v) => setOpen(v),
-    focusTrigger);
+  useAttachNativeTouchHandlers(triggerRef, isTouch, setOpen, focusTrigger);
 
   return (
     <Tooltip
@@ -135,10 +127,6 @@ export function ScoreTooltip({
           ref={triggerRef}
           tabIndex={0}
           role="button"
-          /* For touch devices we attach native listeners with passive:false
-             so we can call preventDefault without triggering the browser warning.
-             Avoid calling preventDefault from React synthetic handlers because
-             they may be registered as passive. */
           onKeyDown={(event) => {
             if (isTouch) return;
             if (event.key === "Enter" || event.key === " ") {
@@ -146,7 +134,6 @@ export function ScoreTooltip({
               setOpen((prev) => !prev);
             }
           }}
-          // touch handlers moved to a native listener (see useEffect below)
           className="inline-flex items-center gap-1 cursor-help text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-sm group touch-manipulation"
           aria-expanded={isTouch ? open : undefined}
           aria-haspopup="true"
@@ -160,8 +147,6 @@ export function ScoreTooltip({
         align={resolvedAlign}
         sideOffset={6}
         collisionPadding={16}
-        /* TooltipContent touch handlers are unnecessary because the trigger
-           has native touch listeners attached to the trigger element. */
         className="max-w-xs bg-neutral-900 text-white border-neutral-700"
       >
         <div className="space-y-1">
@@ -189,13 +174,10 @@ export function ScoreTooltip({
   );
 }
 
-// Attach native touch listeners to trigger element when on touch devices.
-// We'll add the listeners in a separate effect so we can use passive: false.
-// This avoids the browser warning when calling event.preventDefault().
 function useAttachNativeTouchHandlers(
   ref: React.RefObject<HTMLElement | null>,
   isTouchDevice: boolean,
-  setOpenState: (v: boolean) => void,
+  setOpenState: React.Dispatch<React.SetStateAction<boolean>>,
   focusFn: () => void
 ) {
   useEffect(() => {
@@ -203,15 +185,13 @@ function useAttachNativeTouchHandlers(
     if (!node || !isTouchDevice) return;
 
     const onTouchStart = (event: TouchEvent) => {
-      // Prevent default to avoid page scroll while interacting with tooltip
       event.preventDefault();
       event.stopPropagation();
       focusFn();
-      setOpenState(true);
+      setOpenState((prev) => !prev);
     };
 
     const onTouchMove = (event: TouchEvent) => {
-      // Prevent accidental scrolling when moving finger over trigger
       event.preventDefault();
     };
 
@@ -222,10 +202,5 @@ function useAttachNativeTouchHandlers(
       node.removeEventListener("touchstart", onTouchStart as EventListener);
       node.removeEventListener("touchmove", onTouchMove as EventListener);
     };
-    // We intentionally exclude focusFn from deps because it's stable in this
-    // component; include only values that matter.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ref, isTouchDevice, setOpenState]);
+  }, [ref, isTouchDevice, setOpenState, focusFn]);
 }
-
-// Hook definition is below. The usage is inside the component above.

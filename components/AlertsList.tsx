@@ -8,6 +8,7 @@ import {
   formatAlertTime,
   type Alert,
 } from "@/lib/notifications";
+// Use explicit CTA styles to match site primary buttons
 import {
   FaBell,
   FaTrash,

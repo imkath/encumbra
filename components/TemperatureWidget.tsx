@@ -38,19 +38,31 @@ export function TemperatureWidget({
         // Geocodificación inversa para obtener la comuna
         if (latitude && longitude) {
           try {
-            // Usar nuestra API interna que llama a Nominatim desde el servidor
-            const geoResponse = await fetch(
-              `/api/geocode?lat=${latitude}&lon=${longitude}`
-            );
+            // Si la API interna no está disponible (dev server no arrancado), evitamos logs repetidos
+            const geoUrl = `/api/geocode?lat=${latitude}&lon=${longitude}`;
+
+            // pequeño timeout para no colgar la UI
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 3000);
+
+            const geoResponse = await fetch(geoUrl, {
+              signal: controller.signal,
+            });
+            clearTimeout(timeout);
 
             if (geoResponse.ok) {
               const geoData = await geoResponse.json();
               setLocationName(geoData.locationName || "Tu ubicación");
             } else {
+              // no hacer console.error para evitar spam en dev cuando el back no está
               setLocationName("Tu ubicación");
             }
           } catch (geoError) {
-            console.error("Error fetching location name:", geoError);
+            // Evitar logging repetido: solo loguear la primera vez
+            if (!(window as any).__geo_fetch_failed) {
+              console.error("Error fetching location name:", geoError);
+              (window as any).__geo_fetch_failed = true;
+            }
             setLocationName("Tu ubicación");
           }
         } else {
