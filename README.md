@@ -1,20 +1,19 @@
 # Encumbra
 
-App de monitoreo de seguridad y alertas ciudadanas en tiempo real para Chile.
+App para decidir cuándo y dónde volar volantín en Santiago, según el viento y el clima en tiempo real.
 
 ## Qué hace
 
-- Mapa interactivo con alertas activas por geolocalización
-- Semáforo de seguridad por zona
-- Widget de temperatura y condiciones climáticas
-- Lista de alertas con niveles de urgencia
-- Vista mobile-first con bottom navigation
+- Índice de vuelo (0-100) a partir del viento, con una curva centrada en la velocidad ideal y penalización por ráfagas según el tipo de volantín
+- Clima y viento en tiempo real (Open-Meteo), con reintentos y manejo de límites de la API
+- 17 parques de Santiago con coordenadas, para comparar condiciones por lugar
+- Vista mobile-first
+- Formulario de contacto y de sugerencia de parques (envío por email con rate limiting)
 
 ## Stack
 
-- Next.js (App Router)
-- Tailwind CSS
-- API de clima integrada
+- Next.js (App Router) · Tailwind CSS
+- Open-Meteo (clima) · Resend (email)
 
 ## Correr local
 
