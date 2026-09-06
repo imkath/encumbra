@@ -88,8 +88,12 @@ cómo tratan la profundidad, qué se mueve y cuánto), no el pixel.
 
 ### Lo que ya se intentó y ella rechazó, para no repetirlo
 
-1. **Bloque de color plano** con el veredicto gigante ocupando la pantalla:
-   rompía con la app, no presentaba el producto y desincentivaba entrar.
+1. **El color plano y pastel**, no la estructura. La primera versión llenaba el
+   fold con el color de la banda y el veredicto gigante encima. Lo que Kath
+   rechazó fue **el color**: un mostaza lavado, el pastel plano que sale de
+   cualquier generador. La idea de una superficie de color grande sigue viva
+   si el color es bueno. Esa primera versión además rompía con la app y no
+   presentaba el producto, pero eso ya está resuelto por separado.
 2. **Gráfico de líneas** del viento de 12 horas: "una simpleza", es el
    componente más estándar que existe.
 3. **Campo de partículas** tipo Windy: le habla a un meteorólogo, no a alguien
@@ -101,9 +105,15 @@ cómo tratan la profundidad, qué se mueve y cuánto), no el pixel.
 5. **Cielo saturado con velo oscuro** para la legibilidad: el velo se comió el
    día y "parecía cielo nocturno". Todo eso ya está revertido.
 
-El compromiso que hay que resolver bien: un cielo con color de verdad deja el
-texto oscuro en 1.89 de contraste. Aclararlo lo vuelve pastel. La salida no es
-ninguno de los dos extremos.
+El hilo que atraviesa casi todos los rechazos es el mismo: **el pastel**. Los
+tokens de banda originales eran pasteles derivados por fórmula, los cinco con
+luminosidad entre 90 y 94: mismo tono, saturación baja, luminosidad clavada. Se
+leen como generados porque lo son. La paleta ya se corrigió en el commit, pero
+la lección vale para cualquier color nuevo que se proponga.
+
+Y el compromiso técnico a resolver bien: un cielo con color de verdad deja el
+texto oscuro en 1.89 de contraste. Aclararlo lo vuelve pastel otra vez.
+La salida no es ninguno de los dos extremos.
 
 ### Pendiente concreto y chico
 
