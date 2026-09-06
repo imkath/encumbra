@@ -11,6 +11,8 @@ import {
   type Coordenadas,
 } from "@/lib/parques.ts";
 import {
+  contextoSalida,
+  luzEnHorario,
   elegirParqueInicial,
   lecturasParques,
   type LecturaParque,
@@ -204,6 +206,9 @@ export function EncumbraApp({
       : resultados.slice(0, 5);
   const hora = parque.horas.find((h) => h.fecha === horaElegida) ?? parque.hora;
   const actualizado = pronostico.estado === "actual";
+  const zonaElegida = pronostico.zonas.find((z) => z.id === parque.zonaId);
+  const luzDeHora = (fecha: string) => luzEnHorario(fecha, zonaElegida?.salidaSol ?? [], zonaElegida?.puestaSol ?? []);
+  const contexto = contextoSalida(hora, hora ? luzDeHora(hora.fecha) : null, actualizado);
   const propuesto =
     orden === "adecuado" && actualizado && !busqueda
       ? ordenados.find((p, i) => i === 0 && p.banda === "ideal" && p.esDeDia)
@@ -401,6 +406,19 @@ export function EncumbraApp({
                         : "Encuentra tu parque para encumbrar."}
                     </p>
                   </div>
+
+                </div>
+                <div className="buscar-ubicacion">
+                <label className="buscador-app">
+                  <Icono nombre="buscar" />
+                  <span className="sr-only">Buscar parque o comuna</span>
+                  <input
+                    type="search"
+                    placeholder="Parque o comuna"
+                    value={busqueda}
+                    onChange={(e) => setBusqueda(e.target.value)}
+                  />
+                </label>
                   <button
                     className="icon-button boton-ubicacion"
                     onClick={localizar}
@@ -412,16 +430,6 @@ export function EncumbraApp({
                     <Icono nombre="ubicacion" />
                   </button>
                 </div>
-                <label className="buscador-app">
-                  <Icono nombre="buscar" />
-                  <span className="sr-only">Buscar parque o comuna</span>
-                  <input
-                    type="search"
-                    placeholder="Parque o comuna"
-                    value={busqueda}
-                    onChange={(e) => setBusqueda(e.target.value)}
-                  />
-                </label>
                 <div className="explorar-filtros">
                   <div className="segmentos" aria-label="Orden de parques">
                     <button
@@ -487,7 +495,7 @@ export function EncumbraApp({
                   <div className="lista-titulo">
                     <h2>
                       {busqueda
-                        ? `${resultados.length} resultados`
+                        ? `${resultados.length} ${resultados.length === 1 ? "resultado" : "resultados"}`
                         : orden === "guardados"
                           ? "Tus lugares"
                           : ubicacion
@@ -528,7 +536,7 @@ export function EncumbraApp({
                       </h2>
                       <p>
                         {orden === "guardados" && !busqueda
-                          ? "Toca el marcador junto a un parque para guardarlo aquí."
+                          ? "Usa el botón Guardar junto al nombre de un parque para encontrarlo aquí."
                           : "Prueba con otra comuna o borra la búsqueda."}
                       </p>
                       <button
@@ -598,7 +606,7 @@ export function EncumbraApp({
               <div className="salida-layout">
                 <section
                   className="parte-viento"
-                  data-estado={hora?.banda ?? "sin-datos"}
+                  data-estado={contexto?.estado ?? hora?.banda ?? "sin-datos"}
                   aria-label="Condiciones de viento"
                 >
                   <div className="parte-viento__hora">
@@ -610,11 +618,11 @@ export function EncumbraApp({
                     </span>
                     <span>{actualizado ? "Pronóstico" : "Último dato"}</span>
                   </div>
-                  <h2>{hora ? ESTADOS[hora.banda] : "El viento, pendiente"}</h2>
+                  <h2>{contexto?.titulo ?? (hora ? ESTADOS[hora.banda] : "El viento, pendiente")}</h2>
                   <p>
-                    {hora
+                    {contexto?.detalle ?? (hora
                       ? `Por viento: ${CONSEJOS[hora.banda]}`
-                      : "Todavía puedes elegir tu parque. Reintenta para conocer las condiciones."}
+                      : "Todavía puedes elegir tu parque. Reintenta para conocer las condiciones.")}
                   </p>
                   {hora?.probabilidadPrecipitacion !== null &&
                   hora?.probabilidadPrecipitacion !== undefined &&
@@ -674,7 +682,8 @@ export function EncumbraApp({
                         download={`encumbra-${parque.id}.ics`}
                         href={`data:text/calendar;charset=utf-8,${encodeURIComponent(calendario)}`}
                       >
-                        <Icono nombre="salir" />
+                        <Icono nombre="calendario" />
+                        <span>Agregar al calendario</span>
                       </a>
                     ) : null}
                   </div>
@@ -692,22 +701,18 @@ export function EncumbraApp({
                           <button
                             key={h.fecha}
                             data-estado={h.banda}
+                            data-luz={luzDeHora(h.fecha) === false ? "noche" : "dia"}
                             aria-pressed={h.fecha === hora?.fecha}
-                            aria-label={`${formatearHora(h.fecha)}, ${ESTADOS[h.banda]}, viento ${Math.round(h.viento)} kilómetros por hora`}
+                            aria-label={`${formatearHora(h.fecha)}, ${ESTADOS[h.banda]}, viento ${Math.round(h.viento)} kilómetros por hora, rachas ${Math.round(h.racha)}, ${luzDeHora(h.fecha) === false ? "de noche" : luzDeHora(h.fecha) ? "con luz" : "luz sin confirmar"}`}
                             onClick={() => setHoraElegida(h.fecha)}
                           >
                             <time dateTime={h.fecha}>
                               {i === 0 ? "Ahora" : formatearHora(h.fecha)}
                             </time>
-                            <span className="hora-barra">
-                              <i
-                                style={{
-                                  height: `${Math.max(5, Math.min(48, h.racha * 1.3))}px`,
-                                }}
-                              />
-                            </span>
-                            <strong>{Math.round(h.viento)}</strong>
-                            <small>km/h</small>
+                            <Icono nombre={luzDeHora(h.fecha) === false ? "luna" : "viento"} />
+                            <strong>{Math.round(h.viento)}<small> km/h</small></strong>
+                            <span className="hora-racha">Racha {Math.round(h.racha)}</span>
+                            <small>{luzDeHora(h.fecha) === false ? "Noche" : luzDeHora(h.fecha) ? "Con luz" : "Luz sin dato"}</small>
                           </button>
                         ))}
                       </div>
@@ -716,7 +721,7 @@ export function EncumbraApp({
                           <i />
                           Viento favorable
                         </span>
-                        <span>Barra = racha</span>
+                        <span>Viento y rachas en km/h</span>
                       </div>
                     </section>
                   ) : null}
@@ -759,9 +764,7 @@ export function EncumbraApp({
                   <h1 ref={titulo} tabIndex={-1}>
                     Antes de soltar hilo
                   </h1>
-                  <p>Lo justo para salir bien preparado.</p>
                 </div>
-                <MarcaVolantin />
               </div>
               <section className="elegir-volantin">
                 <h2>¿Cuál llevas?</h2>
@@ -790,7 +793,7 @@ export function EncumbraApp({
               <section className="checklist-app">
                 <div className="lista-titulo">
                   <h2>Una última mirada</h2>
-                  <span>{checks.length}/3 listo</span>
+                  <span>{checks.length}/3 completados</span>
                 </div>
                 {[
                   "Hilo sin curar y carrete en buen estado",

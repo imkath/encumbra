@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# vendored at dev/build by scripts/vendor-maplibre.mjs
+/public/vendor/

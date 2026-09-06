@@ -1,5 +1,5 @@
 @import "tailwindcss" source(none);
-@import "leaflet/dist/leaflet.css";
+@import "maplibre-gl/dist/maplibre-gl.css";
 @source "../app";
 @source "../components";
 
@@ -337,7 +337,7 @@ h1:focus {
 }
 .segmentos button {
   font-size: 12px;
-  min-height: 40px;
+  min-height: 44px;
   padding: 0 13px;
   border-radius: 22px;
   color: var(--app-muted);
@@ -396,9 +396,6 @@ h1:focus {
 .mapa-lienzo {
   z-index: 0;
   font-family: inherit;
-}
-.mapa-lienzo .leaflet-tile-pane {
-  filter: saturate(0.75);
 }
 .mapa-mi-ubicacion {
   position: absolute;
@@ -485,24 +482,6 @@ h1:focus {
 .mapa-marcador:hover .mapa-pin > span:last-child,
 .mapa-marcador:focus-visible .mapa-pin > span:last-child {
   display: block;
-}
-.mapa-lienzo .leaflet-control-attribution {
-  font-size: 9px;
-  background: var(--app-surface);
-  max-width: 100%;
-}
-.mapa-lienzo .leaflet-control-zoom {
-  border: 0;
-  box-shadow: 0 2px 8px #14233720;
-  border-radius: 10px;
-  overflow: hidden;
-}
-.mapa-lienzo .leaflet-control-zoom a {
-  width: 36px;
-  height: 36px;
-  line-height: 36px;
-  color: var(--app-ink);
-  background: var(--app-surface);
 }
 .explorar-lista {
   min-height: 0;
@@ -917,18 +896,6 @@ h1:focus {
 .horas-cinta time {
   font-size: 10px;
   color: var(--app-muted);
-}
-.hora-barra {
-  height: 54px;
-  display: flex;
-  align-items: flex-end;
-  margin: 8px 0;
-}
-.hora-barra i {
-  display: block;
-  width: 8px;
-  background: var(--estado-ink);
-  border-radius: 4px;
 }
 .horas-cinta strong {
   font-size: 15px;
@@ -1658,4 +1625,69 @@ h1, h2, .app-marca, .parte-viento__datos dd {
   .mapa-pin--elegido .mapa-pin__punto { width: 23px; height: 26px; }
   .explorar-lista { padding-top: 10px; }
   .dato-aviso { font-size: 10px; padding-bottom: 4px; }
+}
+
+/* Review refinements: tighter composition, clearer controls and vector map. */
+.buscar-ubicacion { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.buscar-ubicacion .buscador-app { flex: 1; min-width: 0; margin-top: 0; }
+.guardar-parque { width: 44px; min-width: 44px; }
+.parque-identidad > span, .parque-condicion { font-size: 12px; }
+.parque-condicion small { font-size: 11px; }
+.perfiles-app label { padding: 8px 12px; gap: 10px; }
+.perfiles-app label > svg { width: 40px; height: 49px; }
+.perfiles-app { gap: 7px; }
+.guia-screen > .app-heading { margin-bottom: 20px; }
+.horas-cinta button { min-width: 78px; gap: 6px; padding: 10px 7px; }
+.horas-cinta time, .horas-cinta small, .hora-racha { font-size: 12px; }
+.horas-cinta strong { font-size: 19px; }
+.horas-cinta button > svg { width: 20px; height: 20px; color: var(--estado-ink); }
+.horas-cinta [data-luz="noche"] { background: #f0f2f8; }
+.horas-cinta button[aria-pressed="true"] { background: var(--app-blue-soft); border-color: var(--app-blue); }
+.hora-racha { color: var(--app-muted); white-space: nowrap; }
+.horas-leyenda { font-size: 11px; gap: 10px; }
+[data-estado="noche"] { --estado-ink: #495d85; --estado-bg: #e9edf8; }
+.ventana-salida { flex-wrap: wrap; }
+.ventana-salida > div { flex: 1; min-width: 0; }
+.ventana-salida > a { display: flex; gap: 7px; font-size: 12px; width: 100%; margin-left: 37px; justify-content: flex-start; }
+.parte-viento h2 { max-width: 16ch; }
+.mapa-lienzo .maplibregl-ctrl-group { border-radius: 12px; box-shadow: 0 3px 12px #14233720; overflow: hidden; }
+.mapa-lienzo .maplibregl-ctrl-group button { width: 44px; height: 44px; }
+.mapa-lienzo .maplibregl-ctrl-attrib { font-size: 10px; }
+.mapa-punto {
+  width: 44px; height: 44px; display: grid; place-items: center;
+  background: #fff; color: #16223d; border: 2px solid #fff;
+  border-radius: 14px 14px 14px 4px; font: 750 14px var(--font-archivo), sans-serif;
+  box-shadow: 0 3px 10px #16223d35;
+}
+.mapa-punto--grupo { border-radius: 50%; background: #16223d; color: #fff; }
+.mapa-punto--grupo::after { content: "+"; position: absolute; right: 5px; top: 2px; font-size: 10px; }
+.mapa-punto--elegido { background: #d9fc69; color: #16223d; border-color: #16223d; }
+.mapa-punto:hover { border-color: #3155f5; }
+.mapa-tu-posicion { width: 16px; height: 16px; border: 3px solid #fff; border-radius: 50%; background: #3155f5; box-shadow: 0 2px 8px #14233740; }
+.mapa-error { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; }
+.mapa-error button { min-height: 44px; color: var(--app-blue); font-weight: 650; }
+.mapa-leyenda { pointer-events: none; }
+@media (min-width: 900px) {
+  .explorar-herramientas { grid-template-columns: 390px minmax(0, 1fr); column-gap: 20px; row-gap: 10px; }
+  .buscar-ubicacion { margin: 0; width: min(100%, 440px); }
+  .explorar-filtros { grid-column: 1; }
+  .explorar-herramientas .app-heading h1 { font-size: 32px; }
+}
+@media (max-width: 899px) {
+  .explorar-herramientas { padding-top: 7px; padding-bottom: 5px; }
+  .explorar-herramientas .app-heading h1 { font-size: 28px; }
+  .explorar-herramientas .app-heading p { margin-top: 2px; }
+  .explorar-cuerpo:not(.explorar-cuerpo--lista) { grid-template-rows: minmax(160px, 1fr) minmax(130px, 1fr); }
+  .parte-viento { padding: 18px; }
+}
+@media (max-width: 359px) {
+  .parque-identidad > span { font-size: 11px; }
+  .parque-condicion { font-size: 10px; }
+  .parque-condicion small { font-size: 10px; }
+}
+@media (max-height: 650px) and (max-width: 899px) {
+  .encumbra-app .explorar-herramientas .app-heading p { display: none; }
+  .explorar-herramientas .app-heading h1 { font-size: 25px; }
+  .buscar-ubicacion { margin-top: 6px; }
+  .encumbra-app .explorar-cuerpo:not(.explorar-cuerpo--lista) { grid-template-rows: minmax(130px, .85fr) minmax(110px, 1fr); }
 }

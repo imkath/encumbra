@@ -1,5 +1,7 @@
 import type { CSSProperties } from "react";
 const trazos = {
+  luna: <path d="M20 14a8 8 0 0 1-10-10 8 8 0 1 0 10 10Z" />,
+  calendario: <><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M7 3v4m10-4v4M3 10h18m-9 3v5m-2.5-2.5h5" /></>,
   buscar: (
     <>
       <circle cx="10.5" cy="10.5" r="6.5" />
