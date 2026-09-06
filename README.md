@@ -21,7 +21,7 @@ diferencias de viento que el modelo meteorológico no puede ver.
 
 ## Estado
 
-Planificación cerrada. Sin implementar.
+Implementación disponible. La interfaz principal es una app móvil con mapa de parques, favoritos locales, pronóstico horario y preparación de salida. Ver [el cambio de estructura](docs/11-APP-MOVIL.md).
 
 Los umbrales del dominio están calibrados contra la American Kitefliers
 Association y cinco años de datos horarios de Santiago. Se reproduce con:

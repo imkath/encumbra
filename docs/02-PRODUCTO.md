@@ -60,6 +60,8 @@ Una sola página, scroll vertical, sin navegación superior. Cuatro bloques a an
 ```
 
 - El veredicto es siempre **de ahora**, nunca del día. "Hoy está bueno" no sirve: la gente sale a una hora concreta.
+- Antes de la palabra aparece `¿Cuál vas a encumbrar?`: papel liviano, con cola o acrobático. Cada opción recupera uno de los volantines dibujados para v1 y recalcula en el acto el veredicto, la cola horaria, las ventanas y las zonas donde anda.
+- Si la zona elegida no anda, la misma pantalla dice en cuáles de las otras cinco zonas sí anda ahora. Si ninguna anda, lo dice sin mandar a probar selectores. La comparación es entre celdas del modelo, nunca entre parques de una misma zona.
 - Si ahora no anda pero anda después, inmediatamente debajo aparece la línea que engancha: `a las 16:20 anda`. Ese es el pico emocional de la pantalla (Regla de Fin de Pico) y evita que un "NO ANDA" mate la sesión.
 - Sin tarjeta, sin borde, sin icono, sin porcentaje. El número 0-100 es un detalle de implementación: **el usuario nunca ve un score**. Ve una palabra y dos velocidades.
 
@@ -97,7 +99,7 @@ Este bloque es el diferenciador del producto y por eso ocupa una pantalla propia
 En tinta sobre papel, sin color, sin caja de alerta, sin icono de triángulo:
 - Distancia mínima a tendidos eléctricos.
 - Hilo curado: prohibido por la **Ley 20.700 (2013)**. Fabricar, almacenar o comercializar arriesga presidio de 61 a 540 días y multa de 100 a 500 UTM; usarlo o facilitarlo, multa de 2 a 50 UTM.
-- Los parques de la zona con sus advertencias.
+- Los 17 parques, agrupados en sus seis zonas, con la zona actual marcada y sus advertencias verificadas cuando existan. Cambiar de zona se hace desde el nombre del grupo; el listado no inventa un ranking entre parques.
 
 No es un banner que se cierra ni un modal de bienvenida: vive en la página y se lee cuando se llega ahí (Paradoja del Usuario Activo: nadie lee el manual, así que el contenido va en el flujo, no antes de él).
 
@@ -163,9 +165,9 @@ Sin geolocalización (el caso mayoritario, porque la mayoría no da el permiso) 
 
 ### 6.2 Perfil de volantín
 
-Se conserva: es lo único que el usuario sabe y el sistema no puede deducir. Pero no vive en una hoja de ajustes con tres controles más. Son tres botones en una línea, dentro del bloque de la brecha, donde el cambio se ve en el acto.
+Se conserva: es lo único que el usuario sabe y el sistema no puede deducir. Pero no vive en una hoja de ajustes con tres controles más ni después de una respuesta calculada con el tipo incorrecto. Son tres opciones ilustradas en la primera pantalla, antes del veredicto: papel liviano, con cola y acrobático.
 
-Por defecto: **estándar**. Cambiarlo recalcula bandas y ventanas en el cliente, sin llamada de red.
+Por defecto: **con cola (estándar)**. Cambiarlo recalcula bandas, ventanas y alternativas en el cliente, sin llamada de red. La elección viaja a MODO VOLAR; allí también gobierna la banda vigente, la ventana, la tendencia y el calendario, y queda escrita junto al nombre de la zona.
 
 ### 6.3 Unidades
 
