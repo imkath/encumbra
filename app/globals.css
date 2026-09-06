@@ -723,26 +723,34 @@ h1:focus {
   width: 18px;
   height: 18px;
 }
-[data-estado="ideal"] {
-  --estado-ink: #357746;
-  --estado-bg: #eaf4db;
-}
-[data-estado="liviano"] {
-  --estado-ink: #866316;
-  --estado-bg: #faf0cf;
-}
+/* Colour says how much energy the air has, not good or bad: the scale runs
+   from still to gale. Lime is the stretch that flies, red is real danger.
+   All pairs verified AA at normal text size. */
 [data-estado="plancha"],
 [data-estado="sin-datos"] {
   --estado-ink: #5e6f7d;
-  --estado-bg: #ecf0f4;
+  --estado-bg: #edf0f4;
+  --estado-sobre: #16223d;
+}
+[data-estado="liviano"] {
+  --estado-ink: #4a5b72;
+  --estado-bg: #dde4ee;
+  --estado-sobre: #16223d;
+}
+[data-estado="ideal"] {
+  --estado-ink: #4a6b16;
+  --estado-bg: #d9fc69;
+  --estado-sobre: #16223d;
 }
 [data-estado="bravo"] {
-  --estado-ink: #a65224;
-  --estado-bg: #fce9da;
+  --estado-ink: #3d4f70;
+  --estado-bg: #46587a;
+  --estado-sobre: #f7f9fc;
 }
 [data-estado="peligro"] {
-  --estado-ink: #b33242;
-  --estado-bg: #fce5e7;
+  --estado-ink: #a8263a;
+  --estado-bg: #a8263a;
+  --estado-sobre: #f7f9fc;
 }
 .salida-screen,
 .guia-screen {
@@ -1420,11 +1428,32 @@ h1:focus {
 }
 .vivo {
   min-height: 100dvh;
-  padding: 24px max(20px, calc((100vw - 700px) / 2));
+  overflow: hidden;
+  padding: 20px max(20px, calc((100vw - 760px) / 2))
+    max(20px, env(safe-area-inset-bottom));
   display: grid;
-  grid-template-rows: auto 1fr auto;
-  gap: 24px;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 16px;
+  position: relative;
+  isolation: isolate;
   background: var(--color-verdict-bg);
+  background-image: radial-gradient(
+    120% 78% at 80% 10%,
+    color-mix(in srgb, #fff 58%, transparent),
+    transparent 60%
+  );
+}
+.vivo__cabecera,
+.vivo__datos,
+.vivo__midiendo {
+  position: relative;
+}
+.vivo .volantin-vela {
+  stroke: var(--app-ink);
+}
+.vivo .volantin-cola,
+.vivo .volantin-hilo {
+  stroke: var(--app-ink);
 }
 .vivo__cabecera {
   font-size: 13px;
@@ -1437,67 +1466,176 @@ h1:focus {
 .vivo__agenda {
   display: inline-flex;
   align-items: center;
+  gap: 6px;
   min-height: 44px;
-  color: var(--app-blue);
+  margin-top: 4px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, currentColor 42%, transparent);
+  background: color-mix(in srgb, #050c1c 34%, transparent);
+  color: inherit;
   font-weight: 650;
+  font-size: 13px;
+  text-decoration: none;
+  backdrop-filter: blur(6px);
+}
+.vivo__agenda:hover {
+  background: color-mix(in srgb, #050c1c 52%, transparent);
 }
 .vivo__datos {
+  display: grid;
+  grid-template-areas:
+    "ahora volantin"
+    "ventana volantin"
+    "contexto contexto";
+  grid-template-columns: minmax(0, 1fr) minmax(140px, 38%);
   align-content: center;
+  column-gap: 16px;
 }
+.vivo__ahora {
+  grid-area: ahora;
+  align-self: end;
+}
+/* The answer, not the reading: it is the biggest thing on the screen. */
 .vivo__banda {
-  font-size: 28px;
+  font-size: clamp(56px, 16vw, 104px);
+  font-weight: 800;
+  font-stretch: 112%;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
 }
 .vivo__viento {
   display: flex;
   align-items: baseline;
-  gap: 10px;
-  margin-top: 18px;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin-top: 14px;
+  font-variant-numeric: tabular-nums;
 }
 .vivo__viento strong {
-  font-size: clamp(80px, 25vw, 130px);
+  font-size: clamp(34px, 9vw, 46px);
+  font-weight: 700;
   line-height: 1;
-  letter-spacing: -5px;
+  letter-spacing: -0.03em;
 }
 .vivo__viento span {
-  font-size: 20px;
+  font-size: 17px;
 }
-.vivo__racha {
-  font-size: 20px;
-  margin-top: 12px;
+.vivo__viento small {
+  font-size: 15px;
+  color: var(--app-muted);
+  width: 100%;
+}
+.vivo__volantin {
+  grid-area: volantin;
+  width: 100%;
+  height: auto;
+  align-self: stretch;
+  justify-self: center;
+  /* The string keeps going past the fold instead of stopping in mid-air. */
+  margin-bottom: -30vh;
+  pointer-events: none;
+}
+.volantin-hilo {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  opacity: 0.4;
+}
+.volantin-vela {
+  fill: var(--app-blue);
+  stroke: var(--app-ink);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+.volantin-varilla {
+  stroke: #d9fc69;
+  stroke-width: 2;
+}
+.volantin-brida {
+  fill: none;
+  stroke: var(--app-ink);
+  stroke-width: 1.4;
+  opacity: 0.75;
+}
+.volantin-cola {
+  fill: none;
+  stroke: var(--app-ink);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+/* It swings about the hand, and swings wider when the line is slack. Line and
+   kite are in the same group so they can never drift apart. */
+.volantin-conjunto {
+  animation: volantin-pendulo 5s ease-in-out infinite alternate;
+  transform-box: view-box;
+  transform-origin: 216px 632px;
+}
+@keyframes volantin-pendulo {
+  from { rotate: calc(var(--pendulo, 2deg) * -1); }
+  to { rotate: var(--pendulo, 2deg); }
+}
+/* How long you have left is what you actually came here to read. */
+.vivo__ventana {
+  grid-area: ventana;
+  margin-top: 20px;
+  font-size: clamp(19px, 4.5vw, 25px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
 }
 .vivo__contexto {
-  margin-top: 30px;
+  grid-area: contexto;
+  margin-top: 22px;
 }
 .vivo__contexto > div {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 20px;
-  min-height: 55px;
-  border-top: 1px solid #c0c9ce;
+  min-height: 52px;
+  border-top: 1px solid color-mix(in srgb, currentColor 22%, transparent);
 }
 .vivo__contexto dt {
   font-size: 13px;
+  color: var(--app-muted);
 }
 .vivo__contexto dd {
   font-weight: 650;
   text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 .vivo__listo {
-  min-height: 52px;
+  min-height: 56px;
   border-radius: 14px;
   background: var(--app-blue);
   color: var(--app-surface);
   font-weight: 650;
-  margin-bottom: env(safe-area-inset-bottom);
+  font-size: 16px;
 }
 .vivo__midiendo {
   align-self: center;
 }
 .vivo__midiendo h1 {
-  font-size: 36px;
-  line-height: 1.1;
+  font-size: clamp(44px, 13vw, 72px);
+  font-weight: 800;
+  font-stretch: 112%;
+  letter-spacing: -0.03em;
+  line-height: 1;
   margin-bottom: 18px;
+}
+@media (max-width: 479px) {
+  .vivo__datos {
+    grid-template-columns: minmax(0, 1fr) minmax(104px, 32%);
+  }
+  .vivo__volantin {
+    margin-bottom: -22vh;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .volantin-conjunto {
+    animation: none;
+  }
 }
 
 /* Acciones de salida en su propia fila: siempre a mano, nunca sobre datos. */
@@ -1564,8 +1702,12 @@ h1:focus {
 }
 
 /* Flight identity: clear sky, electric blue, a high-visibility sail. */
-h1, h2, .app-marca, .parte-viento__datos dd {
-  font-family: var(--font-display), var(--font-archivo), sans-serif;
+/* One family throughout: headings separate by width and weight, not by face. */
+h1, h2, .app-marca {
+  font-stretch: 108%;
+}
+.parte-viento__datos dd, .horas-cinta strong, .parque-condicion {
+  font-variant-numeric: tabular-nums;
 }
 .app-marca { font-weight: 700; letter-spacing: -1.2px; }
 .app-topbar { border-bottom-color: transparent; }
@@ -1645,7 +1787,7 @@ h1, h2, .app-marca, .parte-viento__datos dd {
 .horas-cinta button[aria-pressed="true"] { background: var(--app-blue-soft); border-color: var(--app-blue); }
 .hora-racha { color: var(--app-muted); white-space: nowrap; }
 .horas-leyenda { font-size: 11px; gap: 10px; }
-[data-estado="noche"] { --estado-ink: #495d85; --estado-bg: #e9edf8; }
+[data-estado="noche"] { --estado-ink: #495d85; --estado-bg: #e9edf8; --estado-sobre: #16223d; }
 .ventana-salida { flex-wrap: wrap; }
 .ventana-salida > div { flex: 1; min-width: 0; }
 .ventana-salida > a { display: flex; gap: 7px; font-size: 12px; width: 100%; margin-left: 37px; justify-content: flex-start; }
@@ -1656,7 +1798,7 @@ h1, h2, .app-marca, .parte-viento__datos dd {
 .mapa-punto {
   width: 44px; height: 44px; display: grid; place-items: center;
   background: #fff; color: #16223d; border: 2px solid #fff;
-  border-radius: 14px 14px 14px 4px; font: 750 14px var(--font-archivo), sans-serif;
+  border-radius: 14px 14px 14px 4px; font: 750 14px var(--font-archivo), sans-serif; font-variant-numeric: tabular-nums;
   box-shadow: 0 3px 10px #16223d35;
 }
 .mapa-punto--grupo { border-radius: 50%; background: #16223d; color: #fff; }
@@ -1690,4 +1832,478 @@ h1, h2, .app-marca, .parte-viento__datos dd {
   .explorar-herramientas .app-heading h1 { font-size: 25px; }
   .buscar-ubicacion { margin-top: 6px; }
   .encumbra-app .explorar-cuerpo:not(.explorar-cuerpo--lista) { grid-template-rows: minmax(130px, .85fr) minmax(110px, 1fr); }
+}
+
+/* ── Portada ────────────────────────────────────────────────────────────────
+   Same surface, blue and rows as the app: the landing is the app's front door,
+   not a different product. The band tints the verdict card, never the page. */
+.portada {
+  min-height: 100dvh;
+  background: var(--app-surface);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+.portada .app-topbar {
+  position: sticky;
+  top: 0;
+}
+.portada-ciudad {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--app-muted);
+}
+.portada main {
+  display: grid;
+  gap: 56px;
+  padding: 40px 20px 64px;
+  max-width: 1080px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.portada-hero {
+  position: relative;
+  display: grid;
+  gap: 28px;
+  align-items: end;
+  isolation: isolate;
+  min-height: min(62dvh, 520px);
+  padding-block: 8px 24px;
+}
+.portada-volantin {
+  position: absolute;
+  right: max(2%, calc(50vw - 600px));
+  top: 0;
+  bottom: 0;
+  width: min(28%, 300px);
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.9;
+}
+/* Text sits on the sky, so it needs its own ground to stay readable. */
+.portada-hero .portada-decir,
+.portada-hero .portada-tarjeta {
+  position: relative;
+}
+.portada-hero .portada-decir {
+  max-width: 34rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .escena-astro,
+  .escena-volantin {
+    animation: none;
+  }
+}
+.portada-decir,
+.portada-tarjeta {
+  position: relative;
+}
+.portada-decir {
+  display: grid;
+  gap: 16px;
+  justify-items: start;
+}
+.portada-decir h1 {
+  font-size: clamp(38px, 8vw, 66px);
+  font-weight: 780;
+  font-stretch: 108%;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+.portada-sub {
+  font-size: clamp(15px, 1.6vw, 18px);
+  color: var(--app-muted);
+  max-width: 46ch;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+.portada-accion {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 0 24px;
+  border-radius: 14px;
+  background: var(--app-blue);
+  color: #fff;
+  font-weight: 650;
+  font-size: 16px;
+  text-decoration: none;
+}
+.portada-accion:hover {
+  background: #2544d6;
+}
+.portada-accion svg {
+  width: 18px;
+  height: 18px;
+}
+
+.portada-tarjeta {
+  display: grid;
+  gap: 10px;
+  padding: 24px;
+  border-radius: 20px;
+  background: var(--estado-bg);
+  color: var(--estado-sobre);
+}
+.portada-tarjeta__ahora {
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.85;
+}
+.portada-tarjeta__palabra {
+  font-size: clamp(34px, 7vw, 52px);
+  font-weight: 800;
+  font-stretch: 112%;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.portada-tarjeta__detalle {
+  font-size: 15px;
+  line-height: 1.45;
+  max-width: 40ch;
+  text-wrap: pretty;
+}
+.portada-datos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 28px;
+  margin-top: 6px;
+  padding-top: 14px;
+  border-top: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+  font-variant-numeric: tabular-nums;
+}
+.portada-datos dt {
+  font-size: 11px;
+  opacity: 0.8;
+}
+.portada-datos dd {
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.portada-lista {
+  display: grid;
+  gap: 4px;
+}
+.portada-lista__titulo {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.portada-lista h2,
+.portada-escala h2 {
+  font-size: clamp(20px, 2.6vw, 26px);
+  font-weight: 720;
+  font-stretch: 108%;
+  letter-spacing: -0.02em;
+}
+.portada-lista__titulo span {
+  font-size: 12px;
+  color: var(--app-muted);
+}
+.portada-lista ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.portada-lista .parque-abrir {
+  text-decoration: none;
+  color: inherit;
+}
+.portada-lista .parque-simbolo {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--app-blue);
+  background: var(--app-blue-soft);
+  font-variant-numeric: tabular-nums;
+}
+.portada-vertodos {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 48px;
+  margin-top: 8px;
+  color: var(--app-blue);
+  font-weight: 650;
+  font-size: 14px;
+  text-decoration: none;
+}
+.portada-vertodos svg {
+  width: 16px;
+  height: 16px;
+}
+
+.portada-escala {
+  display: grid;
+  gap: 16px;
+}
+.portada-honestidad {
+  font-size: 13px;
+  color: var(--app-muted);
+  max-width: 54ch;
+  text-wrap: pretty;
+}
+
+.portada-pie {
+  display: grid;
+  gap: 16px;
+  justify-items: start;
+  padding: 32px 20px max(32px, env(safe-area-inset-bottom));
+  max-width: 1080px;
+  width: 100%;
+  margin: 0 auto;
+  border-top: 1px solid var(--app-line);
+}
+.portada-pie p {
+  font-size: 12px;
+  color: var(--app-muted);
+}
+
+/* A wind chart, not a traffic light: one continuum from still air to gale,
+   with the lime block marking the only stretch that actually flies. */
+.regla {
+  margin: 0;
+  display: grid;
+  gap: 0;
+}
+.regla-pista {
+  position: relative;
+  height: 52px;
+  margin-top: 30px;
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1px var(--app-line);
+  background: linear-gradient(
+    90deg,
+    #eef0f3 0%,
+    #d7dde6 22%,
+    #aebdd0 45%,
+    #7b8fae 68%,
+    #4c5f80 85%,
+    #2b3a56 100%
+  );
+}
+.regla-vuela {
+  position: absolute;
+  top: -6px;
+  bottom: -6px;
+  display: grid;
+  place-items: center;
+  background: #d9fc69;
+  border-radius: 8px;
+  box-shadow: 0 0 0 3px var(--app-surface);
+}
+.regla-vuela b {
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #16223d;
+}
+.regla-ahora {
+  position: absolute;
+  top: -30px;
+  bottom: -8px;
+  border-left: 2px solid var(--app-ink);
+}
+.regla-ahora b {
+  position: absolute;
+  top: 0;
+  left: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  color: var(--app-ink);
+  font-variant-numeric: tabular-nums;
+  animation: regla-asienta 240ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+@keyframes regla-asienta {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+.regla-cortes {
+  display: flex;
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+}
+.regla-cortes li {
+  display: grid;
+  gap: 1px;
+  padding: 6px 0 0 7px;
+  border-left: 1px solid var(--app-line);
+  min-width: 0;
+}
+.regla-cortes li:last-child {
+  flex-grow: 0;
+  padding: 6px 7px 0 0;
+  justify-items: end;
+  text-align: right;
+  border-left: 0;
+  border-right: 1px solid var(--app-line);
+}
+.regla-cortes em {
+  font-style: normal;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--app-ink);
+  font-variant-numeric: tabular-nums;
+}
+.regla-cortes span {
+  font-size: 11px;
+  color: var(--app-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.regla-cortes li[data-banda="ideal"] em,
+.regla-cortes li[data-banda="ideal"] span {
+  color: var(--app-ink);
+  font-weight: 650;
+}
+.regla figcaption {
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--app-muted);
+}
+@media (prefers-reduced-motion: reduce) {
+  .regla-ahora b {
+    animation: none;
+  }
+}
+@media (min-width: 860px) {
+  .portada-hero {
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 48px;
+  }
+  .portada main {
+    padding: 56px 32px 72px;
+    gap: 72px;
+  }
+  .portada-pie {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+@media (max-width: 559px) {
+  .regla-pista b {
+    writing-mode: vertical-rl;
+  }
+  .regla-pista > span[data-estado] {
+    padding: 10px 5px;
+  }
+}
+
+/* ── El cielo ───────────────────────────────────────────────────────────────
+   The next hours of wind drawn as a ridge. The lime band is the stretch that
+   flies, so "does today fly" is answered by whether the curve enters it.
+   The curve stretches to fill the box; the kite is positioned on top of it so
+   it keeps its shape and stays aligned with the hour labels. */
+.cielo {
+  margin: 0;
+}
+.cielo-lienzo {
+  position: relative;
+  height: clamp(210px, 30vw, 300px);
+}
+.cielo-lienzo svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.cielo-vuela {
+  fill: #d9fc69;
+  opacity: 0.36;
+}
+.cielo-relleno {
+  fill: url(#cielo-relleno);
+}
+.cielo-cresta {
+  fill: none;
+  stroke: var(--app-ink);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.cielo-etiqueta {
+  position: absolute;
+  right: 10px;
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #55700f;
+  pointer-events: none;
+}
+.cielo-volantin {
+  position: absolute;
+  width: 34px;
+  height: 62px;
+  margin: -22px 0 0 -17px;
+  animation: cielo-mece 5.5s ease-in-out infinite alternate;
+}
+.cielo-volantin svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.cielo-vela {
+  fill: var(--app-blue);
+  stroke: var(--app-surface);
+  stroke-width: 2;
+}
+.cielo-volantin[data-vuela="si"] .cielo-vela {
+  fill: #16223d;
+}
+.cielo-cola {
+  fill: none;
+  stroke: var(--app-ink);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+@keyframes cielo-mece {
+  from {
+    transform: translateY(-3px) rotate(-5deg);
+  }
+  to {
+    transform: translateY(3px) rotate(5deg);
+  }
+}
+.cielo-horas {
+  position: relative;
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  height: 16px;
+  border-top: 1px solid var(--app-line);
+  padding-top: 7px;
+}
+.cielo-horas li {
+  position: absolute;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: var(--app-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.cielo-horas li:first-child {
+  transform: none;
+}
+.cielo figcaption {
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--app-muted);
+}
+@media (prefers-reduced-motion: reduce) {
+  .cielo-volantin {
+    animation: none;
+  }
 }

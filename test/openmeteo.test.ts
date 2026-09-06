@@ -27,7 +27,7 @@ describe("Open-Meteo", () => {
     );
     assert.equal(
       url.searchParams.get("hourly"),
-      "wind_speed_10m,wind_gusts_10m,precipitation_probability",
+      "wind_speed_10m,wind_gusts_10m,wind_direction_10m,cloud_cover,weather_code,precipitation_probability",
     );
     assert.equal(url.searchParams.get("daily"), "sunrise,sunset");
     assert.equal(url.searchParams.get("forecast_days"), "2");

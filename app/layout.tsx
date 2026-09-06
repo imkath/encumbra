@@ -1,19 +1,14 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Sans, Space_Grotesk } from "next/font/google";
+import { Archivo } from "next/font/google";
 import "./globals.css";
 
-const lectura = DM_Sans({
-  display: "swap",
-  variable: "--font-archivo",
-  weight: "variable",
-  subsets: ["latin"],
-});
-
-const titulares = Space_Grotesk({
+// One family for app and landing. The width axis carries the signage register
+// that a second display face used to, and its tabular figures hold the numbers.
+const archivo = Archivo({
   display: "swap",
   preload: true,
-  variable: "--font-display",
-  weight: "variable",
+  variable: "--font-archivo",
+  axes: ["wdth"],
   subsets: ["latin"],
 });
 
@@ -35,9 +30,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es-CL">
-      <body className={`${lectura.variable} ${titulares.variable}`}>
-        {children}
-      </body>
+      <body className={archivo.variable}>{children}</body>
     </html>
   );
 }

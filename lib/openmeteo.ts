@@ -33,6 +33,10 @@ type OpenMeteoZona = {
     readonly time: readonly string[];
     readonly wind_speed_10m: readonly number[];
     readonly wind_gusts_10m: readonly number[];
+    // Optional: a cached payload from before we asked for these has none.
+    readonly wind_direction_10m?: readonly number[];
+    readonly cloud_cover?: readonly number[];
+    readonly weather_code?: readonly number[];
     readonly precipitation_probability: readonly (number | null)[];
   };
   readonly daily: {
@@ -45,6 +49,12 @@ export type HoraPronostico = {
   readonly fecha: string;
   readonly viento: number;
   readonly racha: number;
+  /** Degrees the wind blows *from*, 0 = north. Null when the provider omits it. */
+  readonly direccion: number | null;
+  /** Percent of sky covered. Null when the provider omits it. */
+  readonly nubosidad: number | null;
+  /** WMO code: 0 clear, 1-3 cloud, 45-48 fog, 51+ rain, 95+ storm. */
+  readonly codigoTiempo: number | null;
   readonly probabilidadPrecipitacion: number | null;
   readonly banda: BandaId;
 };
@@ -116,6 +126,12 @@ function leerZona(valor: unknown): OpenMeteoZona {
   const tiempos = hourly.time;
   const vientos = hourly.wind_speed_10m;
   const rachas = hourly.wind_gusts_10m;
+  const largo = esArregloDeTextos(hourly.time) ? hourly.time.length : -1;
+  const serieOpcional = (valor: unknown) =>
+    esArregloDeNumeros(valor) && valor.length === largo ? valor : undefined;
+  const direcciones = serieOpcional(hourly.wind_direction_10m);
+  const nubosidades = serieOpcional(hourly.cloud_cover);
+  const codigos = serieOpcional(hourly.weather_code);
   const precipitacion = hourly.precipitation_probability;
   const puestasSol = daily.sunset;
   const salidasSol = daily.sunrise ?? [];
@@ -160,6 +176,9 @@ function leerZona(valor: unknown): OpenMeteoZona {
       time: tiempos,
       wind_speed_10m: vientos,
       wind_gusts_10m: rachas,
+      ...(direcciones ? { wind_direction_10m: direcciones } : {}),
+      ...(nubosidades ? { cloud_cover: nubosidades } : {}),
+      ...(codigos ? { weather_code: codigos } : {}),
       precipitation_probability: precipitacion,
     },
     daily: { sunset: puestasSol, sunrise: salidasSol },
@@ -190,7 +209,8 @@ export function crearUrlOpenMeteo(): string {
   const parametros = new URLSearchParams({
     latitude: ZONAS.map(({ lat }) => lat).join(","),
     longitude: ZONAS.map(({ lon }) => lon).join(","),
-    hourly: "wind_speed_10m,wind_gusts_10m,precipitation_probability",
+    hourly:
+      "wind_speed_10m,wind_gusts_10m,wind_direction_10m,cloud_cover,weather_code,precipitation_probability",
     daily: "sunrise,sunset",
     forecast_days: "2",
     timezone: TIMEZONE,
@@ -219,6 +239,9 @@ export function crearPronostico(
     const horas = origen.hourly.time.map((fecha, horaIndice) => {
       const viento = origen.hourly.wind_speed_10m[horaIndice];
       const racha = origen.hourly.wind_gusts_10m[horaIndice];
+      const direccion = origen.hourly.wind_direction_10m?.[horaIndice] ?? null;
+      const nubosidad = origen.hourly.cloud_cover?.[horaIndice] ?? null;
+      const codigoTiempo = origen.hourly.weather_code?.[horaIndice] ?? null;
       const probabilidadPrecipitacion =
         origen.hourly.precipitation_probability[horaIndice];
 
@@ -233,6 +256,9 @@ export function crearPronostico(
       return {
         fecha: conOffset(fecha, origen.utc_offset_seconds),
         viento,
+        direccion,
+        nubosidad,
+        codigoTiempo,
         racha,
         probabilidadPrecipitacion,
         banda: banda(viento, racha, "estandar"),

@@ -15,6 +15,7 @@ diferencias de viento que el modelo meteorológico no puede ver.
 | [`docs/02-PRODUCTO.md`](docs/02-PRODUCTO.md) | Los dos modos de uso, el alcance, el fundamento de UX |
 | [`docs/03-PLAN.md`](docs/03-PLAN.md) | Arquitectura, contratos, fases, presupuestos |
 | [`DESIGN.md`](DESIGN.md) | Contrato visual: color, tipografía, forma, lista de exclusión |
+| [`docs/12-LANDING.md`](docs/12-LANDING.md) | Dirección visual de la landing, escrita antes de generarla |
 | [`docs/06-CALIBRACION.md`](docs/06-CALIBRACION.md) | De dónde sale cada número, con las fuentes y los datos |
 | [`docs/04-PROMPT-CODEX.md`](docs/04-PROMPT-CODEX.md) | Prompt de implementación |
 | [`docs/05-PROMPT-V0.md`](docs/05-PROMPT-V0.md) | Prompt de exploración visual |

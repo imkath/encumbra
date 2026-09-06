@@ -18,7 +18,7 @@ const pronostico: Pronostico = {
         {
           fecha: "2026-09-05T16:00:00-04:00",
           viento: 14,
-          racha: 15,
+          racha: 15, direccion: null, nubosidad: null, codigoTiempo: null,
           probabilidadPrecipitacion: null,
           banda: "ideal",
         },
@@ -67,7 +67,7 @@ test("no ofrece tramo de madrugada como ventana de salida", () => {
       {
         fecha: "2026-09-05T01:00:00-04:00",
         viento: 14,
-        racha: 15,
+        racha: 15, direccion: null, nubosidad: null, codigoTiempo: null,
         probabilidadPrecipitacion: 0,
         banda: "ideal" as const,
       },

@@ -18,6 +18,7 @@ const hora = (
   fecha,
   viento,
   racha,
+  direccion: null, nubosidad: null, codigoTiempo: null,
   probabilidadPrecipitacion: null,
   banda: "plancha",
 });

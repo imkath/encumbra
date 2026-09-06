@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Perfil } from "@/lib/bandas.ts";
-import { CONSEJOS } from "@/lib/bandas.ts";
+import { CONSEJOS, ETIQUETAS } from "@/lib/bandas.ts";
 import type { Pronostico } from "@/lib/openmeteo.ts";
 import {
   buscarParques,
@@ -51,13 +51,6 @@ const PERFILES = [
     detalle: "Dos hilos, más control.",
   },
 ] as const;
-const ESTADOS = {
-  ideal: "Buen viento",
-  liviano: "Viento justo",
-  plancha: "Falta viento",
-  bravo: "Rachas fuertes",
-  peligro: "No encumbres",
-};
 const STORAGE = "encumbra:pronostico:v1";
 const esVista = (s: string | null): s is Vista =>
   s === "parques" || s === "salida" || s === "guia";
@@ -321,7 +314,7 @@ export function EncumbraApp({
           >
             <span>
               <i />
-              {p.banda ? ESTADOS[p.banda] : "Sin dato"}
+              {p.banda ? ETIQUETAS[p.banda] : "Sin dato"}
             </span>
             <small>
               {p.hora ? `${Math.round(p.hora.viento)} km/h` : "Ver parque"}
@@ -618,7 +611,7 @@ export function EncumbraApp({
                     </span>
                     <span>{actualizado ? "Pronóstico" : "Último dato"}</span>
                   </div>
-                  <h2>{contexto?.titulo ?? (hora ? ESTADOS[hora.banda] : "El viento, pendiente")}</h2>
+                  <h2>{contexto?.titulo ?? (hora ? ETIQUETAS[hora.banda] : "El viento, pendiente")}</h2>
                   <p>
                     {contexto?.detalle ?? (hora
                       ? `Por viento: ${CONSEJOS[hora.banda]}`
@@ -703,7 +696,7 @@ export function EncumbraApp({
                             data-estado={h.banda}
                             data-luz={luzDeHora(h.fecha) === false ? "noche" : "dia"}
                             aria-pressed={h.fecha === hora?.fecha}
-                            aria-label={`${formatearHora(h.fecha)}, ${ESTADOS[h.banda]}, viento ${Math.round(h.viento)} kilómetros por hora, rachas ${Math.round(h.racha)}, ${luzDeHora(h.fecha) === false ? "de noche" : luzDeHora(h.fecha) ? "con luz" : "luz sin confirmar"}`}
+                            aria-label={`${formatearHora(h.fecha)}, ${ETIQUETAS[h.banda]}, viento ${Math.round(h.viento)} kilómetros por hora, rachas ${Math.round(h.racha)}, ${luzDeHora(h.fecha) === false ? "de noche" : luzDeHora(h.fecha) ? "con luz" : "luz sin confirmar"}`}
                             onClick={() => setHoraElegida(h.fecha)}
                           >
                             <time dateTime={h.fecha}>

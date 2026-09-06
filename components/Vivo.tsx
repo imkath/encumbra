@@ -16,6 +16,7 @@ import {
   tendencia60,
 } from "@/lib/vivo.ts";
 import { lecturasParques } from "@/lib/salida.ts";
+import { Volantin } from "@/components/Volantin.tsx";
 
 const CLAVE_MODO = "encumbra:modo";
 const CLAVE_PRONOSTICO = "encumbra:pronostico:v1";
@@ -209,17 +210,6 @@ export function Vivo({
   const ventana = estadoVentana(zona.ventanas, ahora);
   const luz = estadoLuz(zona.puestaSol, ahora);
   const tendencia = tendencia60(zona.horas, ahora);
-  const ventanaCalendario = lecturasParques(
-    pronostico,
-    perfilInicial,
-    ahora,
-    null,
-  ).find((parque) =>
-    parqueInicial ? parque.id === parqueInicial : parque.zonaId === zonaInicial,
-  )?.ventanaDiurna;
-  const calendario = ventanaCalendario
-    ? crearCalendario(ventanaCalendario, zona.nombre, ahora)
-    : null;
   const estadoDesactualizado =
     sinSenal || pronostico.estado === "desactualizado";
 
@@ -237,15 +227,6 @@ export function Vivo({
             {formatearHora(pronostico.actualizadoEn)}
           </time>
         </p>
-        {calendario ? (
-          <a
-            className="vivo__agenda"
-            download={`encumbra-${zona.id}.ics`}
-            href={`data:text/calendar;charset=utf-8,${encodeURIComponent(calendario)}`}
-          >
-            agendar ventana diurna
-          </a>
-        ) : null}
       </header>
 
       <section className="vivo__datos" aria-labelledby="estado-viento">
@@ -256,18 +237,23 @@ export function Vivo({
           <p className="vivo__viento">
             <strong>{Math.round(hora.viento)}</strong>
             <span>km/h</span>
+            <small>rachas {formatearVelocidad(hora.racha)}</small>
           </p>
-          <p className="vivo__racha">rachas {formatearVelocidad(hora.racha)}</p>
         </div>
+
+        <Volantin
+          className="vivo__volantin"
+          banda={hora.banda}
+          deNoche={luz.tipo === "terminada"}
+        />
+
+        {/* Standing in the park, the one thing you need is how long you have. */}
+        <p className="vivo__ventana">{ventana.texto}</p>
 
         <dl className="vivo__contexto">
           <div>
             <dt>en 60 min</dt>
             <dd>{tendencia}</dd>
-          </div>
-          <div>
-            <dt>ventana</dt>
-            <dd>{ventana.texto}</dd>
           </div>
           <div>
             <dt>luz</dt>

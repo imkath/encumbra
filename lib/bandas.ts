@@ -32,3 +32,12 @@ export const CONSEJOS = {
   bravo: "Va con tirones. Mejor espera a que baje.",
   peligro: "No encumbres con estas rachas.",
 } as const satisfies Record<BandaId, string>;
+
+/** Everyday wording for a band. VEREDICTOS shouts; this one talks. */
+export const ETIQUETAS = {
+  plancha: "Falta viento",
+  liviano: "Viento justo",
+  ideal: "Buen viento",
+  bravo: "Rachas fuertes",
+  peligro: "No encumbres",
+} as const satisfies Record<BandaId, string>;
