@@ -28,7 +28,7 @@
 .sway { transform-origin: 255.5px 132.84px; animation: sway 4.8s ease-in-out both; }
 .snap { opacity: 0; animation: snap 4.8s linear both; }
 .reel { transform-origin: 0 42px; animation: reel 4.8s ease-in-out both; }
-.holes { transform-origin: 14px 0; animation: unwind 4.8s ease-in-out both; }
+.holes { transform-origin: 0 0; animation: unwind 4.8s ease-in-out both; }
 
 @keyframes sever {
   0%, 39.99% { opacity: .65; }

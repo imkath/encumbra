@@ -32,13 +32,18 @@ export function VolantinPerdido() {
           <ellipse cx="14" rx="34" ry="45" fill="#bf9457" stroke="#76542e" />
           <ellipse cx="14" rx="30" ry="41" fill="#dabb83" stroke="#f0d6a6" strokeWidth="2" />
           <ellipse cx="14" rx="25" ry="35" fill="none" stroke="#b78c50" strokeWidth=".8" />
-          <g className={styles.holes} fill="#937044" stroke="#edd3a5" strokeWidth="1.2">
-            <ellipse cx="14" cy="-26" rx="5.5" ry="7" />
-            <ellipse cx="30" cy="-15" rx="5" ry="6.5" />
-            <ellipse cx="30" cy="15" rx="5" ry="6.5" />
-            <ellipse cx="14" cy="26" rx="5.5" ry="7" />
-            <ellipse cx="-2" cy="15" rx="5" ry="6.5" />
-            <ellipse cx="-2" cy="-15" rx="5" ry="6.5" />
+          {/* Rotate in the circular face's plane, then project into its ellipse. */}
+          <g transform="translate(14 0) scale(.75 1)">
+            <g className={styles.holes} fill="#937044" stroke="#edd3a5" strokeWidth="1.2">
+              {[-90, -30, 30, 90, 150, 210].map((angle) => (
+                <circle
+                  key={angle}
+                  cx={25.5 * Math.cos(angle * Math.PI / 180)}
+                  cy={25.5 * Math.sin(angle * Math.PI / 180)}
+                  r="5.5"
+                />
+              ))}
+            </g>
           </g>
           <ellipse cx="14" rx="9" ry="11" fill="#966432" />
           <path d="M14-7 36-2V12L14 7Z" fill="#b68a4e" stroke="#946a37" />
