@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "encumbra",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-09-09",
+  // nodejs_compat lo exige OpenNext; global_fetch_strictly_public hace que un
+  // fetch a encumbra.nvrkth.com salga a internet en vez de volver al Worker.
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": { "enabled": true }
+}
