@@ -1,0 +1,125 @@
+.page {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  padding-inline: clamp(1.5rem, 5vw, 5rem);
+  background: var(--brand-bone);
+}
+
+.header {
+  padding-block: 1.25rem;
+  border-bottom: 1px solid var(--app-line);
+}
+
+.brand {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  text-decoration: none;
+}
+
+.main {
+  flex: 1;
+  display: grid;
+  align-content: center;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 68rem;
+  margin-inline: auto;
+  padding-block: 2rem 3rem;
+}
+
+.illustration {
+  position: relative;
+  width: min(100%, 24rem);
+  justify-self: center;
+  aspect-ratio: 1.8;
+}
+
+.kite {
+  --paper-base: var(--brand-yellow);
+  position: absolute;
+  width: 80%;
+  height: 100%;
+  inset: -12% 0 auto auto;
+}
+
+.number {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  font-size: clamp(5rem, 20vw, 6rem);
+  line-height: .85;
+  font-weight: 900;
+  letter-spacing: -.04em;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--brand-ink);
+}
+
+.message h1 {
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  line-height: .96;
+  font-weight: 900;
+  letter-spacing: -.04em;
+}
+
+.message p {
+  max-width: 35ch;
+  margin-top: 1.5rem;
+  color: var(--app-muted);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .75rem 1.5rem;
+  margin-top: 2rem;
+}
+
+.primary,
+.secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.25rem;
+  font-weight: 700;
+}
+
+.primary {
+  padding: .875rem 1.5rem;
+  border-radius: .875rem;
+  background: var(--brand-yellow);
+  text-decoration: none;
+}
+
+.primary:hover { background: var(--brand-hover); }
+.secondary:hover { text-decoration-thickness: 2px; }
+
+.footer {
+  padding-block: 1.25rem;
+  border-top: 1px solid var(--app-line);
+  font-size: .8125rem;
+  color: var(--app-muted);
+}
+
+@media (min-width: 48rem) {
+  .main {
+    grid-template-columns: 1.1fr 1fr;
+    align-items: center;
+    gap: 3rem;
+    padding-block: 5rem;
+  }
+
+  .message { grid-area: 1 / 1; }
+  .illustration { grid-area: 1 / 2; aspect-ratio: 1; }
+  .kite { width: 100%; inset-block-start: -5%; }
+}
+
+@media (forced-colors: active) {
+  .number { color: CanvasText; -webkit-text-stroke: 0; }
+  .primary { border: 1px solid ButtonText; }
+}
