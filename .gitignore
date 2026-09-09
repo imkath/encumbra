@@ -43,3 +43,7 @@ next-env.d.ts
 # vendored at dev/build by scripts/vendor-maplibre.mjs
 /public/vendor/
 referencias/
+.next-check
+
+# salida de review de la skill impeccable (capturas, 31M)
+.impeccable/
