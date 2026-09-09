@@ -1,124 +1,139 @@
----
-name: Encumbra — app de parques
-description: Explorar parques, revisar una salida y prepararse desde una app móvil.
-colors:
-  primary: "#3155f5"
-  primary-soft: "#e9efff"
-  primary-hover: "#2544d6"
-  background: "#eef2f8"
-  surface: "#f7f9fc"
-  ink: "#16223d"
-  muted: "#5c6c83"
-  line: "#dfe5ef"
-  ideal: "#357746"
-  ideal-soft: "#eaf4db"
-  liviano: "#866316"
-  liviano-soft: "#faf0cf"
-  plancha: "#5e6f7d"
-  plancha-soft: "#ecf0f4"
-  bravo: "#a65224"
-  bravo-soft: "#fce9da"
-  peligro: "#b33242"
-  peligro-soft: "#fce5e7"
-typography:
-  headline:
-    fontFamily: "DM Sans, -apple-system, BlinkMacSystemFont, sans-serif"
-    fontSize: "25px"
-    fontWeight: 720
-    lineHeight: 1.15
-    letterSpacing: "-0.8px"
-  body:
-    fontFamily: "DM Sans, -apple-system, BlinkMacSystemFont, sans-serif"
-    lineHeight: 1.45
-  verdict:
-    fontFamily: "DM Sans, -apple-system, BlinkMacSystemFont, sans-serif"
-    fontSize: "32px"
-    fontWeight: 650
-    lineHeight: 1.12
-    letterSpacing: "-1.1px"
-rounded:
-  field: "12px"
-  action: "14px"
-  panel: "20px"
-spacing:
-  compact: "10px"
-  content: "20px"
-components:
-  button-primary:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.surface}"
-    rounded: "{rounded.action}"
-    padding: "10px 12px"
-  button-primary-hover:
-    backgroundColor: "{colors.primary-hover}"
-  button-secondary:
-    backgroundColor: "{colors.primary-soft}"
-    textColor: "{colors.primary}"
-    rounded: "{rounded.action}"
-    padding: "10px 12px"
----
+# Encumbra · sistema visual
 
-## Overview
+Referencia de implementación: `app/globals.css`, `app/layout.tsx` y `components/Marca.tsx`. Actualizado en septiembre de 2026. Este documento reemplaza las indicaciones anteriores sobre azul, lima, DM Sans y Space Grotesk.
 
-App de uso móvil con tres destinos persistentes: **Parques**, **Mi salida** y **Prepararme**. Superficies claras, azul de acción, datos compactos y una marca de volantín. La referencia anterior y su composición de landing son obsoletas: el usuario rechazó la página interminable y pidió una experiencia de app.
+## Dirección y alcance
 
-Diseño elegido durante la ejecución delegada; no representa un comp aprobado ni entrevistas o validación con usuarios. Esta captura describe la implementación de `app/globals.css`, `components/EncumbraApp.tsx`, `components/MapaParques.tsx`, `components/Icono.tsx` y `lib/salida.ts`.
+La dirección solicitada por el usuario reúne una paleta cálida, Archivo expresiva y formas redondeadas. El logo definitivo se conserva intacto. La estructura de `/app` también se conserva: aplicar identidad no autoriza reorganizar sus pantallas o navegación.
 
-**Key Characteristics:** navegación siempre accesible, scroll por superficie, mapa real y estados meteorológicos explícitos.
+| Superficie | Propósito | Tratamiento |
+| --- | --- | --- |
+| `/` | Persuadir y explicar el valor antes de entrar | Titular sólido y de contorno, ficha de pronóstico, pasos, parques y lectura visual del viento. |
+| `/app` | Operar: explorar parques, revisar la salida y prepararse | Shell compacto, mapa/lista y navegación persistente; jerarquía de información práctica. |
+| `/volar` | Operar afuera, con lectura inmediata | Veredicto grande sólido y de contorno, mediciones y límites de tiempo sobre fondo de estado. |
 
-## Colors
+La elección de valores finos de espaciado, curvas y composición describe la implementación actual; no constituye validación con usuarios ni demuestra mejor conversión o legibilidad exterior.
 
-### Primary
-Azul para acciones, ubicación, selección y destino activo; azul suave para controles secundarios y fondos seleccionados.
+## Paleta y tokens
 
-### Neutral
-Fondo gris frío, superficie casi blanca, tinta azul oscura y divisores tenues. Texto secundario gris para contexto, unidades y procedencia.
+Elección confirmada: **Sol de septiembre + Atmósfera mate con grano fino**, aplicada a `/`, `/app` y `/volar` desde el comparativo `public/propuestas.html`.
 
-Los estados combinan tinta y fondo propios: verde para buen viento, ocre para viento justo, gris para falta de viento o datos, naranja para rachas fuertes y rojo para no encumbrar. Siempre acompañar el color con texto. Los marcadores del mapa usan sus propios tonos cercanos a estas bandas; la selección usa azul.
+| Token | Valor | Uso |
+| --- | --- | --- |
+| `--brand-yellow` | `#ffda24` | Acciones principales y selección horaria |
+| `--brand-coral` | `#f45138` | Acento bermellón |
+| `--brand-gold` | `#ffae27` | Detalles dorados |
+| `--brand-bone` | `#f8f7f2` | Superficie clara |
+| `--brand-ink` | `#252520` | Texto y navegación seleccionada |
+| `--brand-soft` | `#f9edbb` | Superficie auxiliar |
+| `--brand-hover` | `#f3c91c` | Hover de acciones |
 
-## Typography
+La selección de navegación cubre icono y texto con un rectángulo redondeado carbón en móvil y escritorio. Los grupos del mapa indican «N parques» y acercan el mapa al pulsar; no llevan un signo más. Ahora y recién son etiquetas sin puntos decorativos.
 
-Archivo con respaldo del sistema en toda la app, incluidos los datos. Cabeceras compactas; el título de Mi salida pasa de 29px a 34px en escritorio y el veredicto de 32px a 42px. Texto de filas entre 10px y 15px según función y ancho; búsqueda con entrada de 16px. Horas y mediciones usan números tabulares. No hay un hero editorial.
+## Estados y volantín
 
-## Layout
+Los colores semánticos son independientes de los acentos de marca. Se comparten con `--state-bg`, `--state-ink` y `--state-label`; los textos pequeños fuera de un fondo de estado usan tinta adaptada a hueso.
 
-Shell de `100dvh`, mínimo 420px, con cabecera, contenido flexible y navegación inferior; respeta áreas seguras superior e inferior. El contenido limita su desbordamiento y cada pantalla controla su scroll.
+| Estado | Fondo | Texto sobre fondo |
+| --- | --- | --- |
+| Ideal | `#287348` | `#faf7ee` |
+| Liviano | `#ffc937` | `#27291f` |
+| Plancha | `#f6e5ba` | `#27291f` |
+| Bravo | `#ff9938` | `#27291f` |
+| Peligro | `#c72f27` | `#faf7ee` |
+| Noche | `#29271f` | `#faf7ee` |
+| Sin datos | `#faf5e4` | `#27291f` |
 
-En Parques, herramientas arriba, mapa y lista debajo. En móvil el mapa ocupa una fracción de la altura disponible con mínimo 100px; la lista tiene scroll propio y esquinas superiores curvas. Ocultar el mapa deja toda esa zona a la lista. La búsqueda y los filtros permanecen fuera del scroll de resultados.
+Los estados se explican con texto, nunca solo con color. Las superficies de pronóstico usan `superficie-mate`: variación tonal continua y grano fino, sin reflejos blancos ni manchas luminosas. De noche muestra «POR HOY / hasta aquí.»; sin pronóstico muestra «SIN DATOS / por ahora.».
 
-Mi salida dispone de contenido desplazable y una fila de acciones independiente encima de la navegación: **Cómo llegar** y **Ya estoy afuera**. Esta fila reserva espacio y no cubre el pronóstico. Prepararme desplaza su propio contenido.
+`VolantinPapel` comparte el dibujo entre portada, exterior, selectores de perfil y marcador del gráfico. Su vela toma el color de la superficie por `--paper-base`, con mezclas hacia hueso (`--paper-light`, `--paper-mid`) y carbón (`--paper-shade`, `--paper-rib`). Sustituye el naranja con arcos de la versión anterior. En iconos pequeños sobre hueso usa una base neutra de mayor contraste para conservar la silueta.
 
-Desde 900px, navegación lateral de 88px, cabecera de 76px y explorador con lista de 390px a la izquierda del mapa. Mi salida tiene dos columnas y ancho máximo de 1100px; Prepararme, 640px. Bajo 359px se reducen márgenes a 14px y se compactan controles y texto.
+La silueta tiene laterales cóncavos y punta inferior larga. El perfil estándar lleva cola con lazos unidos a las curvas, el liviano no lleva cola y el acrobático tiene vela delta y dos hilos. Cada SVG tiene un recorte y gradiente con identificadores únicos. Las posturas son ilustrativas por banda, no una simulación física: falta de viento, peligro, noche y ausencia de datos muestran reposo.
 
-## Elevation & Depth
+## Material compartido
 
-La estructura se separa con superficies y bordes, sin sombras generales en paneles. Sombras localizadas en controles, etiquetas de mapa y avisos transitorios. Los avisos de mapa conservan la lista como alternativa operativa.
+`superficie-mate` se aplica a la ficha y parques destacados de portada, el panel de condiciones de `/app` y el fondo de `/volar`. El grano pasa por encima de la ilustración y debajo del texto y controles. No se aplica a toda la página, mapa, navegación ni inputs: esas superficies conservan la claridad del hueso y carbón.
 
-## Shapes
+La textura estática local `public/textures/paper-fine.svg` usa `--grain-image`, `--grain-size: 112px` y `--grain-opacity: .48`, con mezcla `soft-light`. Es el grano fino aprobado en el comparativo v14; no se anima, no recibe eventos y se oculta en colores forzados. Su filtro monocromo usa frecuencia .95 y contraste 1.9. Es un acabado gráfico, no representa lluvia, nubosidad ni rachas. No inferir el estado del cielo a partir del viento.
 
-Controles y paneles redondeados según su función; selector rápido y filtros en cápsula. Marcadores circulares, marca geométrica de volantín y perfiles ilustrados con SVG. Iconos de línea en caja de 24 unidades, trazo de 1.7 y extremos redondos; decorativos y ocultos a lectores de pantalla, con el nombre accesible en el control.
+Los colores semánticos permanecen distintos. La variación tonal del material no sustituye el color del estado ni añade brillos de vidrio. La tabla de colores documenta la base; el contraste de la composición final requiere revisión sobre el material, no solo calcular el hex de fondo.
 
-## Components
+## Tipografía y marca
 
-- **Navegación:** tres destinos con icono y etiqueta; `aria-current` identifica el activo. El historial conserva vista, parque y perfil. Al navegar se enfoca el título.
-- **Perfil global:** selector rápido de cabecera y radios ilustrados de Prepararme comparten estado: Papel liviano, Con cola y Acrobático. El perfil modifica las lecturas y acompaña el enlace al modo exterior.
-- **Explorador:** búsqueda por parque/comuna, filtros y favoritos guardados localmente. Geolocalización solo por acción; la lista sigue disponible sin ubicación o clima. Filas con nombre, contexto, condición textual y acceso al detalle; inicialmente hasta cinco resultados.
-- **Mapa:** Leaflet con teselas OpenStreetMap y atribución visible. Marcadores seleccionables y accesibles por teclado; etiqueta visible al seleccionar, enfocar o pasar el puntero. Controles de zoom y ubicación explícitos, zoom por rueda desactivado. Error de carga explicado sin bloquear la lista.
-- **Mi salida:** panel tonal con estado, consejo, viento, rachas y lluvia; horas seleccionables en cinta horizontal, barras de racha, puesta de sol, procedencia y actualización. Las frases nombran la probabilidad de lluvia y piden revisarla antes de salir; buen viento no implica ausencia de lluvia.
-- **Ventana diurna:** intersección de ventanas de viento con amanecer y puesta de sol del mismo día. Sin amanecer confirmado no se recomienda un horario. La ventana disponible permite descargar calendario y conserva el recordatorio de lluvia. Los parques de una zona comparten pronóstico.
-- **Prepararme:** radios de perfil, checklist de tres elementos y recomendaciones en desplegables nativos.
-- **Acciones y estados:** principales de al menos 48px de alto (52px en escritorio); botones de icono normalmente de 44px. Foco azul visible de 3px con separación de 3px. Datos ausentes o antiguos se declaran; hay actualización real y avisos con `role="status"`.
+Archivo variable es la única familia, cargada por `next/font/google` con `display: swap`, eje `wdth` y variable `--font-archivo`. Datos y texto comparten familia; `--font-data` es un alias de Archivo. Las cifras de viento, horas y límites usan números tabulares. La diferencia entre títulos y lectura procede del peso, ancho y tamaño.
 
-## Do's and Don'ts
+Los títulos expresivos alternan relleno y contorno: portada `clamp(54px, 10vw, 88px)` y exterior `clamp(44px, 15vw, 86px)`, ambos con interlínea `0.94`. El contorno usa `text-stroke`; con colores forzados vuelve a texto sólido. Reservar este recurso para mensajes principales, manteniendo etiquetas y mediciones sólidas. Los veredictos usan peso 900; los datos destacados, 500.
 
-- **Do** Mantener cada destino dentro del shell y reservar espacio para las acciones persistentes.
-- **Do** Conservar etiquetas, foco visible, atribución cartográfica y alternativa de lista.
-- **Do** Respetar movimiento reducido: CSS desactiva animaciones/transiciones y Leaflet sus animaciones de zoom y fundido.
-- **Don't** Restaurar la landing extensa ni su paleta de papel y petróleo.
-- **Don't** Inventar datos, recomendar horas sin luz confirmada o presentar viento favorable como garantía frente a la lluvia.
-- **Don't** Afirmar mediciones de terreno o diferencias de viento entre parques que comparten zona.
+`Marca` construye “encumbra” con letras seleccionables, peso 900 y anchos propios del eje variable, más un pequeño volantín opcional. Reutilizar el componente y sus opciones existentes; no redibujar, sustituir su fuente ni modificar sus proporciones o letras.
+
+## Formas, composición y movimiento
+
+Predominan círculos, cápsulas y siluetas de pin con una esquina más cerrada. Los símbolos de parque y marcadores comparten esa familia. Los pasos usan círculos de color; los parques destacados de portada usan un contorno redondeado asimétrico. Evitar círculos y órbitas decorativas detrás del volantín. Usar únicamente el grano fino aprobado mediante el material compartido; las escalas conservan su gradiente funcional.
+
+Radios de referencia: búsqueda 12px, acciones 14px, perfil rápido 16px, pastillas exteriores 22px y panel de viento 28px. La ficha de portada usa `36px 36px 100px 36px`; el bloque del cielo, 32px. El token general `--radius-control` es `0.8rem`, pero los componentes conservan los valores específicos anteriores. Divisores y superficies separan el contenido; las sombras quedan localizadas en mapa y avisos.
+
+`/app` conserva el shell de `100dvh`, cabecera, contenido con scroll por superficie y navegación inferior. Desde 900px pasa a navegación lateral de 88px y cabecera de 76px; el explorador dispone lista y mapa en columnas. Mantener el espacio reservado para acciones y las áreas seguras. La portada permite más espacio y composición en columnas; el exterior adapta la lectura y el vuelo a columnas desde 700px, dentro de un área máxima de 1520px.
+
+El foco visible usa tinta, 3px de grosor y 3px de separación. Los botones principales de app parten en 48px de alto; la acción de portada usa 52px; los botones de icono suelen medir 44px. `--dur-tap` es 160ms y `--ease-out` es `cubic-bezier(0.16, 1, 0.3, 1)`. Respetar `prefers-reduced-motion`, que desactiva animaciones y transiciones.
+
+## Continuidad
+
+- Mantener las tres rutas y su propósito; conservar la estructura operativa de `/app`.
+- Reutilizar tokens y `Marca`; evitar variantes locales de la identidad.
+- Conservar etiquetas de estado, unidades, procedencia y avisos de datos ausentes o antiguos.
+- Revisar tamaños estrechos, foco, contornos y contraste sobre cada fondo al cambiar componentes.
+- No documentar decisiones visuales como preferencias validadas o requisitos de producto sin evidencia.
 
 
-## Identidad actual
+## Vuelo en terreno
 
-Space Grotesk en títulos y marca; DM Sans en lectura y controles. Azul eléctrico y tinta sobre superficies claras, con lima #d9fc69 para la selección del mapa y la navegación activa. Volantines vectoriales con tres siluetas y paletas reconocibles. Números compartidos entre los resultados y sus marcadores geográficos. La dirección retro fue rechazada por el usuario; no reintroducir crema y terracota como identidad.
+`VolantinCampo` mide el contenedor con ResizeObserver para que el hilo llegue al borde inferior real. En móvil sale por el costado derecho para dejar libre el titular; en escritorio, desde abajo del panel lateral. Hilo y vela comparten un grupo que rota alrededor de ese extremo fijo: balanceo de .75° cada 7 s en ideal, .45° con poco viento y 1.2° cada 3.6 s con rachas. Plancha, peligro, noche y sin datos quedan abajo y sin animación. `prefers-reduced-motion` conserva la postura estática. El movimiento es ilustrativo por banda; no representa una simulación física ni una medición instantánea.
+
+
+## Favicon
+
+`app/icon.svg` y `app/favicon.ico` usan la silueta cóncava del volantín sobre carbón, con papel hueso y una cola solar. Se omite el grano para conservar legibilidad a 16 px. El ICO incluye tamaños 16, 32, 48 y 64 px. No modifica el wordmark definitivo.
+
+
+Guía visual: public/sistema-diseno.html con estilos en public/design-system.css. Ejemplos generados desde VolantinPapel: actualizar al cambiar la geometría. La guía y el comparativo tienen meta robots y X-Robots-Tag noindex,nofollow,noarchive; no se enlazan desde la navegación del producto. Noindex no constituye control de acceso.
+
+
+## Fuente compartida y mantenimiento
+
+public/design-tokens.css es la fuente de marca, colores semánticos y parámetros de grano. La app y la guía la importan; no duplicar esos valores para nuevas superficies. `npm run design:sync` regenera los ejemplos de marca y volantín de public/sistema-diseno.html desde componentes reales, manteniendo sus textos de guía. También se ejecuta en build. La página reúne concepto, marca, color, material, tipografía, usos por ruta y reglas de continuidad.
+
+
+Ajuste autorizado del símbolo final: vela cóncava con cola corta, monocroma y compartida con la guía mediante .marca__volantin. Se conservan exactamente anchos, pesos y espaciado de las letras. El ritmo central de u-m-b es intencional: no separar, colorear o resaltar c-u-m como bloque.
+
+El símbolo del logo apunta hacia arriba y a la izquierda, con vela asimétrica en perspectiva. La parte inferior es más larga y termina abajo a la derecha, donde nace la cola. Perspectiva sugerida por la silueta; sin sombras ni volumen añadido. Las letras permanecen intactas.
+
+El símbolo se sitúa ligeramente sobre la «a» final, con desplazamiento superior y solapamiento óptico leve; las letras y su espaciado permanecen intactos.
+
+
+## Composiciones responsive de Prepararme y /volar
+
+Prepararme conserva su secuencia de contenido y controles. Hasta 699 px usa una columna; desde 700 px presenta tres perfiles en fila y revisión/seguridad en dos columnas; desde 1100 px separa los perfiles verticales a la izquierda y la revisión, seguridad y acción a la derecha. Ancho máximo 1360 px.
+
+/volar mantiene el flujo móvil hasta 699 px. Desde 700 px usa una retícula de lectura a la izquierda y vuelo a la derecha, cabecera completa y límites debajo de la lectura. Tipografía y cifras crecen con el ancho; el área útil llega a 1520 px. La vela crece dentro de su zona hasta escala 2, conservando el anclaje del hilo y el movimiento reducido.
+
+Verificación en navegador: 320, 390, 768, 1024, 1180, 1440 y 2048 px; tablet vertical y horizontal. No equivale a prueba en dispositivos iPad físicos.
+
+
+## Explorador y salida responsive
+
+Parques muestra lista y mapa en columnas desde 700 px. En escritorio la lista crece entre 380 y 500 px; hasta 1199 px la condición baja debajo de la identidad para evitar comprimir nombres. Nombre, comuna y recomendación mantienen líneas propias. La vista solo lista ocupa un máximo de 1180 px.
+
+Mi salida usa dos columnas desde 700 px, con un ancho máximo de 1360 px. Pronóstico y elección de hora comparten la composición; la barra de acciones se alinea con ese mismo ancho. La navegación lateral sigue apareciendo desde 900 px.
+
+Revisión de landing, Parques y Mi salida en 390, 768, 1024, 1440 y 2048 px: sin desbordamiento horizontal ni errores JavaScript; búsqueda de parques verificada.
+
+
+Desde 900 px, Mi salida y Prepararme comparten padding de 32 px, cabecera mínima de 100 px y escala de título. Cambiar parque se sitúa al costado de la cabecera para no desplazar el título.
+
+Agregar al calendario despliega Google Calendar y exportación iCalendar. Se prioriza iCalendar en dispositivos Apple detectados y Google en otros; siempre se ofrecen ambas opciones. No se presume qué aplicaciones están instaladas. El evento incluye la ventana diurna confirmada y el parque, con aviso de pronóstico estimado. Google abre un formulario; iCalendar se sirve desde /api/calendario con fechas validadas y sin caché. La persona confirma el guardado en su calendario.
+
+
+Mi salida ofrece Hoy / mañana con selector compacto carbón. El día elegido controla horas, ventana diurna, puesta de sol y calendario. Nunca etiquetar una hora futura como Ahora. La fecha se calcula en America/Santiago con aritmética de calendario, incluso en cambios de horario. Sin datos del día, mostrar ausencia en lugar de reutilizar el otro día. Prepararme reúne la explicación del pronóstico en un desplegable. Contacto y sugerencias se enlazan a https://nvrkth.com en el pie de la landing, con firma nvrkth y sin «Un proyecto de».
+
+
+Prepararme presenta «Para pasarlo bien y volver bien» como bloque de cuidados: dónde encumbrar, qué llevar y cuándo parar. Checklist voluntario de tres revisiones con contador discreto; no bloquea la salida ni certifica seguridad. Los textos siguen legibles al marcar. Hueso y carbón, amarillo suave solo en el contador; sin superficies de alarma decorativas. Cables, hilo curado y explicación del pronóstico permanecen en desplegables. Revisión de interacción a 390, 768 y 1440 px, incluido teclado.

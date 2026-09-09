@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/vendor-maplibre.mjs && next dev",
-    "build": "node scripts/vendor-maplibre.mjs && next build --webpack",
+    "build": "npm run design:sync && node scripts/vendor-maplibre.mjs && next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "dev:check": "node scripts/vendor-maplibre.mjs && NEXT_DIST_DIR=.next-check next dev --webpack -p 3005",
+    "design:sync": "node scripts/sync-design-system.mjs"
   },
   "dependencies": {
     "maplibre-gl": "^6.7.0",

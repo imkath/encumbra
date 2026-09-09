@@ -1,0 +1,25 @@
+/* Canonical brand and semantic tokens, used by the product and design guide. */
+:root {
+  --brand-yellow: #ffda24;
+  --brand-coral: #f45138;
+  --brand-gold: #ffae27;
+  --brand-bone: #f8f7f2;
+  --brand-ink: #252520;
+  --brand-soft: #f9edbb;
+  --brand-hover: #f3c91c;
+}
+[data-paleta="ideal"], [data-estado="ideal"], [data-banda="ideal"] { --state-bg: #287348; --state-ink: #faf7ee; --state-label: #287348; }
+[data-paleta="liviano"], [data-estado="liviano"], [data-banda="liviano"] { --state-bg: #ffc937; --state-ink: #27291f; --state-label: #664310; }
+[data-paleta="plancha"], [data-estado="plancha"], [data-banda="plancha"] { --state-bg: #f6e5ba; --state-ink: #27291f; --state-label: #59564e; }
+[data-paleta="bravo"], [data-estado="bravo"], [data-banda="bravo"] { --state-bg: #ff9938; --state-ink: #27291f; --state-label: #682d14; }
+[data-paleta="peligro"], [data-estado="peligro"], [data-banda="peligro"] { --state-bg: #c72f27; --state-ink: #faf7ee; --state-label: #a92822; }
+[data-paleta="noche"], [data-estado="noche"], [data-banda="noche"] { --state-bg: #29271f; --state-ink: #faf7ee; --state-label: #59564e; }
+[data-paleta="sin-datos"], [data-estado="sin-datos"], [data-banda="sin-datos"] { --state-bg: #faf5e4; --state-ink: #27291f; --state-label: #59564e; }
+:root {
+  --grain-image: url("/textures/paper-fine.svg");
+  --grain-size: 112px;
+  --grain-opacity: .48;
+}
+
+/* Shared wordmark suffix: curved sail and short tether, never a detached diamond. */
+.marca__volantin { display: block; flex: 0 0 auto; width: .58em; height: .58em; margin: -.20em 0 0 -.13em; overflow: visible; }
