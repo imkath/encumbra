@@ -62,7 +62,7 @@ export default function MapaParques({ parques, seleccionado, ubicacion, elegir }
       actual.touchZoomRotate.disableRotation();
       actual.scrollZoom.disable();
       actual.addControl(new L.NavigationControl({ showCompass: false }), "top-right");
-      actual.addControl(new L.AttributionControl({ compact: true, customAttribution: '<a href="https://openfreemap.org/">OpenFreeMap</a> · <a href="https://www.openmaptiles.org/">OpenMapTiles</a> · <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap</a>' }), "bottom-left");
+      actual.addControl(new L.AttributionControl({ compact: true }), "bottom-left");
       actual.on("error", () => { if (activo) setError(true); });
       actual.on("load", () => {
         if (!activo) return;
