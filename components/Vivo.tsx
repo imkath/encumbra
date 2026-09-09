@@ -1,10 +1,20 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { VEREDICTOS, type BandaId, type Perfil } from "@/lib/bandas.ts";
-import { formatearHora, formatearVelocidad } from "@/lib/formato.ts";
+import {
+  COLETILLAS,
+  VEREDICTOS,
+  type BandaId,
+  type Perfil,
+} from "@/lib/bandas.ts";
+import {
+  formatearDesdeAhora,
+  formatearHora,
+  formatearVelocidad,
+} from "@/lib/formato.ts";
 import type { Pronostico, ZonaPronostico } from "@/lib/openmeteo.ts";
 import { adaptarZonaAlPerfil, horaVigente } from "@/lib/planear.ts";
 import {
@@ -16,7 +26,8 @@ import {
   tendencia60,
 } from "@/lib/vivo.ts";
 import { lecturasParques } from "@/lib/salida.ts";
-import { Volantin } from "@/components/Volantin.tsx";
+import { Marca } from "@/components/Marca.tsx";
+import { VolantinCampo } from "@/components/VolantinCampo.tsx";
 
 const CLAVE_MODO = "encumbra:modo";
 const CLAVE_PRONOSTICO = "encumbra:pronostico:v1";
@@ -192,9 +203,17 @@ export function Vivo({
 
   if (!zona || !hora || !tieneDatos(pronostico)) {
     return (
-      <main className="vivo vivo--midiendo" data-banda="plancha">
+      <main
+        className="vivo vivo--midiendo superficie-mate"
+        data-banda="sin-datos"
+        data-paleta="sin-datos"
+      >
+        <VolantinCampo banda={null} perfil={perfilInicial} />
         <section className="vivo__midiendo" aria-live="polite">
-          <h1>MIDIENDO…</h1>
+          <h1 className="vivo__frase">
+            <span className="vivo__grito">SIN DATOS</span>
+            <span className="vivo__hueco">por ahora.</span>
+          </h1>
           <p>
             No llegó el pronóstico. Si ya abriste Encumbra antes, recuperaremos
             el último dato guardado.
@@ -212,64 +231,91 @@ export function Vivo({
   const tendencia = tendencia60(zona.horas, ahora);
   const estadoDesactualizado =
     sinSenal || pronostico.estado === "desactualizado";
+  // With no window running, or with the sun already down, the wind is the limit
+  // that matters; otherwise whichever of the two runs out first wins the dot.
+  const mandaElViento =
+    ventana.tipo !== "activa" ||
+    luz.tipo !== "vigente" ||
+    ventana.hasta === null ||
+    Date.parse(ventana.hasta) <= Date.parse(luz.fecha);
 
   return (
-    <main className="vivo" data-banda={hora.banda}>
+    <main className="vivo superficie-mate" data-banda={hora.banda} data-paleta={luz.tipo === "terminada" ? "noche" : hora.banda}>
+      <VolantinCampo
+        banda={hora.banda}
+        perfil={perfilInicial}
+        deNoche={luz.tipo === "terminada"}
+      />
+
       <header className="vivo__cabecera">
+        <div>
+        <Link href="/" className="vivo__marca" aria-label="Encumbra, inicio"><Marca /></Link>
         <p className="vivo__zona">
-          {zona.nombre} · <span>volantín {NOMBRES_PERFIL[perfilInicial]}</span>
+          {zona.nombre}
+          <span>volantín {NOMBRES_PERFIL[perfilInicial]}</span>
         </p>
-        <p className="vivo__medicion" aria-live="polite">
-          {estadoDesactualizado
-            ? "sin señal · último dato de las "
-            : "pronóstico actualizado a las "}
-          <time dateTime={pronostico.actualizadoEn}>
-            {formatearHora(pronostico.actualizadoEn)}
-          </time>
+        </div>
+        {/* How old the reading is, not what time it is: the phone already shows the clock. */}
+        <p
+          className={
+            estadoDesactualizado
+              ? "vivo__frescura vivo__frescura--viejo"
+              : "vivo__frescura"
+          }
+          aria-live="polite"
+        >
+          {estadoDesactualizado ? "sin señal · " : ""}
+          {formatearDesdeAhora(pronostico.actualizadoEn, ahora)}
         </p>
       </header>
 
       <section className="vivo__datos" aria-labelledby="estado-viento">
-        <div className="vivo__ahora">
-          <h1 id="estado-viento" className="vivo__banda">
-            {VEREDICTOS[hora.banda]}
-          </h1>
-          <p className="vivo__viento">
-            <strong>{Math.round(hora.viento)}</strong>
-            <span>km/h</span>
-            <small>rachas {formatearVelocidad(hora.racha)}</small>
-          </p>
-        </div>
+        <h1 id="estado-viento" className="vivo__frase">
+          <span className="vivo__grito">{luz.tipo === "terminada" ? "POR HOY" : VEREDICTOS[hora.banda]}</span>
+          <span className="vivo__hueco">{luz.tipo === "terminada" ? "hasta aquí." : COLETILLAS[hora.banda]}</span>
+        </h1>
 
-        <Volantin
-          className="vivo__volantin"
-          banda={hora.banda}
-          deNoche={luz.tipo === "terminada"}
-        />
-
-        {/* Standing in the park, the one thing you need is how long you have. */}
-        <p className="vivo__ventana">{ventana.texto}</p>
-
-        <dl className="vivo__contexto">
-          <div>
+        <dl className="vivo__pastillas">
+          <div className="vivo__pastilla vivo__pastilla--llena">
+            <dt>viento</dt>
+            <dd>{formatearVelocidad(hora.viento)}</dd>
+          </div>
+          <div className="vivo__pastilla">
+            <dt>rachas</dt>
+            <dd>{Math.round(hora.racha)}</dd>
+          </div>
+          <div className="vivo__pastilla">
             <dt>en 60 min</dt>
             <dd>{tendencia}</dd>
           </div>
-          <div>
-            <dt>luz</dt>
-            <dd>
-              {luz.tipo === "sin-dato" ? (
-                "sin dato"
-              ) : (
-                <>
-                  {luz.tipo === "vigente" ? "hasta las " : "terminó a las "}
-                  <time dateTime={luz.fecha}>{formatearHora(luz.fecha)}</time>
-                </>
-              )}
-            </dd>
-          </div>
         </dl>
       </section>
+
+      {/* Two different clocks run against you. The one that ends first is your limit. */}
+      <footer className="vivo__limites">
+        <div className="vivo__limite" data-manda={mandaElViento ? "si" : "no"}>
+          <p className="vivo__limite-que">viento</p>
+          <p className="vivo__limite-glosa">{ventana.glosa}</p>
+          <p className="vivo__limite-valor">{ventana.valor}</p>
+        </div>
+        <div className="vivo__limite" data-manda={mandaElViento ? "no" : "si"}>
+          <p className="vivo__limite-que">luz</p>
+          <p className="vivo__limite-glosa">
+            {luz.tipo === "sin-dato"
+              ? "sin dato"
+              : luz.tipo === "vigente"
+                ? "hasta las"
+                : "terminó"}
+          </p>
+          <p className="vivo__limite-valor">
+            {luz.tipo === "sin-dato" ? (
+              "—"
+            ) : (
+              <time dateTime={luz.fecha}>{formatearHora(luz.fecha)}</time>
+            )}
+          </p>
+        </div>
+      </footer>
 
       <button className="vivo__listo" type="button" onClick={volverAPlanear}>
         Volver a planear

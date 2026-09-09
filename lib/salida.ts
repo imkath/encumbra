@@ -17,18 +17,28 @@ export function elegirParqueInicial(id?: string, zona?: string) {
   if (!elegido) throw new Error("El catálogo de parques está vacío");
   return elegido;
 }
+const FORMATO_DIA = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Santiago", year: "numeric", month: "2-digit", day: "2-digit" });
+
+/** Calendar arithmetic in Santiago, including days when the UTC offset changes. */
+export function diaDeSalida(ahora: Date, dia: 0 | 1): string {
+  const partes = FORMATO_DIA.formatToParts(ahora);
+  const valor = (tipo: string) => Number(partes.find((p) => p.type === tipo)?.value);
+  return new Date(Date.UTC(valor("year"), valor("month") - 1, valor("day") + dia)).toISOString().slice(0, 10);
+}
+
 export function lecturasParques(
   pronostico: Pronostico,
   perfil: Perfil,
   ahora: Date,
   ubicacion: Coordenadas | null,
+  dia?: string,
 ) {
   return PARQUES.map((parque) => {
     const zona = pronostico.zonas.find((z) => z.id === parque.zonaId);
-    const horas = zona ? adaptarHorasAlPerfil(zona.horas, perfil) : [];
+    const horas = zona ? adaptarHorasAlPerfil(zona.horas, perfil).filter((h) => !dia || diaDeSalida(new Date(h.fecha), 0) === dia) : [];
     const hora = horaVigente(horas, ahora);
     const tramos = ventanas(horas, perfil);
-    const amaneceres = zona?.salidaSol ?? [];
+    const amaneceres = (zona?.salidaSol ?? []).filter((f) => !dia || diaDeSalida(new Date(f), 0) === dia);
     const periodos = amaneceres.flatMap((inicio) => {
       const fin = zona?.puestaSol.find(
         (f) => f.slice(0, 10) === inicio.slice(0, 10),
@@ -56,14 +66,14 @@ export function lecturasParques(
       ...parque,
       hora,
       banda: hora?.banda ?? null,
-      horas: proximasDoceHoras(horas, ahora),
+      horas: dia ? horas.filter((h) => Date.parse(h.fecha) + 3600000 > ahora.getTime()) : proximasDoceHoras(horas, ahora),
       ventanaDiurna: tramosDiurnos[0] ?? null,
       luzConfirmada: periodos.length > 0,
       esDeDia: periodos.some(
         (p) => p.inicio <= ahora.getTime() && ahora.getTime() < p.fin,
       ),
       ventana: ventanaActiva(tramos, ahora) ?? proximaVentana(tramos, ahora),
-      luz: estadoLuz(zona?.puestaSol ?? [], ahora),
+      luz: dia ? { fecha: zona?.puestaSol.find((f) => diaDeSalida(new Date(f), 0) === dia) ?? null } : estadoLuz(zona?.puestaSol ?? [], ahora),
       distancia: ubicacion ? distanciaKm(ubicacion, parque) : null,
     };
   });

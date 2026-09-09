@@ -1,25 +1,26 @@
 @import "tailwindcss" source(none);
 @import "maplibre-gl/dist/maplibre-gl.css";
+@import "../public/design-tokens.css";
 @source "../app";
 @source "../components";
 
 :root {
-  --app-bg: #eef2f8;
-  --app-surface: #f7f9fc;
-  --app-ink: #16223d;
-  --app-muted: #5c6c83;
-  --app-line: #dfe5ef;
-  --app-blue: #3155f5;
-  --app-blue-soft: #e9efff;
-  --app-good: #357746;
-  --app-good-soft: #eaf4db;
-  --app-warning: #976d1a;
-  --app-danger: #b33242;
+  --app-bg: #ebe7dc;
+  --app-surface: var(--brand-bone);
+  --app-ink: var(--brand-ink);
+  --app-muted: #666257;
+  --app-line: #d9d4c8;
+  --app-action: var(--brand-ink);
+  --app-action-soft: var(--brand-soft);
+  --app-good: #287348;
+  --app-good-soft: var(--brand-soft);
+  --app-warning: #75500e;
+  --app-danger: #a92822;
   --color-surface: var(--app-surface);
   --color-text-primary: var(--app-ink);
   --color-text-secondary: var(--app-muted);
-  --color-action: var(--app-blue);
-  --color-verdict-bg: #e9edf1;
+  --color-action: var(--app-action);
+  --color-verdict-bg: #e8e4d9;
   --color-verdict-ink: var(--app-ink);
   --font-data: var(--font-archivo);
   --text-label: 0.8rem;
@@ -95,14 +96,14 @@ a svg {
   height: 22px;
 }
 :focus-visible {
-  outline: 3px solid var(--app-blue);
+  outline: 3px solid var(--app-action);
   outline-offset: 3px;
 }
 h1:focus {
   outline: none;
 }
 ::selection {
-  background: #d9fc69;
+  background: var(--brand-yellow);
   color: var(--app-ink);
 }
 .sr-only,
@@ -139,17 +140,12 @@ h1:focus {
 .app-marca {
   display: flex;
   align-items: center;
-  gap: 8px;
   padding: 0;
   min-height: 44px;
-  font-size: 23px;
-  font-weight: 780;
-  letter-spacing: -1px;
+  color: var(--app-ink);
 }
-.app-marca > svg {
-  height: 43px;
-  width: 36px;
-  color: var(--app-blue);
+.app-marca .marca {
+  font-size: 24px;
 }
 .app-ciudad {
   display: none;
@@ -202,7 +198,7 @@ h1:focus {
   overflow: auto;
   overscroll-behavior-y: contain;
   scrollbar-width: thin;
-  scrollbar-color: #b6bfcb transparent;
+  scrollbar-color: #b6afa0 transparent;
 }
 .app-main--parques .app-screen {
   display: grid;
@@ -236,7 +232,7 @@ h1:focus {
   height: 24px;
 }
 .app-nav button[aria-current] {
-  color: var(--app-blue);
+  color: var(--app-action);
 }
 .app-nav button[aria-current]::before {
   content: "";
@@ -245,7 +241,7 @@ h1:focus {
   width: 44px;
   height: 30px;
   border-radius: 18px;
-  background: var(--app-blue-soft);
+  background: var(--app-action-soft);
   z-index: -1;
 }
 .icon-button {
@@ -258,13 +254,13 @@ h1:focus {
   border-radius: 14px;
 }
 .icon-button:hover {
-  background: var(--app-blue-soft);
+  background: var(--app-action-soft);
 }
 .icon-button[aria-pressed="true"] {
-  color: var(--app-blue);
+  color: var(--app-action);
 }
 .icon-button[aria-pressed="true"] svg {
-  fill: var(--app-blue-soft);
+  fill: var(--app-action-soft);
 }
 .app-heading {
   display: flex;
@@ -289,8 +285,8 @@ h1:focus {
   z-index: 3;
 }
 .boton-ubicacion {
-  background: var(--app-blue-soft);
-  color: var(--app-blue);
+  background: var(--app-action-soft);
+  color: var(--app-action);
   border-radius: 50%;
 }
 .buscador-app {
@@ -359,7 +355,7 @@ h1:focus {
   color: var(--app-muted);
 }
 .alternar-mapa[aria-pressed="true"] {
-  color: var(--app-blue);
+  color: var(--app-action);
 }
 .explorar-cuerpo {
   display: grid;
@@ -381,7 +377,7 @@ h1:focus {
 .mapa-espera {
   width: 100%;
   height: 100%;
-  background: #e8ece4;
+  background: #ebe7dc;
 }
 .mapa-espera {
   display: flex;
@@ -403,7 +399,7 @@ h1:focus {
   bottom: 28px;
   background: var(--app-surface);
   box-shadow: 0 3px 12px #14233720;
-  color: var(--app-blue);
+  color: var(--app-action);
   z-index: 2;
   border-radius: 50%;
 }
@@ -457,9 +453,9 @@ h1:focus {
   place-items: center;
   font-size: 12px;
   font-weight: 750;
-  color: #fff;
-  border: 2px solid #fff;
-  background: #253551;
+  color: var(--brand-bone);
+  border: 2px solid var(--brand-bone);
+  background: var(--brand-ink);
   border-radius: 12px 12px 12px 3px;
   box-shadow: 0 2px 5px #14233740;
   flex: none;
@@ -477,7 +473,7 @@ h1:focus {
 .mapa-pin--elegido .mapa-pin__punto {
   width: 30px;
   height: 34px;
-  background: var(--app-blue);
+  background: var(--app-action);
 }
 .mapa-marcador:hover .mapa-pin > span:last-child,
 .mapa-marcador:focus-visible .mapa-pin > span:last-child {
@@ -492,7 +488,7 @@ h1:focus {
   z-index: 2;
   padding: 14px 20px 20px;
   scrollbar-width: thin;
-  scrollbar-color: #c8ced7 transparent;
+  scrollbar-color: #b6afa0 transparent;
 }
 .lista-titulo {
   display: flex;
@@ -516,104 +512,16 @@ h1:focus {
   padding: 0;
   margin: 0;
 }
-.parque-fila {
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid var(--app-line);
-  min-width: 0;
-  position: relative;
-}
-.parque-abrir {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex: 1;
-  min-width: 0;
-  text-align: left;
-  min-height: 80px;
-  padding: 12px 0;
-}
-.parque-simbolo {
-  display: flex;
-  width: 30px;
-  height: 34px;
-  align-items: center;
-  justify-content: center;
-  background: var(--app-bg);
-  border-radius: 12px;
-  color: var(--app-muted);
-  flex: none;
-}
-.parque-simbolo svg {
-  width: 19px;
-  height: 19px;
-}
-.parque-identidad {
-  display: grid;
-  gap: 3px;
-  min-width: 0;
-  flex: 1;
-}
-.parque-identidad strong {
-  font-size: 14px;
-  font-weight: 650;
-  line-height: 1.2;
-  overflow-wrap: anywhere;
-}
-.parque-identidad > span {
-  font-size: 11px;
-  color: var(--app-muted);
-  line-height: 1.25;
-}
-.parque-identidad small {
-  font-size: 10px;
-  color: var(--app-good);
-  line-height: 1.3;
-}
-.parque-condicion {
-  display: grid;
-  gap: 5px;
-  justify-items: end;
-  flex: none;
-  font-size: 10px;
-  max-width: 92px;
-  text-align: right;
-}
-.parque-condicion > span {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  line-height: 1.15;
-  color: var(--estado-ink);
-}
-.parque-condicion i {
-  width: 5px;
-  height: 5px;
-  flex: none;
-  border-radius: 50%;
-  background: var(--estado-ink);
-}
-.parque-condicion small {
-  font-size: 11px;
-  color: var(--app-muted);
-  font-variant-numeric: tabular-nums;
-}
 .guardar-parque {
   min-width: 32px;
   width: 32px;
   height: 44px;
   margin-left: 3px;
-  color: #758092;
+  color: #70695d;
 }
 .guardar-parque svg {
   width: 18px;
   height: 18px;
-}
-.parque-fila--sugerido .parque-identidad strong {
-  color: var(--app-good);
-}
-.parque-abrir:hover .parque-identidad strong {
-  color: var(--app-blue);
 }
 .ver-todos-app {
   display: flex;
@@ -622,7 +530,7 @@ h1:focus {
   width: 100%;
   min-height: 48px;
   margin-top: 5px;
-  color: var(--app-blue);
+  color: var(--app-action);
   font-size: 12px;
   font-weight: 650;
 }
@@ -658,7 +566,7 @@ h1:focus {
 }
 .dato-aviso button {
   margin-left: auto;
-  color: var(--app-blue);
+  color: var(--app-action);
   font-weight: 650;
   min-height: 32px;
   padding: 0;
@@ -672,7 +580,7 @@ h1:focus {
   width: 28px;
   height: 28px;
   margin: 0 auto 12px;
-  color: var(--app-blue);
+  color: var(--app-action);
 }
 .app-vacio h2 {
   font-size: 17px;
@@ -686,7 +594,7 @@ h1:focus {
 }
 .app-text-button {
   min-height: 44px;
-  color: var(--app-blue);
+  color: var(--app-action);
   font-size: 13px;
   font-weight: 650;
   margin-top: 10px;
@@ -723,34 +631,11 @@ h1:focus {
   width: 18px;
   height: 18px;
 }
-/* Colour says how much energy the air has, not good or bad: the scale runs
-   from still to gale. Lime is the stretch that flies, red is real danger.
-   All pairs verified AA at normal text size. */
-[data-estado="plancha"],
-[data-estado="sin-datos"] {
-  --estado-ink: #5e6f7d;
-  --estado-bg: #edf0f4;
-  --estado-sobre: #16223d;
-}
-[data-estado="liviano"] {
-  --estado-ink: #4a5b72;
-  --estado-bg: #dde4ee;
-  --estado-sobre: #16223d;
-}
-[data-estado="ideal"] {
-  --estado-ink: #4a6b16;
-  --estado-bg: #d9fc69;
-  --estado-sobre: #16223d;
-}
-[data-estado="bravo"] {
-  --estado-ink: #3d4f70;
-  --estado-bg: #46587a;
-  --estado-sobre: #f7f9fc;
-}
-[data-estado="peligro"] {
-  --estado-ink: #a8263a;
-  --estado-bg: #a8263a;
-  --estado-sobre: #f7f9fc;
+/* State colors are semantic; the kite keeps its own fixed print. */
+[data-estado] {
+  --estado-bg: var(--state-bg);
+  --estado-ink: var(--state-label);
+  --estado-sobre: var(--state-ink);
 }
 .salida-screen,
 .guia-screen {
@@ -762,7 +647,7 @@ h1:focus {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: var(--app-blue);
+  color: var(--app-action);
   font-size: 11px;
   min-height: 32px;
   padding: 0;
@@ -856,7 +741,7 @@ h1:focus {
 .ventana-salida > svg {
   width: 25px;
   height: 25px;
-  color: var(--app-blue);
+  color: var(--app-action);
 }
 .ventana-salida strong {
   font-size: 13px;
@@ -873,7 +758,7 @@ h1:focus {
   place-items: center;
   min-width: 40px;
   min-height: 44px;
-  color: var(--app-blue);
+  color: var(--app-action);
 }
 .horas-app {
   padding-top: 19px;
@@ -885,7 +770,7 @@ h1:focus {
   padding: 7px 1px 9px;
   scroll-snap-type: x proximity;
   scrollbar-width: thin;
-  scrollbar-color: #d2d8e2 transparent;
+  scrollbar-color: #b6afa0 transparent;
 }
 .horas-cinta button {
   display: flex;
@@ -898,8 +783,8 @@ h1:focus {
   border: 1px solid transparent;
 }
 .horas-cinta button[aria-pressed="true"] {
-  background: var(--app-blue-soft);
-  border-color: #a2b6fb;
+  background: var(--app-action-soft);
+  border-color: var(--brand-yellow);
 }
 .horas-cinta time {
   font-size: 10px;
@@ -977,15 +862,15 @@ h1:focus {
   text-align: center;
 }
 .app-primary {
-  background: var(--app-blue);
+  background: var(--app-action);
   color: var(--app-surface);
 }
 .app-primary:hover {
-  background: #2544d6;
+  background: #454136;
 }
 .app-secondary {
-  background: var(--app-blue-soft);
-  color: var(--app-blue);
+  background: var(--app-action-soft);
+  color: var(--app-action);
 }
 .app-primary svg,
 .app-secondary svg {
@@ -1011,7 +896,7 @@ h1:focus {
 .guia-screen > .app-heading > svg {
   width: 30px;
   height: 36px;
-  color: var(--app-blue);
+  color: var(--app-action);
 }
 .guia-screen h2 {
   font-size: 16px;
@@ -1033,8 +918,8 @@ h1:focus {
   cursor: pointer;
 }
 .perfiles-app label:has(input:checked) {
-  border-color: #a2b6fb;
-  background: var(--app-blue-soft);
+  border-color: var(--brand-yellow);
+  background: var(--app-action-soft);
 }
 .perfiles-app input,
 .checklist-app input {
@@ -1045,7 +930,7 @@ h1:focus {
 }
 .perfiles-app label:has(input:focus-visible),
 .checklist-app label:has(input:focus-visible) {
-  outline: 3px solid var(--app-blue);
+  outline: 3px solid var(--app-action);
   outline-offset: 3px;
 }
 .perfiles-app label > svg {
@@ -1068,7 +953,7 @@ h1:focus {
   margin-left: auto;
   width: 20px;
   height: 20px;
-  border: 1.5px solid #b8c2ce;
+  border: 1.5px solid #b6afa0;
   border-radius: 50%;
   display: grid;
   place-items: center;
@@ -1079,8 +964,8 @@ h1:focus {
   height: 14px;
 }
 .perfiles-app input:checked ~ .radio-visual {
-  background: var(--app-blue);
-  border-color: var(--app-blue);
+  background: var(--app-action);
+  border-color: var(--app-action);
   color: var(--app-surface);
 }
 .perfiles-app input:checked ~ .radio-visual svg {
@@ -1103,7 +988,7 @@ h1:focus {
 .check-visual {
   width: 23px;
   height: 23px;
-  border: 1.5px solid #b8c2ce;
+  border: 1.5px solid #b6afa0;
   border-radius: 7px;
   display: grid;
   place-items: center;
@@ -1115,8 +1000,8 @@ h1:focus {
   height: 16px;
 }
 .checklist-app input:checked + .check-visual {
-  background: var(--app-blue);
-  border-color: var(--app-blue);
+  background: var(--app-action);
+  border-color: var(--app-action);
   color: var(--app-surface);
 }
 .checklist-app input:checked + .check-visual svg {
@@ -1155,7 +1040,7 @@ h1:focus {
   display: inline-flex;
   min-height: 44px;
   align-items: center;
-  color: var(--app-blue);
+  color: var(--app-action);
 }
 .guia-listo {
   width: 100%;
@@ -1196,7 +1081,7 @@ h1:focus {
     font-size: 10px;
   }
   .app-nav button[aria-current] {
-    background: var(--app-blue-soft);
+    background: var(--app-action-soft);
   }
   .app-nav button[aria-current]::before {
     display: none;
@@ -1252,18 +1137,6 @@ h1:focus {
     padding: 20px 20px 25px;
     max-width: none;
     border-right: 1px solid var(--app-line);
-  }
-  .parque-abrir {
-    min-height: 94px;
-  }
-  .parque-identidad strong {
-    font-size: 15px;
-  }
-  .parque-identidad > span {
-    font-size: 12px;
-  }
-  .parque-condicion {
-    font-size: 11px;
   }
   .mapa-pin > span:last-child {
     display: block;
@@ -1382,16 +1255,6 @@ h1:focus {
   .guia-screen {
     padding-inline: 14px;
   }
-  .parque-condicion {
-    font-size: 9px;
-    max-width: 76px;
-  }
-  .parque-identidad strong {
-    font-size: 13px;
-  }
-  .parque-abrir {
-    gap: 6px;
-  }
   .salida-acciones {
     gap: 6px;
   }
@@ -1412,130 +1275,224 @@ h1:focus {
 }
 /* Existing outdoor route uses the same surfaces and type, without the explorer shell. */
 [data-banda="ideal"] {
-  --color-verdict-bg: #eaf4db;
+  --color-verdict-bg: var(--brand-soft);
 }
 [data-banda="liviano"] {
-  --color-verdict-bg: #faf0cf;
+  --color-verdict-bg: var(--brand-coral);
 }
 [data-banda="plancha"] {
-  --color-verdict-bg: #ecf0f4;
+  --color-verdict-bg: #e6e1d5;
 }
 [data-banda="bravo"] {
-  --color-verdict-bg: #fce9da;
+  --color-verdict-bg: var(--brand-gold);
 }
 [data-banda="peligro"] {
-  --color-verdict-bg: #fce5e7;
+  --color-verdict-bg: #eee0d6;
 }
+/* ============================================================
+   Pantalla de terreno (/volar). Tokens propios: la app en /app
+   sigue con --color-verdict-bg, que a tamaño píldora funciona
+   y a pantalla completa se lava.
+   ============================================================ */
 .vivo {
   min-height: 100dvh;
   overflow: hidden;
-  padding: 20px max(20px, calc((100vw - 760px) / 2))
-    max(20px, env(safe-area-inset-bottom));
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  gap: 16px;
   position: relative;
   isolation: isolate;
-  background: var(--color-verdict-bg);
-  background-image: radial-gradient(
-    120% 78% at 80% 10%,
-    color-mix(in srgb, #fff 58%, transparent),
-    transparent 60%
-  );
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  gap: 14px;
+  padding: calc(20px + env(safe-area-inset-top))
+    max(22px, calc((100vw - 620px) / 2))
+    calc(26px + env(safe-area-inset-bottom));
+  background: var(--vivo-base);
+  color: var(--vivo-tinta);
+}
+/* El volantín: papel a contraluz, dentro del fondo y no encima de él. */
+.vivo__volantin {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  --papel-alto: var(--vivo-papel-alto);
+  --papel-medio: var(--vivo-papel-medio);
+  --papel-bajo: var(--vivo-papel-bajo);
 }
 .vivo__cabecera,
 .vivo__datos,
-.vivo__midiendo {
+.vivo__limites,
+.vivo__midiendo,
+.vivo__listo {
   position: relative;
-}
-.vivo .volantin-vela {
-  stroke: var(--app-ink);
-}
-.vivo .volantin-cola,
-.vivo .volantin-hilo {
-  stroke: var(--app-ink);
+  z-index: 5;
 }
 .vivo__cabecera {
-  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
 }
-.vivo__medicion {
-  font-size: 11px;
-  margin-top: 6px;
-  color: var(--app-muted);
+.vivo__zona {
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.3;
 }
-.vivo__agenda {
-  display: inline-flex;
+.vivo__zona span {
+  display: block;
+  font-weight: 500;
+  font-size: 11.5px;
+  opacity: 0.5;
+  margin-top: 2px;
+}
+/* Qué tan viejo es el dato, no qué hora es: el reloj ya está arriba en el sistema. */
+.vivo__frescura {
+  display: flex;
   align-items: center;
   gap: 6px;
-  min-height: 44px;
-  margin-top: 4px;
-  padding: 0 14px;
-  border-radius: 999px;
-  border: 1px solid color-mix(in srgb, currentColor 42%, transparent);
-  background: color-mix(in srgb, #050c1c 34%, transparent);
-  color: inherit;
-  font-weight: 650;
-  font-size: 13px;
-  text-decoration: none;
-  backdrop-filter: blur(6px);
+  padding-top: 2px;
+  font-size: 11.5px;
+  font-weight: 700;
+  opacity: 0.55;
+  white-space: nowrap;
 }
-.vivo__agenda:hover {
-  background: color-mix(in srgb, #050c1c 52%, transparent);
-}
+.vivo__frescura--viejo { font-weight: 800; }
+
 .vivo__datos {
-  display: grid;
-  grid-template-areas:
-    "ahora volantin"
-    "ventana volantin"
-    "contexto contexto";
-  grid-template-columns: minmax(0, 1fr) minmax(140px, 38%);
-  align-content: center;
-  column-gap: 16px;
-}
-.vivo__ahora {
-  grid-area: ahora;
   align-self: end;
 }
-/* The answer, not the reading: it is the biggest thing on the screen. */
-.vivo__banda {
-  font-size: clamp(56px, 16vw, 104px);
-  font-weight: 800;
-  font-stretch: 112%;
+/* La respuesta, dicha en voz alta: dos tratamientos en la misma frase. */
+.vivo__frase {
+  font-size: clamp(54px, 19vw, 86px);
+  font-weight: 900;
+  line-height: 0.8;
   letter-spacing: -0.04em;
-  line-height: 0.9;
+  text-transform: lowercase;
 }
-.vivo__viento {
+.vivo__grito {
+  display: block;
+  text-transform: uppercase;
+  font-stretch: 112%;
+}
+.vivo__hueco {
+  display: block;
+  color: transparent;
+  -webkit-text-stroke: 2px var(--vivo-tinta);
+}
+
+.vivo__pastillas {
   display: flex;
-  align-items: baseline;
   flex-wrap: wrap;
-  gap: 4px 10px;
-  margin-top: 14px;
+  gap: 8px;
+  margin-top: 24px;
+}
+.vivo__pastilla {
+  padding: 9px 15px 10px;
+  border-radius: 16px;
+  line-height: 1.1;
+  background: color-mix(in srgb, var(--vivo-tinta) 9%, transparent);
+  border: 1px solid color-mix(in srgb, var(--vivo-tinta) 22%, transparent);
+}
+.vivo__pastilla--llena {
+  background: var(--vivo-tinta);
+  color: var(--vivo-base);
+  border-color: transparent;
+}
+.vivo__pastilla dt {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+.vivo__pastilla dd {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
 }
-.vivo__viento strong {
-  font-size: clamp(34px, 9vw, 46px);
+
+/* Dos relojes distintos corren en tu contra. El que se acaba primero queda al
+   frente; el otro baja un paso. Sin marcas ni símbolos que haya que aprender. */
+.vivo__limites {
+  display: flex;
+  gap: 26px;
+  padding-top: 15px;
+  border-top: 1px solid color-mix(in srgb, var(--vivo-tinta) 26%, transparent);
+  background: var(--vivo-base);
+  padding: 18px;
+  border-radius: 0 0 22px 22px;
+}
+.vivo__limite {
+  flex: 1 1 0;
+}
+.vivo__limite[data-manda="no"] {
+  opacity: 0.66;
+}
+.vivo__limite-que {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+.vivo__limite-glosa {
+  font-size: 11.5px;
+  font-weight: 600;
+  opacity: 0.55;
+  margin: 5px 0 2px;
+}
+.vivo__limite-valor {
+  font-size: clamp(24px, 7vw, 30px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 0.95;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Salir de aquí es la acción menos importante de la pantalla. */
+.vivo__listo {
+  justify-self: start;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
   font-weight: 700;
-  line-height: 1;
-  letter-spacing: -0.03em;
+  opacity: 0.6;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+  cursor: pointer;
 }
-.vivo__viento span {
-  font-size: 17px;
+.vivo__listo:hover {
+  opacity: 1;
 }
-.vivo__viento small {
-  font-size: 15px;
-  color: var(--app-muted);
-  width: 100%;
+
+.vivo__midiendo {
+  align-self: end;
 }
-.vivo__volantin {
-  grid-area: volantin;
-  width: 100%;
-  height: auto;
-  align-self: stretch;
-  justify-self: center;
-  /* The string keeps going past the fold instead of stopping in mid-air. */
-  margin-bottom: -30vh;
-  pointer-events: none;
+.vivo__midiendo p {
+  margin-top: 18px;
+  font-size: 14px;
+  max-width: 34ch;
+  opacity: 0.62;
 }
+
+/* Sol de septiembre: independent brand, state and kite colors. */
+[data-paleta] { --vivo-base: var(--state-bg); --vivo-tinta: var(--state-ink); }
+.parte-viento { --estado-ink: var(--state-ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  .volantin-conjunto {
+    animation: none;
+  }
+}
+
+/* Volantín de línea: lo sigue usando la portada. */
 .volantin-hilo {
   fill: none;
   stroke: currentColor;
@@ -1543,13 +1500,13 @@ h1:focus {
   opacity: 0.4;
 }
 .volantin-vela {
-  fill: var(--app-blue);
+  fill: var(--app-action);
   stroke: var(--app-ink);
   stroke-width: 2.5;
   stroke-linejoin: round;
 }
 .volantin-varilla {
-  stroke: #d9fc69;
+  stroke: var(--brand-yellow);
   stroke-width: 2;
 }
 .volantin-brida {
@@ -1564,77 +1521,17 @@ h1:focus {
   stroke-width: 3;
   stroke-linecap: round;
 }
-/* It swings about the hand, and swings wider when the line is slack. Line and
-   kite are in the same group so they can never drift apart. */
 .volantin-conjunto {
   animation: volantin-pendulo 5s ease-in-out infinite alternate;
   transform-box: view-box;
   transform-origin: 216px 632px;
 }
 @keyframes volantin-pendulo {
-  from { rotate: calc(var(--pendulo, 2deg) * -1); }
-  to { rotate: var(--pendulo, 2deg); }
-}
-/* How long you have left is what you actually came here to read. */
-.vivo__ventana {
-  grid-area: ventana;
-  margin-top: 20px;
-  font-size: clamp(19px, 4.5vw, 25px);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  text-wrap: balance;
-}
-.vivo__contexto {
-  grid-area: contexto;
-  margin-top: 22px;
-}
-.vivo__contexto > div {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-  min-height: 52px;
-  border-top: 1px solid color-mix(in srgb, currentColor 22%, transparent);
-}
-.vivo__contexto dt {
-  font-size: 13px;
-  color: var(--app-muted);
-}
-.vivo__contexto dd {
-  font-weight: 650;
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-.vivo__listo {
-  min-height: 56px;
-  border-radius: 14px;
-  background: var(--app-blue);
-  color: var(--app-surface);
-  font-weight: 650;
-  font-size: 16px;
-}
-.vivo__midiendo {
-  align-self: center;
-}
-.vivo__midiendo h1 {
-  font-size: clamp(44px, 13vw, 72px);
-  font-weight: 800;
-  font-stretch: 112%;
-  letter-spacing: -0.03em;
-  line-height: 1;
-  margin-bottom: 18px;
-}
-@media (max-width: 479px) {
-  .vivo__datos {
-    grid-template-columns: minmax(0, 1fr) minmax(104px, 32%);
+  from {
+    rotate: calc(var(--pendulo, 2deg) * -1);
   }
-  .vivo__volantin {
-    margin-bottom: -22vh;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .volantin-conjunto {
-    animation: none;
+  to {
+    rotate: var(--pendulo, 2deg);
   }
 }
 
@@ -1701,192 +1598,633 @@ h1:focus {
   }
 }
 
-/* Flight identity: clear sky, electric blue, a high-visibility sail. */
+/* Flight identity: bone, charcoal and sunlit accents. */
 /* One family throughout: headings separate by width and weight, not by face. */
-h1, h2, .app-marca {
+h1,
+h2,
+.app-marca {
   font-stretch: 108%;
 }
-.parte-viento__datos dd, .horas-cinta strong, .parque-condicion {
-  font-variant-numeric: tabular-nums;
+.parte-viento__datos dd,
+.horas-cinta strong,
+.app-marca {
+  font-weight: 700;
+  letter-spacing: -1.2px;
 }
-.app-marca { font-weight: 700; letter-spacing: -1.2px; }
-.app-topbar { border-bottom-color: transparent; }
-.app-heading h1 { font-weight: 700; letter-spacing: -0.035em; font-size: 32px; }
-.explorar-herramientas { padding-top: 12px; }
-.buscador-app { background: #fff; border: 1px solid #dfe5ef; border-radius: 16px; }
-.segmentos { gap: 0; }
-.segmentos button { border-radius: 10px; }
-.segmentos button[aria-pressed="true"] { background: #16223d; }
-.perfil-rapido { background: #e9efff; border-radius: 12px; }
-.app-nav { background: #fff; padding-top: 8px; }
-.app-nav button { font-size: 11px; }
-.app-nav button[aria-current]::before { background: #d9fc69; border-radius: 10px; }
-.app-nav button[aria-current] { color: #16223d; }
-.boton-ubicacion { background: #3155f5; color: #fff; border-radius: 15px; }
-.boton-ubicacion:hover { background: #2544d6; }
-.parque-simbolo { color: #3155f5; background: #e9efff; font-weight: 750; font-size: 12px; border-radius: 11px 11px 11px 3px; }
-.parque-fila--sugerido .parque-simbolo { background: #d9fc69; color: #16223d; }
-.explorar-lista { background: #fff; }
-.mapa-superficie, .mapa-lienzo, .mapa-espera { background: #eaf0f6; }
-.mapa-leyenda i { background: #253551; }
-.mapa-pin--elegido .mapa-pin__punto { color: #16223d; background: #d9fc69; border-color: #16223d; }
-.mapa-pin > span:last-child { background: #16223d; color: #fff; border-radius: 8px; }
-.app-primary { transition: background 160ms, transform 160ms; }
-.app-primary:active { transform: scale(.98); }
-.perfiles-app label { background: #fff; padding: 15px; }
-.perfiles-app label:has(input:checked) { border-color: #3155f5; background: #e9efff; }
-.perfiles-app label > svg { transform: rotate(-8deg); }
-.volantin__vela { transform-origin: 40px 35px; }
+.app-topbar {
+  border-bottom-color: transparent;
+}
+.app-heading h1 {
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  font-size: 32px;
+}
+.explorar-herramientas {
+  padding-top: 12px;
+}
+.buscador-app {
+  background: var(--brand-bone);
+  border: 1px solid #d9d4c8;
+  border-radius: 16px;
+}
+.segmentos {
+  gap: 0;
+}
+.segmentos button {
+  border-radius: 10px;
+}
+.segmentos button[aria-pressed="true"] {
+  background: var(--brand-ink);
+}
+.perfil-rapido {
+  background: var(--brand-soft);
+  border-radius: 12px;
+}
+.app-nav {
+  background: var(--brand-bone);
+  padding-top: 8px;
+}
+.app-nav button {
+  font-size: 11px;
+}
+.app-nav button[aria-current]::before {
+  background: var(--brand-yellow);
+  border-radius: 10px;
+}
+.app-nav button[aria-current] {
+  color: var(--brand-ink);
+}
+.boton-ubicacion {
+  background: var(--brand-ink);
+  color: var(--brand-bone);
+  border-radius: 15px;
+}
+.boton-ubicacion:hover {
+  background: #454136;
+}
+.explorar-lista {
+  background: var(--brand-bone);
+}
+.mapa-superficie,
+.mapa-lienzo,
+.mapa-espera {
+  background: #ebe7dc;
+}
+.mapa-leyenda i {
+  background: var(--brand-ink);
+}
+.mapa-pin--elegido .mapa-pin__punto {
+  color: var(--brand-ink);
+  background: var(--brand-yellow);
+  border-color: var(--brand-ink);
+}
+.mapa-pin > span:last-child {
+  background: var(--brand-ink);
+  color: var(--brand-bone);
+  border-radius: 8px;
+}
+.app-primary {
+  transition:
+    background 160ms,
+    transform 160ms;
+}
+.app-primary:active {
+  transform: scale(0.98);
+}
+.perfiles-app label {
+  background: var(--brand-bone);
+  padding: 15px;
+}
+.perfiles-app label:has(input:checked) {
+  border-color: var(--brand-ink);
+  background: var(--brand-soft);
+}
+.perfiles-app label > svg {
+  transform: rotate(-8deg);
+}
+.volantin__vela {
+  transform-origin: 40px 35px;
+}
 .app-marca:hover .volantin__vela,
-.perfiles-app label:hover .volantin__vela { animation: tomar-viento 900ms ease-in-out; }
+.perfiles-app label:hover .volantin__vela {
+  animation: tomar-viento 900ms ease-in-out;
+}
 @keyframes tomar-viento {
-  0%, 100% { transform: rotate(0deg); }
-  35% { transform: rotate(-9deg) translateY(-2px); }
-  70% { transform: rotate(5deg); }
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  35% {
+    transform: rotate(-9deg) translateY(-2px);
+  }
+  70% {
+    transform: rotate(5deg);
+  }
 }
 @media (min-width: 900px) {
-  .app-heading h1 { font-size: 36px; }
-  .app-nav button[aria-current] { background: #d9fc69; }
-  .explorar-herramientas { padding-top: 20px; }
+  .app-heading h1 {
+    font-size: 36px;
+  }
+  .app-nav button[aria-current] {
+    background: var(--brand-yellow);
+  }
+  .explorar-herramientas {
+    padding-top: 20px;
+  }
 }
 @media (max-width: 359px) {
-  .app-heading h1 { font-size: 28px; }
-  .parque-simbolo { width: 24px; height: 29px; }
-  .parque-identidad strong { font-size: 12px; }
+  .app-heading h1 {
+    font-size: 28px;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .volantin__vela { animation: none !important; }
-  .app-primary { transition: none; }
+  .volantin__vela {
+    animation: none !important;
+  }
+  .app-primary {
+    transition: none;
+  }
 }
 
 @media (max-height: 650px) and (max-width: 899px) {
-  .explorar-herramientas .app-heading p { display: none; }
-  .explorar-herramientas { padding-top: 6px; padding-bottom: 4px; }
-  .buscador-app { margin-top: 8px; }
-  .mapa-pin__punto { width: 19px; height: 22px; font-size: 9px; border-width: 1px; border-radius: 7px 7px 7px 2px; }
-  .mapa-pin--elegido .mapa-pin__punto { width: 23px; height: 26px; }
-  .explorar-lista { padding-top: 10px; }
-  .dato-aviso { font-size: 10px; padding-bottom: 4px; }
+  .explorar-herramientas .app-heading p {
+    display: none;
+  }
+  .explorar-herramientas {
+    padding-top: 6px;
+    padding-bottom: 4px;
+  }
+  .buscador-app {
+    margin-top: 8px;
+  }
+  .mapa-pin__punto {
+    width: 19px;
+    height: 22px;
+    font-size: 9px;
+    border-width: 1px;
+    border-radius: 7px 7px 7px 2px;
+  }
+  .mapa-pin--elegido .mapa-pin__punto {
+    width: 23px;
+    height: 26px;
+  }
+  .explorar-lista {
+    padding-top: 10px;
+  }
+  .dato-aviso {
+    font-size: 10px;
+    padding-bottom: 4px;
+  }
 }
 
 /* Review refinements: tighter composition, clearer controls and vector map. */
-.buscar-ubicacion { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
-.buscar-ubicacion .buscador-app { flex: 1; min-width: 0; margin-top: 0; }
-.guardar-parque { width: 44px; min-width: 44px; }
-.parque-identidad > span, .parque-condicion { font-size: 12px; }
-.parque-condicion small { font-size: 11px; }
-.perfiles-app label { padding: 8px 12px; gap: 10px; }
-.perfiles-app label > svg { width: 40px; height: 49px; }
-.perfiles-app { gap: 7px; }
-.guia-screen > .app-heading { margin-bottom: 20px; }
-.horas-cinta button { min-width: 78px; gap: 6px; padding: 10px 7px; }
-.horas-cinta time, .horas-cinta small, .hora-racha { font-size: 12px; }
-.horas-cinta strong { font-size: 19px; }
-.horas-cinta button > svg { width: 20px; height: 20px; color: var(--estado-ink); }
-.horas-cinta [data-luz="noche"] { background: #f0f2f8; }
-.horas-cinta button[aria-pressed="true"] { background: var(--app-blue-soft); border-color: var(--app-blue); }
-.hora-racha { color: var(--app-muted); white-space: nowrap; }
-.horas-leyenda { font-size: 11px; gap: 10px; }
-[data-estado="noche"] { --estado-ink: #495d85; --estado-bg: #e9edf8; --estado-sobre: #16223d; }
-.ventana-salida { flex-wrap: wrap; }
-.ventana-salida > div { flex: 1; min-width: 0; }
-.ventana-salida > a { display: flex; gap: 7px; font-size: 12px; width: 100%; margin-left: 37px; justify-content: flex-start; }
-.parte-viento h2 { max-width: 16ch; }
-.mapa-lienzo .maplibregl-ctrl-group { border-radius: 12px; box-shadow: 0 3px 12px #14233720; overflow: hidden; }
-.mapa-lienzo .maplibregl-ctrl-group button { width: 44px; height: 44px; }
-.mapa-lienzo .maplibregl-ctrl-attrib { font-size: 10px; }
+.buscar-ubicacion {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+.buscar-ubicacion .buscador-app {
+  flex: 1;
+  min-width: 0;
+  margin-top: 0;
+}
+.guardar-parque {
+  width: 44px;
+  min-width: 44px;
+}
+.parque-identidad > span,
+.perfiles-app label {
+  padding: 8px 12px;
+  gap: 10px;
+}
+.perfiles-app label > svg {
+  width: 40px;
+  height: 49px;
+}
+.perfiles-app {
+  gap: 7px;
+}
+.guia-screen > .app-heading {
+  margin-bottom: 20px;
+}
+.horas-cinta button {
+  min-width: 78px;
+  gap: 6px;
+  padding: 10px 7px;
+}
+.horas-cinta time,
+.horas-cinta small,
+.hora-racha {
+  font-size: 12px;
+}
+.horas-cinta strong {
+  font-size: 19px;
+}
+.horas-cinta button > svg {
+  width: 20px;
+  height: 20px;
+  color: var(--estado-ink);
+}
+.horas-cinta [data-luz="noche"] {
+  background: #e6e1d5;
+}
+.horas-cinta button[aria-pressed="true"] {
+  background: var(--app-action-soft);
+  border-color: var(--app-action);
+}
+.hora-racha {
+  color: var(--app-muted);
+  white-space: nowrap;
+}
+.horas-leyenda {
+  font-size: 11px;
+  gap: 10px;
+}
+.ventana-salida {
+  flex-wrap: wrap;
+}
+.ventana-salida > div {
+  flex: 1;
+  min-width: 0;
+}
+.ventana-salida > a {
+  display: flex;
+  gap: 7px;
+  font-size: 12px;
+  width: 100%;
+  margin-left: 37px;
+  justify-content: flex-start;
+}
+.parte-viento h2 {
+  max-width: 16ch;
+}
+.mapa-lienzo .maplibregl-ctrl-group {
+  border-radius: 12px;
+  box-shadow: 0 3px 12px #14233720;
+  overflow: hidden;
+}
+.mapa-lienzo .maplibregl-ctrl-group button {
+  width: 44px;
+  height: 44px;
+}
+.mapa-lienzo .maplibregl-ctrl-attrib {
+  font-size: 10px;
+}
 .mapa-punto {
-  width: 44px; height: 44px; display: grid; place-items: center;
-  background: #fff; color: #16223d; border: 2px solid #fff;
-  border-radius: 14px 14px 14px 4px; font: 750 14px var(--font-archivo), sans-serif; font-variant-numeric: tabular-nums;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  background: var(--brand-bone);
+  color: var(--brand-ink);
+  border: 2px solid var(--brand-bone);
+  border-radius: 14px 14px 14px 4px;
+  font:
+    750 14px var(--font-archivo),
+    sans-serif;
+  font-variant-numeric: tabular-nums;
   box-shadow: 0 3px 10px #16223d35;
 }
-.mapa-punto--grupo { border-radius: 50%; background: #16223d; color: #fff; }
-.mapa-punto--grupo::after { content: "+"; position: absolute; right: 5px; top: 2px; font-size: 10px; }
-.mapa-punto--elegido { background: #d9fc69; color: #16223d; border-color: #16223d; }
-.mapa-punto:hover { border-color: #3155f5; }
-.mapa-tu-posicion { width: 16px; height: 16px; border: 3px solid #fff; border-radius: 50%; background: #3155f5; box-shadow: 0 2px 8px #14233740; }
-.mapa-error { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; }
-.mapa-error button { min-height: 44px; color: var(--app-blue); font-weight: 650; }
-.mapa-leyenda { pointer-events: none; }
+.mapa-punto--grupo {
+  width: auto;
+  min-width: 92px;
+  padding: 0 12px;
+  border-radius: 14px;
+  background: var(--brand-ink);
+  color: var(--brand-bone);
+  font-size: 12px;
+}
+.mapa-punto--elegido {
+  background: var(--brand-yellow);
+  color: var(--brand-ink);
+  border-color: var(--brand-ink);
+}
+.mapa-punto:hover {
+  border-color: var(--brand-ink);
+}
+.mapa-tu-posicion {
+  width: 16px;
+  height: 16px;
+  border: 3px solid var(--brand-bone);
+  border-radius: 50%;
+  background: var(--brand-ink);
+  box-shadow: 0 2px 8px #14233740;
+}
+.mapa-error {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.mapa-error button {
+  min-height: 44px;
+  color: var(--app-action);
+  font-weight: 650;
+}
+.mapa-leyenda {
+  pointer-events: none;
+}
 @media (min-width: 900px) {
-  .explorar-herramientas { grid-template-columns: 390px minmax(0, 1fr); column-gap: 20px; row-gap: 10px; }
-  .buscar-ubicacion { margin: 0; width: min(100%, 440px); }
-  .explorar-filtros { grid-column: 1; }
-  .explorar-herramientas .app-heading h1 { font-size: 32px; }
+  .explorar-herramientas {
+    grid-template-columns: 390px minmax(0, 1fr);
+    column-gap: 20px;
+    row-gap: 10px;
+  }
+  .buscar-ubicacion {
+    margin: 0;
+    width: min(100%, 440px);
+  }
+  .explorar-filtros {
+    grid-column: 1;
+  }
+  .explorar-herramientas .app-heading h1 {
+    font-size: 32px;
+  }
 }
 @media (max-width: 899px) {
-  .explorar-herramientas { padding-top: 7px; padding-bottom: 5px; }
-  .explorar-herramientas .app-heading h1 { font-size: 28px; }
-  .explorar-herramientas .app-heading p { margin-top: 2px; }
-  .explorar-cuerpo:not(.explorar-cuerpo--lista) { grid-template-rows: minmax(160px, 1fr) minmax(130px, 1fr); }
-  .parte-viento { padding: 18px; }
+  .explorar-herramientas {
+    padding-top: 7px;
+    padding-bottom: 5px;
+  }
+  .explorar-herramientas .app-heading h1 {
+    font-size: 28px;
+  }
+  .explorar-herramientas .app-heading p {
+    margin-top: 2px;
+  }
+  .explorar-cuerpo:not(.explorar-cuerpo--lista) {
+    grid-template-rows: minmax(160px, 1fr) minmax(130px, 1fr);
+  }
+  .parte-viento {
+    padding: 18px;
+  }
 }
 @media (max-width: 359px) {
-  .parque-identidad > span { font-size: 11px; }
-  .parque-condicion { font-size: 10px; }
-  .parque-condicion small { font-size: 10px; }
 }
 @media (max-height: 650px) and (max-width: 899px) {
-  .encumbra-app .explorar-herramientas .app-heading p { display: none; }
-  .explorar-herramientas .app-heading h1 { font-size: 25px; }
-  .buscar-ubicacion { margin-top: 6px; }
-  .encumbra-app .explorar-cuerpo:not(.explorar-cuerpo--lista) { grid-template-rows: minmax(130px, .85fr) minmax(110px, 1fr); }
+  .encumbra-app .explorar-herramientas .app-heading p {
+    display: none;
+  }
+  .explorar-herramientas .app-heading h1 {
+    font-size: 25px;
+  }
+  .buscar-ubicacion {
+    margin-top: 6px;
+  }
+  .encumbra-app .explorar-cuerpo:not(.explorar-cuerpo--lista) {
+    grid-template-rows: minmax(130px, 0.85fr) minmax(110px, 1fr);
+  }
 }
 
 /* ── Portada ────────────────────────────────────────────────────────────────
-   Same surface, blue and rows as the app: the landing is the app's front door,
-   not a different product. The band tints the verdict card, never the page. */
+   El hero toma la pantalla con el mismo lenguaje que /volar; el resto de la
+   página vuelve al lienzo limpio para que el contraste sea el golpe. */
+
 .portada {
   min-height: 100dvh;
   background: var(--app-surface);
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto auto auto;
 }
-.portada .app-topbar {
-  position: sticky;
-  top: 0;
+
+/* El hero comparte superficie con /app: lienzo claro, el color vive en la ficha. */
+.portada-barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px max(20px, calc((100vw - 1080px) / 2)) 0;
+  max-width: 100%;
+}
+.portada-logo {
+  color: var(--app-ink);
+  text-decoration: none;
+}
+.portada-logo .marca {
+  font-size: clamp(24px, 5vw, 29px);
 }
 .portada-ciudad {
-  margin-left: auto;
-  font-size: 13px;
+  font-size: 12.5px;
+  font-weight: 600;
   color: var(--app-muted);
 }
+
+.portada-hero {
+  display: grid;
+  gap: 26px;
+  align-items: center;
+  padding: 34px max(20px, calc((100vw - 1080px) / 2)) 8px;
+}
+@media (min-width: 880px) {
+  .portada-hero {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    gap: 44px;
+    padding-top: 52px;
+  }
+}
+.portada-decir {
+  display: grid;
+  justify-items: start;
+  gap: 0;
+}
+/* Antes de gritar el dato hay que decir de qué se trata esto. */
+.portada-rubro {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--app-muted);
+  margin-bottom: 16px;
+}
+.portada-titular {
+  font-size: clamp(46px, 11vw, 78px);
+  font-weight: 900;
+  line-height: 0.84;
+  letter-spacing: -0.04em;
+  text-transform: lowercase;
+  color: var(--app-ink);
+}
+.portada-titular__grito {
+  display: block;
+  text-transform: uppercase;
+  font-stretch: 112%;
+}
+.portada-titular__hueco {
+  display: block;
+  color: transparent;
+  -webkit-text-stroke: 1.8px var(--app-ink);
+}
+.portada-explica {
+  margin-top: 20px;
+  font-size: clamp(15px, 1.7vw, 18px);
+  line-height: 1.45;
+  max-width: 40ch;
+  color: var(--app-muted);
+  text-wrap: pretty;
+}
+.portada-decir .portada-accion {
+  margin-top: 24px;
+}
+.portada-firma {
+  margin-top: 26px;
+  padding-top: 14px;
+  border-top: 1px solid var(--app-line);
+  width: 100%;
+  max-width: 320px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--app-muted);
+}
+
+/* La ficha: el único lugar donde el color de la banda toma el mando. */
+.portada-ficha {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 22px;
+  padding: 20px;
+  min-height: 330px;
+  display: grid;
+  align-content: space-between;
+  background: var(--vivo-base);
+  color: var(--vivo-tinta);
+}
+
+.portada-ficha__volantin {
+  position: absolute;
+  inset: 0;
+  /* El recorte lo hace el viewBox del componente, aquí solo llena la ficha. */
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  --papel-alto: var(--vivo-papel-alto);
+  --papel-medio: var(--vivo-papel-medio);
+  --papel-bajo: var(--vivo-papel-bajo);
+}
+.portada-ficha__ahora,
+.portada-ficha__datos {
+  position: relative;
+  z-index: 4;
+}
+.portada-ficha__ahora {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+.portada-ficha__datos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 26px;
+}
+.portada-ficha__datos dt {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.62;
+}
+.portada-ficha__datos dd {
+  font-size: clamp(20px, 4vw, 25px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.05;
+}
+
 .portada main {
   display: grid;
   gap: 56px;
-  padding: 40px 20px 64px;
+  padding: 64px 20px;
   max-width: 1080px;
   width: 100%;
   margin: 0 auto;
 }
 
-.portada-hero {
+/* Los cuatro mejores como volantines, no como filas: el ranking es la imagen. */
+.portada-rombos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 8px;
+  margin-top: 20px;
+  list-style: none;
+}
+.portada-rombo a {
   position: relative;
   display: grid;
-  gap: 28px;
-  align-items: end;
-  isolation: isolate;
-  min-height: min(62dvh, 520px);
-  padding-block: 8px 24px;
+  place-items: center;
+  aspect-ratio: 1 / 1.16;
+  text-decoration: none;
+  color: var(--vivo-tinta);
+  /* Se salen de su celda y se solapan, como los pines de la referencia. */
+  margin: calc(var(--orden) * -6px) -4px 0;
 }
-.portada-volantin {
+.portada-rombo__papel {
   position: absolute;
-  right: max(2%, calc(50vw - 600px));
-  top: 0;
-  bottom: 0;
-  width: min(28%, 300px);
-  z-index: -1;
-  pointer-events: none;
-  opacity: 0.9;
+  inset: 0;
+  clip-path: polygon(50% 0, 100% 38%, 50% 100%, 0 38%);
+  background:
+    radial-gradient(
+      74% 62% at 34% 26%,
+      var(--vivo-papel-alto),
+      transparent 72%
+    ),
+    linear-gradient(
+      152deg,
+      var(--vivo-papel-alto),
+      var(--vivo-base) 52%,
+      var(--vivo-papel-bajo)
+    );
 }
-/* Text sits on the sky, so it needs its own ground to stay readable. */
-.portada-hero .portada-decir,
-.portada-hero .portada-tarjeta {
+
+.portada-rombo__dentro {
   position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  text-align: center;
+  padding: 0 12%;
+  line-height: 1.15;
 }
-.portada-hero .portada-decir {
-  max-width: 34rem;
+.portada-rombo__puesto {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  opacity: 0.5;
+}
+.portada-rombo__dentro strong {
+  font-size: clamp(14px, 3.4vw, 19px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.portada-rombo__viento {
+  font-size: clamp(19px, 5vw, 26px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  margin-top: 2px;
+}
+.portada-rombo__estado {
+  font-size: 11px;
+  font-weight: 700;
+  opacity: 0.6;
+}
+.portada-rombo a:hover .portada-rombo__papel {
+  filter: brightness(1.06);
+}
+@media (min-width: 720px) {
+  .portada-rombos {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+  }
+  .portada-rombo a {
+    margin: calc(var(--orden) * 18px) -7% 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1894,23 +2232,6 @@ h1, h2, .app-marca {
   .escena-volantin {
     animation: none;
   }
-}
-.portada-decir,
-.portada-tarjeta {
-  position: relative;
-}
-.portada-decir {
-  display: grid;
-  gap: 16px;
-  justify-items: start;
-}
-.portada-decir h1 {
-  font-size: clamp(38px, 8vw, 66px);
-  font-weight: 780;
-  font-stretch: 108%;
-  letter-spacing: -0.035em;
-  line-height: 1.02;
-  text-wrap: balance;
 }
 .portada-sub {
   font-size: clamp(15px, 1.6vw, 18px);
@@ -1926,68 +2247,20 @@ h1, h2, .app-marca {
   min-height: 52px;
   padding: 0 24px;
   border-radius: 14px;
-  background: var(--app-blue);
-  color: #fff;
+  background: var(--app-action);
+  color: var(--brand-bone);
   font-weight: 650;
   font-size: 16px;
   text-decoration: none;
 }
 .portada-accion:hover {
-  background: #2544d6;
+  background: #454136;
 }
 .portada-accion svg {
   width: 18px;
   height: 18px;
 }
 
-.portada-tarjeta {
-  display: grid;
-  gap: 10px;
-  padding: 24px;
-  border-radius: 20px;
-  background: var(--estado-bg);
-  color: var(--estado-sobre);
-}
-.portada-tarjeta__ahora {
-  font-size: 12px;
-  font-weight: 600;
-  opacity: 0.85;
-}
-.portada-tarjeta__palabra {
-  font-size: clamp(34px, 7vw, 52px);
-  font-weight: 800;
-  font-stretch: 112%;
-  letter-spacing: -0.03em;
-  line-height: 1;
-}
-.portada-tarjeta__detalle {
-  font-size: 15px;
-  line-height: 1.45;
-  max-width: 40ch;
-  text-wrap: pretty;
-}
-.portada-datos {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 28px;
-  margin-top: 6px;
-  padding-top: 14px;
-  border-top: 1px solid color-mix(in srgb, currentColor 20%, transparent);
-  font-variant-numeric: tabular-nums;
-}
-.portada-datos dt {
-  font-size: 11px;
-  opacity: 0.8;
-}
-.portada-datos dd {
-  font-size: 16px;
-  font-weight: 650;
-}
-
-.portada-lista {
-  display: grid;
-  gap: 4px;
-}
 .portada-lista__titulo {
   display: flex;
   align-items: baseline;
@@ -1995,7 +2268,7 @@ h1, h2, .app-marca {
   gap: 12px;
   margin-bottom: 6px;
 }
-.portada-lista h2,
+.portada-podio h2,
 .portada-escala h2 {
   font-size: clamp(20px, 2.6vw, 26px);
   font-weight: 720;
@@ -2006,29 +2279,13 @@ h1, h2, .app-marca {
   font-size: 12px;
   color: var(--app-muted);
 }
-.portada-lista ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.portada-lista .parque-abrir {
-  text-decoration: none;
-  color: inherit;
-}
-.portada-lista .parque-simbolo {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--app-blue);
-  background: var(--app-blue-soft);
-  font-variant-numeric: tabular-nums;
-}
 .portada-vertodos {
   display: inline-flex;
   align-items: center;
   gap: 7px;
   min-height: 48px;
   margin-top: 8px;
-  color: var(--app-blue);
+  color: var(--app-action);
   font-weight: 650;
   font-size: 14px;
   text-decoration: none;
@@ -2093,7 +2350,7 @@ h1, h2, .app-marca {
   bottom: -6px;
   display: grid;
   place-items: center;
-  background: #d9fc69;
+  background: var(--brand-yellow);
   border-radius: 8px;
   box-shadow: 0 0 0 3px var(--app-surface);
 }
@@ -2102,7 +2359,7 @@ h1, h2, .app-marca {
   font-weight: 750;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #16223d;
+  color: var(--brand-ink);
 }
 .regla-ahora {
   position: absolute;
@@ -2178,14 +2435,6 @@ h1, h2, .app-marca {
   }
 }
 @media (min-width: 860px) {
-  .portada-hero {
-    grid-template-columns: 1.1fr 0.9fr;
-    gap: 48px;
-  }
-  .portada main {
-    padding: 56px 32px 72px;
-    gap: 72px;
-  }
   .portada-pie {
     padding-left: 32px;
     padding-right: 32px;
@@ -2218,7 +2467,7 @@ h1, h2, .app-marca {
   height: 100%;
 }
 .cielo-vuela {
-  fill: #d9fc69;
+  fill: var(--brand-yellow);
   opacity: 0.36;
 }
 .cielo-relleno {
@@ -2240,7 +2489,7 @@ h1, h2, .app-marca {
   font-weight: 750;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #55700f;
+  color: #66500a;
   pointer-events: none;
 }
 .cielo-volantin {
@@ -2256,12 +2505,12 @@ h1, h2, .app-marca {
   overflow: visible;
 }
 .cielo-vela {
-  fill: var(--app-blue);
+  fill: var(--app-action);
   stroke: var(--app-surface);
   stroke-width: 2;
 }
 .cielo-volantin[data-vuela="si"] .cielo-vela {
-  fill: #16223d;
+  fill: var(--brand-ink);
 }
 .cielo-cola {
   fill: none;
@@ -2307,3 +2556,594 @@ h1, h2, .app-marca {
     animation: none;
   }
 }
+
+/* En pantallas anchas el SVG se escalaba por el ancho y el volantín reventaba.
+   Anclado a la derecha conserva su proporción y sigue sangrando por el borde. */
+@media (min-width: 620px) {
+  .vivo__volantin {
+    /* 402/874 es la proporción del viewBox. Explícita, porque width:auto no
+       resuelve en un svg absoluto y aspect-ratio no llega a fijarlo. */
+    left: auto;
+    right: -3%;
+    width: min(52%, calc(100dvh * 402 / 874));
+  }
+}
+
+/* Wordmark. El ancho variable de Archivo hace el gesto: no hay imagen ni SVG. */
+.marca {
+  display: inline-flex;
+  align-items: flex-start;
+  font-weight: 900;
+  font-size: 21px;
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+  color: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.marca > span {
+  display: inline-block;
+}
+
+
+/* Fichas de parque: las usa /app. Recuperadas de HEAD tras la limpieza de la portada. */
+.parque-fila {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--app-line);
+  min-width: 0;
+  position: relative;
+}
+.parque-abrir {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  min-height: 80px;
+  padding: 12px 0;
+}
+.parque-simbolo {
+  display: flex;
+  width: 30px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  background: var(--app-bg);
+  border-radius: 12px;
+  color: var(--app-muted);
+  flex: none;
+}
+.parque-simbolo svg {
+  width: 19px;
+  height: 19px;
+}
+.parque-identidad strong {
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+.parque-identidad small {
+  font-size: 10px;
+  color: var(--app-good);
+  line-height: 1.3;
+}
+.parque-condicion {
+  display: grid;
+  gap: 5px;
+  justify-items: end;
+  flex: none;
+  font-size: 10px;
+  max-width: 92px;
+  text-align: right;
+}
+.parque-condicion > span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  line-height: 1.15;
+  color: var(--estado-ink);
+}
+.parque-condicion i {
+  width: 5px;
+  height: 5px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--estado-ink);
+}
+.parque-condicion small {
+  font-size: 11px;
+  color: var(--app-muted);
+  font-variant-numeric: tabular-nums;
+}
+.parque-fila--sugerido .parque-identidad strong {
+  color: var(--app-good);
+}
+.parque-abrir:hover .parque-identidad strong {
+  color: var(--app-action);
+}
+.parte-viento__datos dd,
+.horas-cinta strong,
+.parque-condicion {
+  font-variant-numeric: tabular-nums;
+}
+.parque-simbolo {
+  color: var(--brand-ink);
+  background: var(--brand-soft);
+  font-weight: 750;
+  font-size: 12px;
+  border-radius: 11px 11px 11px 3px;
+}
+.parque-fila--sugerido .parque-simbolo {
+  background: var(--brand-yellow);
+  color: var(--brand-ink);
+}
+.parque-identidad > span,
+.parque-condicion {
+  font-size: 12px;
+}
+.parque-condicion small {
+  font-size: 11px;
+}
+@media (min-width: 900px) {
+  .parque-abrir {
+    min-height: 94px;
+  }
+  .parque-identidad strong {
+    font-size: 15px;
+  }
+  .parque-condicion {
+    font-size: 11px;
+  }
+}
+@media (max-width: 359px) {
+  .parque-condicion {
+    font-size: 9px;
+    max-width: 76px;
+  }
+  .parque-identidad strong {
+    font-size: 13px;
+  }
+  .parque-abrir {
+    gap: 6px;
+  }
+  .parque-simbolo {
+    width: 24px;
+    height: 29px;
+  }
+  .parque-identidad strong {
+    font-size: 12px;
+  }
+  .parque-condicion {
+    font-size: 10px;
+  }
+  .parque-condicion small {
+    font-size: 10px;
+  }
+}
+
+/* La ficha ahora carga el veredicto, no solo tres números. */
+.portada-ficha {
+  align-content: start;
+  gap: 18px;
+  padding: 22px;
+}
+.portada-ficha__cabeza,
+.portada-ficha__cuerpo {
+  position: relative;
+  z-index: 4;
+}
+.portada-ficha__cuerpo {
+  align-self: end;
+  display: grid;
+  gap: 12px;
+}
+.portada-ficha__lugar {
+  font-size: clamp(17px, 2.2vw, 21px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-top: 3px;
+}
+.portada-ficha__veredicto {
+  font-size: clamp(34px, 6vw, 46px);
+  font-weight: 900;
+  font-stretch: 112%;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+}
+.portada-ficha__veredicto span {
+  display: block;
+  font-stretch: 100%;
+  font-weight: 800;
+  font-size: 0.46em;
+  letter-spacing: -0.02em;
+  opacity: 0.65;
+  margin-top: 6px;
+  text-transform: lowercase;
+}
+.portada-ficha__cabeza,
+.portada-ficha__cuerpo {
+  max-width: 74%;
+}
+.portada-ficha__cuando {
+  font-size: 13.5px;
+  line-height: 1.4;
+  opacity: 0.72;
+  max-width: 34ch;
+}
+.portada-ficha__datos {
+  padding-top: 12px;
+  border-top: 1px solid color-mix(in srgb, var(--vivo-tinta) 24%, transparent);
+}
+
+/* Los tres pasos: la respuesta a "y esto cómo se usa". */
+.portada-pasos ol {
+  display: grid;
+  gap: 22px;
+  margin-top: 22px;
+  list-style: none;
+  counter-reset: paso;
+}
+@media (min-width: 760px) {
+  .portada-pasos ol {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 30px;
+  }
+}
+.portada-pasos li {
+  display: grid;
+  gap: 7px;
+  justify-items: start;
+  padding-top: 16px;
+  border-top: 2px solid var(--app-ink);
+}
+.portada-paso__n {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--app-muted);
+}
+.portada-pasos strong {
+  font-size: clamp(17px, 2.1vw, 20px);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+.portada-pasos p {
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--app-muted);
+  text-wrap: pretty;
+}
+.portada-pasos h2,
+.portada-podio h2,
+.portada-cielo h2,
+.portada-escala h2 {
+  font-size: clamp(22px, 2.8vw, 28px);
+  font-weight: 800;
+  font-stretch: 108%;
+  letter-spacing: -0.03em;
+}
+.portada-cielo .portada-sub,
+.portada-pasos .portada-sub {
+  margin-top: 8px;
+  margin-bottom: 18px;
+}
+
+/* Shared visual language — September 2026. Structure stays with each route. */
+html { caret-color: var(--brand-ink); }
+.app-primary, .portada-accion, .boton-ubicacion {
+  background: var(--brand-yellow);
+  color: var(--brand-ink);
+}
+.app-primary:hover, .portada-accion:hover, .boton-ubicacion:hover {
+  background: var(--brand-hover);
+}
+.app-topbar { border-bottom-color: var(--app-line); }
+.perfil-rapido { border-radius: 16px; }
+.app-heading h1 { font-weight: 850; }
+.app-nav button[aria-current] { font-weight: 800; }
+.app-nav { gap: 8px; }
+.app-nav button { border-radius: 16px; }
+.app-nav button:hover { background: var(--brand-soft); color: var(--brand-ink); }
+.app-nav button[aria-current] { background: var(--brand-ink); color: var(--brand-bone); }
+.app-nav button[aria-current]::before { display: none; }
+.parque-simbolo { background: var(--brand-coral); color: var(--brand-ink); }
+.parque-fila--sugerido .parque-identidad strong { color: var(--brand-ink); }
+.parque-abrir:hover .parque-simbolo { background: var(--brand-yellow); }
+.parte-viento { border-radius: 28px; color: var(--estado-sobre); }
+.parte-viento h2 { font-weight: 900; line-height: 1.02; }
+.parte-viento__datos dd { font-weight: 500; }
+.parte-viento[data-estado="peligro"] { --estado-ink: var(--brand-bone); }
+.horas-cinta button[aria-pressed="true"] { background: var(--brand-yellow); }
+.portada-hero { padding-bottom: 30px; }
+.portada-titular { font-size: clamp(54px, 10vw, 88px); line-height: .94; }
+.portada-titular__hueco { margin-top: 4px; }
+.portada-ficha { min-height: 420px; border-radius: 36px 36px 100px 36px; align-content: space-between; }
+
+.portada-ficha__cabeza, .portada-ficha__cuerpo { max-width: 86%; }
+.portada-ficha__cuando { opacity: 1; }
+.portada-ficha__ahora, .portada-ficha__datos dt { opacity: .8; }
+.portada-ficha__veredicto span { opacity: .85; }
+.portada-ficha__datos dd { font-weight: 500; font-size: clamp(23px, 4vw, 32px); }
+.portada-firma { color: var(--app-ink); }
+.portada-pasos ol, .portada-rombos { padding: 0; }
+.portada-paso__n {
+  display: grid; place-items: center; width: 36px; height: 36px;
+  background: var(--brand-yellow); border-radius: 50%; color: var(--brand-ink); margin-bottom: 8px;
+}
+.portada-pasos li:nth-child(2) .portada-paso__n { background: var(--brand-coral); }
+.portada-pasos li:nth-child(3) .portada-paso__n { background: var(--brand-gold); }
+.portada-rombos { gap: 16px; margin-bottom: 20px; }
+.portada-rombo a { margin: 0; aspect-ratio: 1 / 1.12; }
+.portada-rombo__papel {
+  clip-path: none; border-radius: 50% 50% 48% 8%;
+  background: var(--vivo-base);
+}
+.portada-rombo__dentro { gap: 7px; padding: 18% 10%; }
+.portada-rombo__puesto, .portada-rombo__estado { opacity: .85; }
+.portada-rombo__viento { font-weight: 500; }
+.portada-cielo { padding: clamp(20px, 4vw, 36px); border-radius: 32px; background: #ebe7dc; }
+.regla-pista { background: linear-gradient(90deg, #f6e5ba, #ffc937 45%, #ff9938 70%, #c72f27); }
+.vivo__frase { line-height: .94; font-size: clamp(44px, 15vw, 86px); }
+.vivo__hueco { margin-top: 3px; }
+.vivo__pastilla { background: var(--brand-bone); color: var(--brand-ink); border: 0; border-radius: 22px; padding: 14px 17px; }
+.vivo__pastilla--llena { background: var(--brand-yellow); color: var(--brand-ink); }
+.vivo__pastilla dt, .vivo__zona span, .vivo__frescura,
+.vivo__limite-que, .vivo__limite-glosa, .vivo__listo { opacity: .82; }
+.vivo__limite[data-manda="no"] { opacity: 1; }
+.vivo__limite-valor { font-weight: 500; }
+.vivo__marca { margin-bottom: 16px; display: inline-flex; text-decoration: none; min-height: 32px; align-items: center; }
+@media (min-width: 900px) {
+  .app-nav button[aria-current] { border-radius: 20px; }
+  .portada-rombo:nth-child(even) { padding-top: 28px; }
+}
+@media (max-width: 379px) {
+  .portada-titular { font-size: 50px; }
+  .portada-ficha { padding: 22px 18px; min-height: 390px; }
+  .portada-ficha__datos { gap: 10px 16px; }
+  .portada-rombo__dentro strong { font-size: 13px; }
+  .vivo__pastillas { gap: 6px; }
+  .vivo__pastilla { padding: 12px; }
+}
+@media (forced-colors: active) {
+  .portada-titular__hueco, .vivo__hueco { color: CanvasText; -webkit-text-stroke: 0; }
+}
+
+/* Flight framing leaves the verdict and controls clear. */
+.vivo__pastilla--llena { background: var(--brand-bone); }
+.vivo__volantin { inset: 125px 0 auto; height: clamp(240px, 37dvh, 360px); width: 100%; }
+@media (min-width: 900px) {
+  .vivo__volantin { inset: 120px 2% auto auto; width: min(42%, 520px); height: 420px; }
+}
+
+/* Approved matte material, shared by forecast surfaces and the kite. */
+.superficie-mate {
+  --matte-base: var(--state-bg, var(--brand-bone));
+  isolation: isolate;
+  overflow: hidden;
+  background-color: var(--matte-base);
+  background-image: linear-gradient(135deg,
+    color-mix(in srgb, var(--matte-base) 86%, #f5e5ae),
+    var(--matte-base) 48%,
+    color-mix(in srgb, var(--matte-base) 91%, #383b32));
+}
+.superficie-mate::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background-image: var(--grain-image);
+  background-size: var(--grain-size) var(--grain-size);
+  opacity: var(--grain-opacity);
+  mix-blend-mode: soft-light;
+  border-radius: inherit;
+}
+.parte-viento > * { position: relative; z-index: 4; }
+.volantin-papel {
+  --paper-base: var(--state-bg, var(--brand-bone));
+  --paper-light: color-mix(in srgb, var(--paper-base) 24%, #f8f7e8);
+  --paper-mid: color-mix(in srgb, var(--paper-base) 52%, #f8f7e8);
+  --paper-shade: color-mix(in srgb, var(--paper-base) 82%, #252520);
+  --paper-rib: color-mix(in srgb, var(--paper-base) 48%, #252520);
+}
+/* Small profile controls keep a legible paper edge on neutral surfaces. */
+.volantin-papel.volantin { --paper-base: #c9c6b9; }
+@media (forced-colors: active) {
+  .superficie-mate { background-image: none; }
+  .superficie-mate::after { display: none; }
+}
+/* Supporting copy stays solid over the textured material. */
+.superficie-mate .vivo__frescura,
+.superficie-mate .vivo__zona span,
+.superficie-mate .vivo__limite-que,
+.superficie-mate .vivo__limite-glosa,
+.superficie-mate .vivo__listo,
+.superficie-mate .portada-ficha__ahora,
+.superficie-mate .portada-ficha__datos dt { opacity: 1; }
+.vivo.superficie-mate .vivo__limites { background: transparent; }
+.cielo-volantin .volantin-papel { --paper-base: #8d897a; }
+
+/* The field and its tether share a bottom anchor, so they cannot drift apart. */
+.vivo__campo { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+.vivo__campo > svg { display: block; width: 100%; height: 100%; }
+.volantin-campo-balanceo { transform-box: view-box; animation: vuelo-lateral var(--vuelo-duracion, 7s) ease-in-out infinite alternate; }
+@keyframes vuelo-lateral {
+  from { transform: rotate(calc(-1 * var(--vuelo-amplitud, .75deg))); }
+  to { transform: rotate(var(--vuelo-amplitud, .75deg)); }
+}
+@media (min-width: 900px) {
+  .vivo__campo { left: auto; width: min(35vw, 520px); right: 2%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .volantin-campo-balanceo { animation: none; }
+}
+/* Preparation uses the available work area, with a separate tablet composition. */
+@media (min-width: 700px) {
+  .guia-screen {
+    width: 100%; max-width: 1360px; padding: clamp(28px, 4vw, 56px);
+    display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+    grid-template-areas: "heading heading" "profiles profiles" "checklist safety" ". action";
+    gap: 28px 36px; align-items: start;
+  }
+  .guia-screen > .app-heading { grid-area: heading; margin: 0 0 4px; }
+  .guia-screen .app-heading h1 { font-size: clamp(32px,3.6vw,48px); line-height: 1.08; }
+  .guia-screen h2 { font-size: 20px; }
+  .elegir-volantin { grid-area: profiles; }
+  .checklist-app { grid-area: checklist; margin: 0; }
+  .guia-seguridad { grid-area: safety; }
+  .guia-listo { grid-area: action; margin: 0; min-height: 52px; }
+  .perfiles-app { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; margin-top: 20px; }
+  .perfiles-app label { flex-direction: column; align-items: flex-start; min-height: 200px; padding: 20px; }
+  .perfiles-app label > svg { width: 62px; height: 78px; }
+  .perfiles-app .radio-visual { position: absolute; top: 18px; right: 16px; }
+  .perfiles-app strong { font-size: 16px; }
+  .perfiles-app small { font-size: 12px; line-height: 1.5; }
+  .checklist-app > label { min-height: 78px; font-size: 14px; line-height: 1.5; }
+  .lista-titulo { flex-wrap: wrap; gap: 8px; }
+  .seguridad-app { font-size: 14px; }
+  .seguridad-app summary { min-height: 64px; }
+}
+@media (min-width: 1100px) {
+  .guia-screen {
+    grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+    grid-template-areas: "heading heading" "profiles checklist" "profiles safety" "profiles action";
+    column-gap: clamp(48px,6vw,96px); row-gap: 28px;
+  }
+  .perfiles-app { grid-template-columns: 1fr; gap: 16px; }
+  .perfiles-app label { flex-direction: row; align-items: center; min-height: 124px; padding: 22px; gap: 24px; }
+  .perfiles-app .radio-visual { position: static; margin-left: auto; }
+  .perfiles-app label > svg { width: 64px; height: 80px; flex: none; }
+  .guia-listo { width: auto; justify-self: start; padding-inline: 28px; }
+}
+/* Outdoor reading gets its own wide layout, rather than a centered phone column. */
+@media (min-width: 700px) {
+  .vivo {
+    padding: clamp(28px,4vw,56px) max(32px,calc((100vw - 1520px)/2));
+    grid-template-columns: minmax(0,1.15fr) minmax(0,1fr);
+    grid-template-rows: auto minmax(270px,1fr) auto auto;
+    gap: 24px 40px;
+  }
+  .vivo__cabecera { grid-column: 1/-1; grid-row: 1; }
+  .vivo__marca { margin-bottom: 20px; }
+  .vivo__marca .marca { font-size: 28px; }
+  .vivo__zona { font-size: 18px; }
+  .vivo__zona span { font-size: 13px; }
+  .vivo__frescura { font-size: 13px; }
+  .vivo__datos, .vivo__midiendo { grid-column: 1; grid-row: 2; align-self: center; padding-block: 32px; }
+  .vivo__frase { font-size: clamp(54px,6.7vw,106px); }
+  .vivo__pastillas { margin-top: 32px; gap: 12px; }
+  .vivo__pastilla { padding: 18px; border-radius: 20px; }
+  .vivo__pastilla dd { font-size: clamp(24px,2.5vw,36px); }
+  .vivo__pastilla dt { font-size: 11px; }
+  .vivo__limites { grid-column: 1; grid-row: 3; padding: 22px 0 0; gap: 24px; }
+  .vivo__limite-valor { font-size: clamp(30px,3vw,44px); }
+  .vivo__limite-que, .vivo__limite-glosa { font-size: 12px; }
+  .vivo__listo { grid-column: 1; grid-row: 4; font-size: 14px; }
+  .vivo__campo { left: auto; right: max(24px,calc((100vw - 1520px)/2)); width: min(43vw,700px); }
+}
+@media (min-width: 700px) and (max-width: 999px) {
+  .vivo { gap: 20px; padding-inline: 28px; grid-template-columns: minmax(0,1.2fr) minmax(0,1fr); }
+  .vivo__pastillas { gap: 7px; flex-wrap: wrap; }
+  .vivo__pastilla { padding: 13px 12px; }
+  .vivo__pastilla dd { font-size: 23px; }
+  .vivo__frase { font-size: clamp(46px,6.8vw,66px); }
+}
+/* Park identity is a vertical text group, never an inline sentence of metadata. */
+.parque-identidad { display: grid; gap: 5px; flex: 1; min-width: 0; }
+.parque-identidad > span { padding: 0; color: var(--app-muted); line-height: 1.35; }
+.parque-identidad small { display: block; }
+@media (min-width: 700px) and (max-width: 899px) {
+  .explorar-cuerpo:not(.explorar-cuerpo--lista) {
+    grid-template-columns: minmax(300px,.95fr) minmax(0,1fr);
+    grid-template-rows: minmax(0,1fr);
+  }
+  .explorar-mapa { grid-column: 2; grid-row: 1; }
+  .explorar-lista { grid-column: 1; grid-row: 1; border-radius: 0; border-right: 1px solid var(--app-line); }
+}
+@media (min-width: 900px) {
+  .explorar-cuerpo:not(.explorar-cuerpo--lista) { grid-template-columns: clamp(380px,32vw,500px) minmax(0,1fr); }
+  .explorar-herramientas { grid-template-columns: clamp(350px,30vw,470px) minmax(0,1fr); }
+  .buscar-ubicacion { width: min(100%,560px); }
+  .explorar-lista { padding: 22px 24px; }
+  .explorar-cuerpo--lista .explorar-lista { width: 100%; max-width: 1180px; margin-inline: auto; border-right: 0; }
+  .app-nav button { font-size: 11px; }
+  .parque-identidad strong { font-size: 16px; }
+  .parque-identidad > span { font-size: 13px; }
+}
+@media (min-width: 700px) and (max-width: 1199px) {
+  .explorar-cuerpo:not(.explorar-cuerpo--lista) .parque-abrir {
+    display: grid; grid-template-columns: 30px minmax(0,1fr);
+    grid-template-areas: "number identity" ". condition"; gap: 8px 12px;
+  }
+  .explorar-cuerpo:not(.explorar-cuerpo--lista) .parque-simbolo { grid-area: number; }
+  .explorar-cuerpo:not(.explorar-cuerpo--lista) .parque-identidad { grid-area: identity; }
+  .explorar-cuerpo:not(.explorar-cuerpo--lista) .parque-condicion { grid-area: condition; display: flex; gap: 12px; max-width: none; text-align: left; }
+}
+/* The outing and its persistent action bar share the same content alignment. */
+@media (min-width: 700px) {
+  .salida-screen { width: 100%; max-width: 1360px; padding: 32px; }
+  .salida-layout { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); align-items: start; gap: 28px; }
+  .salida-screen .app-heading h1 { font-size: clamp(30px,3.3vw,44px); }
+  .parte-viento { padding: 26px; min-height: 300px; }
+  .parte-viento h2 { font-size: clamp(32px,3.5vw,48px); }
+  .parte-viento__datos { gap: 14px; }
+  .parte-viento__datos dd { font-size: clamp(32px,3.6vw,48px); }
+  .app-main--salida > .salida-acciones {
+    padding: 14px max(32px,calc((100% - 1296px)/2));
+    grid-template-columns: repeat(2,minmax(0,280px)); justify-content: start; gap: 14px;
+  }
+  .estado-pronostico { max-width: none; }
+}
+@media (min-width: 1100px) {
+  .salida-layout { grid-template-columns: minmax(0,1.05fr) minmax(0,1fr); gap: 40px; }
+  .parte-viento { padding: 36px; min-height: 350px; }
+  .parte-viento > p { font-size: 17px; }
+  .parte-viento__datos dt { font-size: 14px; }
+  .nota-modelo, .estado-pronostico { font-size: 13px; line-height: 1.5; }
+}
+
+/* Shared desktop origin prevents a jump when switching work views. */
+@media (min-width: 900px) {
+  .salida-screen, .guia-screen { padding: 32px; max-width: 1360px; }
+  .salida-screen > .app-heading, .guia-screen > .app-heading {
+    position: relative; min-height: 100px; align-items: flex-start; margin: 0;
+  }
+  .salida-screen > .app-heading { margin-bottom: 28px; }
+  .salida-screen .app-heading h1, .guia-screen .app-heading h1 {
+    font-size: clamp(32px, 3.3vw, 44px); line-height: 1.08; margin-top: 0;
+  }
+  .salida-screen .app-heading > div { padding-right: 180px; }
+  .salida-screen .volver-parques { position: absolute; top: 0; right: 52px; min-height: 44px; margin: 0; }
+}
+.calendario-opciones { grid-column: 2; font-size: 13px; min-width: 0; }
+.calendario-opciones summary { display: flex; align-items: center; gap: 10px; min-height: 44px; cursor: pointer; width: fit-content; }
+.calendario-opciones summary::-webkit-details-marker { display: none; }
+.calendario-opciones summary svg { width: 22px; height: 22px; }
+.calendario-opciones > div { display: grid; gap: 4px; padding: 8px; border: 1px solid var(--app-line); border-radius: 14px; background: var(--brand-bone); }
+.calendario-opciones a { display: flex; align-items: center; min-height: 44px; padding: 8px 12px; border-radius: 8px; }
+.calendario-opciones a:hover { background: var(--brand-soft); }
+
+.dias-salida { display: flex; gap: 4px; width: fit-content; padding: 4px; margin-bottom: 24px; border: 1px solid var(--app-line); border-radius: 16px; }
+.dias-salida button { min-height: 44px; min-width: 96px; border-radius: 12px; font-weight: 700; }
+.dias-salida button[aria-pressed="true"] { background: var(--brand-ink); color: var(--brand-bone); }
+.dias-salida button[aria-pressed="false"]:hover { background: var(--brand-soft); }
+
+/* Care reads as a short preparation ritual, using the existing checklist. */
+.cuidados-intro { padding-bottom: 20px; border-bottom: 1px solid var(--app-line); }
+.cuidados-intro .cuidados-etiqueta { margin: 0 0 12px; font-size: 11px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; color: var(--app-muted); }
+.checklist-app .cuidados-intro h2 { margin: 0; font-size: clamp(26px, 2.6vw, 36px); font-weight: 850; letter-spacing: -.035em; line-height: 1.08; }
+.cuidados-intro > p:not(.cuidados-etiqueta) { margin: 12px 0 16px; font-size: 14px; line-height: 1.5; color: var(--app-muted); }
+.cuidados-progreso { display: inline-block; border-radius: 6px; padding: 5px 8px; background: var(--brand-soft); font-size: 12px; font-weight: 650; }
+.checklist-app > label { align-items: flex-start; gap: 14px; padding-block: 20px; }
+.checklist-app .check-visual { margin-top: 2px; flex: none; }
+.cuidado-texto { display: grid; gap: 5px; }
+.cuidado-texto strong { font-size: 16px; line-height: 1.3; font-weight: 750; }
+.cuidado-texto small { font-size: 14px; line-height: 1.55; color: var(--app-muted); }
+.checklist-app label:has(input:checked) .cuidado-texto { text-decoration: none; opacity: 1; }
+
+.portada-contacto { display: inline-flex; align-items: center; min-height: 44px; color: var(--app-muted); font-size: 12px; text-decoration: underline; text-underline-offset: 3px; }

@@ -22,6 +22,15 @@ export const VEREDICTOS = {
   peligro: "NO SALGAS",
 } as const;
 
+/** The second line under the verdict. VEREDICTOS states it; this one says it out loud. */
+export const COLETILLAS = {
+  plancha: "ni un soplo.",
+  liviano: "igual sale.",
+  ideal: "ahora.",
+  bravo: "agárralo firme.",
+  peligro: "en serio.",
+} as const satisfies Record<keyof typeof VEREDICTOS, string>;
+
 export type Perfil = keyof typeof PERFILES;
 export type BandaId = keyof typeof VEREDICTOS;
 

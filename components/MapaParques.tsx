@@ -88,7 +88,7 @@ export default function MapaParques({ parques, seleccionado, ubicacion, elegir }
             const boton = document.createElement("button");
             boton.type = "button";
             boton.className = `mapa-punto${agrupado ? " mapa-punto--grupo" : ""}${p.elegido ? " mapa-punto--elegido" : ""}`;
-            boton.textContent = agrupado ? `${p.point_count}` : `${p.numero}`;
+            boton.textContent = agrupado ? `${p.point_count} parques` : `${p.numero}`;
             const nombre = agrupado ? `Acercar ${p.point_count} parques` : `Ver ${p.nombre}`;
             boton.setAttribute("aria-label", nombre);
             boton.title = nombre;

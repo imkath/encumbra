@@ -1,3 +1,4 @@
+import { VolantinPapel } from "./VolantinPapel.tsx";
 import { trazarCielo } from "@/lib/cielo.ts";
 import { formatearHora } from "@/lib/formato.ts";
 
@@ -8,7 +9,7 @@ type Props = {
 
 /**
  * The next twelve hours of wind as a ridge, with the stretch that actually
- * flies laid over it in lime and a kite resting on the current hour. It reads
+ * flies laid over it in color and a kite resting on the current hour. It reads
  * as a picture and answers a question: does the curve enter the band today.
  *
  * The curve stretches to fill its box, so the kite lives outside the SVG as a
@@ -37,8 +38,8 @@ export function Cielo({ horas, ahora }: Props) {
         >
           <defs>
             <linearGradient id="cielo-relleno" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#2b3a56" stopOpacity="0.20" />
-              <stop offset="100%" stopColor="#2b3a56" stopOpacity="0.02" />
+              <stop offset="0%" stopColor="var(--brand-ink)" stopOpacity="0.20" />
+              <stop offset="100%" stopColor="var(--brand-ink)" stopOpacity="0.02" />
             </linearGradient>
           </defs>
           <rect
@@ -65,13 +66,7 @@ export function Cielo({ horas, ahora }: Props) {
             style={{ left: izquierda(marca.x), top: arriba(marca.y) }}
             data-vuela={enBanda ? "si" : "no"}
           >
-            <svg viewBox="-16 -24 32 58" aria-hidden="true">
-              <path className="cielo-vela" d="M 0 -21 L 13 0 L 0 21 L -13 0 Z" />
-              <path
-                className="cielo-cola"
-                d="M 0 21 q 7 8 -3 14 q -8 5 -1 11"
-              />
-            </svg>
+            <VolantinPapel banda="ideal" encuadre="icono" />
           </span>
         ) : null}
       </div>

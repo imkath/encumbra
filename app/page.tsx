@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { VEREDICTOS, CONSEJOS, ETIQUETAS } from "@/lib/bandas.ts";
+import { VEREDICTOS, COLETILLAS, CONSEJOS, ETIQUETAS } from "@/lib/bandas.ts";
 import {
   formatearHora,
   formatearVentana,
@@ -8,10 +8,11 @@ import {
 import { getPronostico } from "@/lib/openmeteo.ts";
 import { ordenarParques } from "@/lib/parques.ts";
 import { lecturasParques, type LecturaParque } from "@/lib/salida.ts";
-import { Icono, MarcaVolantin } from "@/components/Icono.tsx";
+import { Icono } from "@/components/Icono.tsx";
+import { Marca } from "@/components/Marca.tsx";
 import { ReglaBandas } from "@/components/ReglaBandas.tsx";
 import { Cielo } from "@/components/Cielo.tsx";
-import { Volantin } from "@/components/Volantin.tsx";
+import { VolantinPapel } from "@/components/VolantinPapel.tsx";
 
 export const dynamic = "force-dynamic";
 
@@ -55,119 +56,167 @@ export default async function Landing({ searchParams }: Props) {
   const ordenados = ordenarParques(parques, "adecuado");
   const mejor = ordenados[0]!;
   const banda = mejor.banda;
-  const zonaMejor = pronostico.zonas.find((z) => z.id === mejor.zonaId);
-  const hoy = ahora.toISOString().slice(0, 10);
-  const delDia = (fechas: readonly string[] | undefined) =>
-    fechas?.find((d) => d.slice(0, 10) === hoy);
   const anda = banda === "ideal" || banda === "liviano";
   // A flat "no" would talk the visitor out of the app; point at the next window.
   const proxima = ordenados
-    .flatMap((p) => (p.ventanaDiurna ? [{ parque: p, v: p.ventanaDiurna }] : []))
+    .flatMap((p) =>
+      p.ventanaDiurna ? [{ parque: p, v: p.ventanaDiurna }] : [],
+    )
     .sort((a, b) => Date.parse(a.v.inicio) - Date.parse(b.v.inicio))[0];
+  const cuatro = ordenados.slice(0, 4);
 
   return (
     <div className="portada">
-      <header className="app-topbar">
-        <a className="app-marca" href="/app">
-          <MarcaVolantin />
-          <span>encumbra</span>
+      <header className="portada-barra">
+        <a className="portada-logo" href="/app" aria-label="Encumbra">
+          <Marca />
         </a>
         <span className="portada-ciudad">Santiago, Chile</span>
       </header>
 
-      <main>
-        <section className="portada-hero">
-          <Volantin className="portada-volantin" banda={banda} />
-          <div className="portada-decir">
-            <h1>El cielo es tuyo.</h1>
-            <p className="portada-sub">
-              Encumbra mira el viento de {parques.length} parques de Santiago y
-              te dice en cuál anda, a qué hora y con qué volantín.
-            </p>
-            <a className="portada-accion" href="/app">
-              Ver parques cerca
-              <Icono nombre="flecha" />
-            </a>
-          </div>
+      {/* Say what this is before showing what it knows. */}
+      <section className="portada-hero">
+        <div className="portada-decir">
+          <h1 className="portada-titular">
+            <span className="portada-titular__grito">¿anda</span>
+            <span className="portada-titular__hueco">o no anda?</span>
+          </h1>
+          <p className="portada-explica">
+            Encumbra mira el viento de {parques.length} parques de Santiago y te
+            dice en cuál vuela tu volantín, a qué hora y con cuál. Sin cuenta,
+            sin instalar nada.
+          </p>
+          <a className="portada-accion" href="/app">
+            Ver los parques
+            <Icono nombre="flecha" />
+          </a>
+          <p className="portada-firma">El cielo es tuyo.</p>
+        </div>
 
-          <div className="portada-tarjeta" data-estado={banda ?? "sin-datos"}>
-            <span className="portada-tarjeta__ahora">Ahora en Santiago</span>
-            <strong className="portada-tarjeta__palabra">
-              {banda ? VEREDICTOS[banda] : "SIN DATOS"}
-            </strong>
-            <p className="portada-tarjeta__detalle">
+        {/* The live answer, as proof that the thing above actually works. */}
+        <aside className="portada-ficha superficie-mate" data-paleta={banda ?? "sin-datos"}>
+          <VolantinPapel
+            className="portada-ficha__volantin"
+            banda={banda}
+            encuadre="tarjeta"
+          />
+          <div className="portada-ficha__cabeza">
+            <p className="portada-ficha__ahora">Ahora mismo, el mejor</p>
+            <p className="portada-ficha__lugar">{nombreLugar(mejor)}</p>
+          </div>
+          <div className="portada-ficha__cuerpo">
+            <p className="portada-ficha__veredicto">
+              {banda ? VEREDICTOS[banda] : "SIN DATOS"}{" "}
+              <span>{banda ? COLETILLAS[banda] : "volvemos."}</span>
+            </p>
+            <p className="portada-ficha__cuando">
               {banda
                 ? anda && mejor.ventanaDiurna
-                  ? `${nombreLugar(mejor)}, ${cuando(mejor.ventanaDiurna, ahora)}`
+                  ? `Buen rato ${cuando(mejor.ventanaDiurna, ahora)}.`
                   : proxima
-                    ? `Aguanta: el mejor rato es ${cuando(proxima.v, ahora)} en ${nombreLugar(proxima.parque)}.`
+                    ? `El mejor rato es ${cuando(proxima.v, ahora)} en ${nombreLugar(proxima.parque)}.`
                     : CONSEJOS[banda]
-                : "No pudimos leer el viento ahora. La app igual te muestra los parques."}
+                : "No pudimos leer el viento ahora."}
             </p>
             {mejor.hora ? (
-              <dl className="portada-datos">
+              <dl className="portada-ficha__datos">
                 <div>
-                  <dt>Viento</dt>
+                  <dt>viento</dt>
                   <dd>{formatearVelocidad(mejor.hora.viento)}</dd>
                 </div>
                 <div>
-                  <dt>Rachas</dt>
-                  <dd>{formatearVelocidad(mejor.hora.racha)}</dd>
+                  <dt>rachas</dt>
+                  <dd>{Math.round(mejor.hora.racha)} km/h</dd>
                 </div>
                 <div>
-                  <dt>Actualizado</dt>
+                  <dt>al día</dt>
                   <dd>
                     {pronostico.actualizadoEn
                       ? formatearHora(pronostico.actualizadoEn)
-                      : "sin dato"}
+                      : "—"}
                   </dd>
                 </div>
               </dl>
             ) : null}
           </div>
+        </aside>
+      </section>
+
+      <main>
+        {/* Three steps, because "what do I do with this" is the next question. */}
+        <section className="portada-pasos">
+          <h2>Cómo se usa</h2>
+          <ol>
+            <li>
+              <span className="portada-paso__n">1</span>
+              <strong>Dinos qué volantín tienes</strong>
+              <p>
+                Uno de papel liviano, uno con cola o uno acrobático. Cada uno
+                necesita un viento distinto, y eso cambia la respuesta.
+              </p>
+            </li>
+            <li>
+              <span className="portada-paso__n">2</span>
+              <strong>Mira los {parques.length} parques en el mapa</strong>
+              <p>
+                Cada parque dice si anda o no anda ahora, y a qué hora se pone
+                bueno. No hay que leer números si no quieres.
+              </p>
+            </li>
+            <li>
+              <span className="portada-paso__n">3</span>
+              <strong>Sal, y llévatelo al parque</strong>
+              <p>
+                Ya en el pasto, la pantalla de terreno te dice cuánto rato te
+                queda de viento y cuánta luz. Funciona sin señal.
+              </p>
+            </li>
+          </ol>
         </section>
 
-        <section className="portada-cielo">
-          <Cielo horas={mejor.horas} ahora={mejor.hora?.fecha} />
-        </section>
-
-        <section className="portada-lista">
+        {/* Four kites, not four rows: the ranking is the picture. */}
+        <section className="portada-podio">
           <div className="portada-lista__titulo">
             <h2>Los mejores ahora</h2>
-            <span>{parques.length} parques en total</span>
+            <span>de {parques.length} parques</span>
           </div>
-          <ul>
-            {ordenados.slice(0, 4).map((p, i) => (
-              <li key={p.id} className="parque-fila">
-                <a
-                  className="parque-abrir"
-                  href={`/app?parque=${p.id}&zona=${p.zonaId}`}
-                >
-                  <span className="parque-simbolo">{i + 1}</span>
-                  <span className="parque-identidad">
+          <ol className="portada-rombos">
+            {cuatro.map((p, i) => (
+              <li
+                key={p.id}
+                className="portada-rombo"
+                data-paleta={p.banda ?? "sin-datos"}
+                style={{ "--orden": i } as React.CSSProperties}
+              >
+                <a href={`/app?parque=${p.id}&zona=${p.zonaId}`}>
+                  <span className="portada-rombo__papel superficie-mate" aria-hidden="true" />
+                  <span className="portada-rombo__dentro">
+                    <span className="portada-rombo__puesto">{i + 1}</span>
                     <strong>{p.nombre}</strong>
-                    {p.nombre === p.comuna ? null : <span>{p.comuna}</span>}
-                  </span>
-                  <span
-                    className="parque-condicion"
-                    data-estado={p.banda ?? "sin-datos"}
-                  >
-                    <span>
-                      <i />
+                    <span className="portada-rombo__viento">
+                      {p.hora ? formatearVelocidad(p.hora.viento) : "sin dato"}
+                    </span>
+                    <span className="portada-rombo__estado">
                       {p.banda ? ETIQUETAS[p.banda] : "sin dato"}
                     </span>
-                    <small>
-                      {p.hora ? formatearVelocidad(p.hora.viento) : "—"}
-                    </small>
                   </span>
                 </a>
               </li>
             ))}
-          </ul>
+          </ol>
           <a className="portada-vertodos" href="/app">
-            Ver los {parques.length} parques en el mapa
+            Verlos todos en el mapa
             <Icono nombre="flecha" />
           </a>
+        </section>
+
+        <section className="portada-cielo">
+          <h2>El viento de hoy</h2>
+          <p className="portada-sub">
+            Cómo se mueve el viento en {mejor.nombre} durante el día. La franja
+            marcada es cuando vuela.
+          </p>
+          <Cielo horas={mejor.horas} ahora={mejor.hora?.fecha} />
         </section>
 
         <section className="portada-escala">
@@ -193,6 +242,9 @@ export default async function Landing({ searchParams }: Props) {
           Datos de Open-Meteo. Cartografía de OpenFreeMap, OpenMapTiles y
           OpenStreetMap.
         </p>
+        <a className="portada-contacto" href="https://nvrkth.com" target="_blank" rel="noopener noreferrer">
+          Contacto y sugerencias · nvrkth ↗
+        </a>
       </footer>
     </div>
   );

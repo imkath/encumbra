@@ -12,6 +12,7 @@ import {
 } from "@/lib/parques.ts";
 import {
   contextoSalida,
+  diaDeSalida,
   luzEnHorario,
   elegirParqueInicial,
   lecturasParques,
@@ -19,11 +20,12 @@ import {
 } from "@/lib/salida.ts";
 import { formatearHora } from "@/lib/formato.ts";
 import {
-  crearCalendario,
   leerPronosticoGuardado,
   serializarPronostico,
 } from "@/lib/vivo.ts";
-import { Icono, MarcaVolantin, Volantin } from "./Icono.tsx";
+import { Icono, Volantin } from "./Icono.tsx";
+import { AgregarCalendario } from "./AgregarCalendario.tsx";
+import { Marca } from "./Marca.tsx";
 
 const Mapa = dynamic(() => import("./MapaParques.tsx"), {
   ssr: false,
@@ -89,10 +91,12 @@ export function EncumbraApp({
     "adecuado",
   );
   const [favoritos, setFavoritos] = useState<string[]>([]);
+  const [diaElegido, setDiaElegido] = useState<0 | 1>(0);
   const [horaElegida, setHoraElegida] = useState<string | null>(null);
   const [listaCompleta, setListaCompleta] = useState(false);
   const [checks, setChecks] = useState<string[]>([]);
   const contenido = useRef<HTMLDivElement>(null);
+  const cintaHoras = useRef<HTMLDivElement>(null);
   const titulo = useRef<HTMLHeadingElement>(null);
   const [vistaMapa, setVistaMapa] = useState(true);
 
@@ -197,10 +201,22 @@ export function EncumbraApp({
     listaCompleta || busqueda || orden === "guardados"
       ? resultados
       : resultados.slice(0, 5);
-  const hora = parque.horas.find((h) => h.fecha === horaElegida) ?? parque.hora;
+  const fechaPlan = diaDeSalida(ahora, diaElegido);
+  const plan = lecturasParques(pronostico, perfil, ahora, ubicacion, fechaPlan).find((p) => p.id === parque.id)!;
   const actualizado = pronostico.estado === "actual";
   const zonaElegida = pronostico.zonas.find((z) => z.id === parque.zonaId);
   const luzDeHora = (fecha: string) => luzEnHorario(fecha, zonaElegida?.salidaSol ?? [], zonaElegida?.puestaSol ?? []);
+  const hora = plan.horas.find((h) => h.fecha === horaElegida)
+    ?? (diaElegido === 0 ? plan.horas[0] : plan.horas.find((h) => plan.ventanaDiurna && Date.parse(h.fecha) >= Date.parse(plan.ventanaDiurna.inicio)))
+    ?? (diaElegido === 1 ? plan.horas.find((h) => luzDeHora(h.fecha)) : null)
+    ?? plan.horas[0] ?? null;
+  useEffect(() => {
+    const cinta = cintaHoras.current;
+    const activa = cinta?.querySelector<HTMLButtonElement>('[aria-pressed="true"]');
+    if (cinta && activa) {
+      cinta.scrollTo({ left: cinta.scrollLeft + activa.getBoundingClientRect().left - cinta.getBoundingClientRect().left - 8, behavior: "instant" });
+    }
+  }, [fechaPlan, hora?.fecha, vista]);
   const contexto = contextoSalida(hora, hora ? luzDeHora(hora.fecha) : null, actualizado);
   const propuesto =
     orden === "adecuado" && actualizado && !busqueda
@@ -273,10 +289,6 @@ export function EncumbraApp({
     );
   }
   const elegirDesdeMapa = (id: string) => navegar("salida", id);
-  const calendario =
-    parque.ventanaDiurna && actualizado
-      ? crearCalendario(parque.ventanaDiurna, parque.nombre, ahora)
-      : null;
   const activoNav = (v: Vista) => (vista === v ? ("page" as const) : undefined);
 
   function fila(p: LecturaParque, indice: number) {
@@ -340,8 +352,7 @@ export function EncumbraApp({
           onClick={() => navegar("parques")}
           aria-label="Encumbra, explorar parques"
         >
-          <MarcaVolantin />
-          <span>encumbra</span>
+          <Marca />
         </button>
         <span className="app-ciudad">Santiago, Chile</span>
         <label className="perfil-rapido">
@@ -596,18 +607,18 @@ export function EncumbraApp({
                   <Icono nombre="guardar" />
                 </button>
               </div>
+              <div className="dias-salida" role="group" aria-label="Día de la salida">
+                {([0, 1] as const).map((dia) => <button key={dia} type="button" aria-pressed={diaElegido === dia} onClick={() => { setDiaElegido(dia); setHoraElegida(null); }}>{dia === 0 ? "Hoy" : "Mañana"}</button>)}
+              </div>
               <div className="salida-layout">
                 <section
-                  className="parte-viento"
+                  className="parte-viento superficie-mate"
                   data-estado={contexto?.estado ?? hora?.banda ?? "sin-datos"}
                   aria-label="Condiciones de viento"
                 >
                   <div className="parte-viento__hora">
                     <span>
-                      <i />
-                      {horaElegida && hora
-                        ? `A las ${formatearHora(hora.fecha)}`
-                        : "Ahora"}
+                      {hora ? (diaElegido === 1 ? `Mañana · ${formatearHora(hora.fecha)}` : hora.fecha === parque.hora?.fecha ? "Ahora" : `Hoy · ${formatearHora(hora.fecha)}`) : (diaElegido === 1 ? "Mañana · sin datos" : "Hoy · sin datos")}
                     </span>
                     <span>{actualizado ? "Pronóstico" : "Último dato"}</span>
                   </div>
@@ -615,7 +626,7 @@ export function EncumbraApp({
                   <p>
                     {contexto?.detalle ?? (hora
                       ? `Por viento: ${CONSEJOS[hora.banda]}`
-                      : "Todavía puedes elegir tu parque. Reintenta para conocer las condiciones.")}
+                      : "No hay datos para este día. Prueba el otro día o actualiza el pronóstico.")}
                   </p>
                   {hora?.probabilidadPrecipitacion !== null &&
                   hora?.probabilidadPrecipitacion !== undefined &&
@@ -652,35 +663,28 @@ export function EncumbraApp({
                 </section>
                 <div className="salida-plan">
                   <div className="ventana-salida">
-                    <Icono nombre={parque.ventanaDiurna ? "sol" : "reloj"} />
+                    <Icono nombre={plan.ventanaDiurna ? "sol" : "reloj"} />
                     <div>
                       <strong>
-                        {parque.ventanaDiurna
+                        {plan.ventanaDiurna
                           ? "Viento y luz coinciden"
-                          : parque.luzConfirmada
+                          : plan.luzConfirmada
                             ? "Sin ventana de viento con luz"
                             : "Horario con luz pendiente"}
                       </strong>
                       <p>
-                        {parque.ventanaDiurna
-                          ? `${new Intl.DateTimeFormat("es-CL", { timeZone: "America/Santiago", weekday: "short", day: "numeric" }).format(new Date(parque.ventanaDiurna.inicio))} · ${formatearHora(parque.ventanaDiurna.inicio)}–${formatearHora(parque.ventanaDiurna.fin)}. Revisa la lluvia.`
-                          : parque.luzConfirmada
+                        {plan.ventanaDiurna
+                          ? `${new Intl.DateTimeFormat("es-CL", { timeZone: "America/Santiago", weekday: "short", day: "numeric" }).format(new Date(plan.ventanaDiurna.inicio))} · ${formatearHora(plan.ventanaDiurna.inicio)}–${formatearHora(plan.ventanaDiurna.fin)}. Revisa la lluvia.`
+                          : plan.luzConfirmada
                             ? "Puedes revisar el viento hora a hora."
                             : "No recomendamos un horario sin amanecer confirmado."}
                       </p>
                     </div>
-                    {calendario ? (
-                      <a
-                        aria-label="Agregar ventana diurna al calendario"
-                        download={`encumbra-${parque.id}.ics`}
-                        href={`data:text/calendar;charset=utf-8,${encodeURIComponent(calendario)}`}
-                      >
-                        <Icono nombre="calendario" />
-                        <span>Agregar al calendario</span>
-                      </a>
+                    {plan.ventanaDiurna && actualizado ? (
+                      <AgregarCalendario ventana={plan.ventanaDiurna} lugar={parque.nombre} />
                     ) : null}
                   </div>
-                  {parque.horas.length ? (
+                  {plan.horas.length ? (
                     <section
                       className="horas-app"
                       aria-label="Pronóstico por hora"
@@ -689,8 +693,8 @@ export function EncumbraApp({
                         <h2>Elige tu momento</h2>
                         <span>Desliza las horas</span>
                       </div>
-                      <div className="horas-cinta">
-                        {parque.horas.map((h, i) => (
+                      <div className="horas-cinta" ref={cintaHoras}>
+                        {plan.horas.map((h) => (
                           <button
                             key={h.fecha}
                             data-estado={h.banda}
@@ -700,7 +704,7 @@ export function EncumbraApp({
                             onClick={() => setHoraElegida(h.fecha)}
                           >
                             <time dateTime={h.fecha}>
-                              {i === 0 ? "Ahora" : formatearHora(h.fecha)}
+                              {diaElegido === 0 && h.fecha === parque.hora?.fecha ? "Ahora" : formatearHora(h.fecha)}
                             </time>
                             <Icono nombre={luzDeHora(h.fecha) === false ? "luna" : "viento"} />
                             <strong>{Math.round(h.viento)}<small> km/h</small></strong>
@@ -711,8 +715,7 @@ export function EncumbraApp({
                       </div>
                       <div className="horas-leyenda">
                         <span>
-                          <i />
-                          Viento favorable
+                              Viento favorable
                         </span>
                         <span>Viento y rachas en km/h</span>
                       </div>
@@ -722,8 +725,8 @@ export function EncumbraApp({
                     <Icono nombre="sol" />
                     <span>Puesta de sol</span>
                     <strong>
-                      {parque.luz.fecha
-                        ? formatearHora(parque.luz.fecha)
+                      {plan.luz.fecha
+                        ? formatearHora(plan.luz.fecha)
                         : "Sin dato"}
                     </strong>
                   </div>
@@ -783,35 +786,38 @@ export function EncumbraApp({
                   ))}
                 </div>
               </section>
-              <section className="checklist-app">
-                <div className="lista-titulo">
-                  <h2>Una última mirada</h2>
-                  <span>{checks.length}/3 completados</span>
+              <section className="checklist-app" aria-labelledby="cuidados-titulo">
+                <div className="cuidados-intro">
+                  <p className="cuidados-etiqueta">Cuidados al encumbrar</p>
+                  <h2 id="cuidados-titulo">Para pasarlo bien<br />y volver bien.</h2>
+                  <p>Un par de cuidados antes de soltar hilo.</p>
+                  <span className="cuidados-progreso" role="status">{checks.length} de 3 revisados</span>
                 </div>
                 {[
-                  "Hilo sin curar y carrete en buen estado",
-                  "Espacio abierto, lejos de cables y calles",
-                  "Agua, protección solar y tiempo para volver",
-                ].map((texto) => (
-                  <label key={texto}>
+                  { id: "lugar", titulo: "Dónde encumbrar", detalle: "Elige un espacio abierto, lejos de cables y calles. Deja espacio con otras personas." },
+                  { id: "equipo", titulo: "Qué llevar", detalle: "Hilo sin curar, carrete en buen estado, agua y protección solar." },
+                  { id: "regreso", titulo: "Cuándo parar", detalle: "Si las rachas te hacen perder el control o empieza a faltar luz, es momento de recoger." },
+                ].map((cuidado) => (
+                  <label key={cuidado.id}>
                     <input
                       type="checkbox"
-                      checked={checks.includes(texto)}
+                      checked={checks.includes(cuidado.id)}
                       onChange={() =>
                         setChecks(
-                          checks.includes(texto)
-                            ? checks.filter((c) => c !== texto)
-                            : [...checks, texto],
+                          checks.includes(cuidado.id)
+                            ? checks.filter((c) => c !== cuidado.id)
+                            : [...checks, cuidado.id],
                         )
                       }
                     />
                     <span className="check-visual">
                       <Icono nombre="check" />
                     </span>
-                    <span>{texto}</span>
+                    <span className="cuidado-texto"><strong>{cuidado.titulo}</strong><small>{cuidado.detalle}</small></span>
                   </label>
                 ))}
               </section>
+              <div className="guia-seguridad">
               <details className="seguridad-app">
                 <summary>
                   Si se enreda en un cable
@@ -846,6 +852,14 @@ export function EncumbraApp({
                   Leer la ley en la BCN
                 </a>
               </details>
+              <details className="seguridad-app">
+                <summary>Cómo leemos el viento<Icono nombre="abajo" /></summary>
+                <p>El viento indica cuánto sopla en promedio. Las rachas son aumentos breves: si son fuertes, el volantín puede dar tirones aunque el promedio parezca bueno.</p>
+                <p>El perfil importa: uno de papel liviano necesita menos viento que uno acrobático. Al elegir cuál llevas, ajustamos la lectura y los horarios favorables.</p>
+                <p>Usamos el pronóstico de Open-Meteo por zona. Varios parques comparten los mismos datos; árboles, edificios y relieve pueden cambiar lo que sientes en el lugar.</p>
+                <p>Los horarios propuestos combinan viento favorable y luz de día. Revisa también la lluvia y las condiciones al llegar: es una estimación, no una medición en el parque.</p>
+              </details>
+              </div>
               <button
                 className="app-primary guia-listo"
                 onClick={() => navegar("salida")}

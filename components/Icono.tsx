@@ -1,3 +1,4 @@
+import { VolantinPapel } from "./VolantinPapel.tsx";
 import type { CSSProperties } from "react";
 const trazos = {
   luna: <path d="M20 14a8 8 0 0 1-10-10 8 8 0 1 0 10 10Z" />,
@@ -101,31 +102,7 @@ export function Icono({
 }
 /** Paper panels, bamboo spars and a cloth tail: three distinct flying shapes. */
 export function Volantin({ perfil = "estandar" }: { perfil?: "liviano" | "estandar" | "acrobatico" }) {
-  return (
-    <svg className="volantin" viewBox="0 0 80 96" fill="none" aria-hidden="true">
-      <g className="volantin__vela">
-        {perfil === "acrobatico" ? <>
-          <path d="M40 8 5 60 40 48 75 60Z" fill="#1d2642" />
-          <path d="M40 8 20 54 40 43 60 54Z" fill="#b0a1ff" />
-          <path d="m40 8-7 38 7-3 7 3Z" fill="#d9fc69" />
-          <path d="M40 8v40M5 60l35-12 35 12" stroke="#142a85" strokeWidth="1.2" />
-          <path d="M24 54c-6 17 13 19 5 35M56 54c6 17-13 19-5 35" stroke="#7784a5" strokeWidth="1" />
-        </> : <>
-          <path d="M40 5 71 35 40 66 9 35Z" fill={perfil === "liviano" ? "#d9fc69" : "#3155f5"} />
-          <path d="M40 5v30H9Z" fill={perfil === "liviano" ? "#efffb0" : "#8cbdff"} />
-          <path d="M40 35h31L40 66Z" fill={perfil === "liviano" ? "#97c730" : "#1933b5"} />
-          <path d="M40 5v61M9 35h62" stroke="#f7faff" strokeWidth="1.1" />
-          <path d="M11 35 40 7l29 28-29 29Z" stroke="#10255126" />
-          <path className="volantin__cola" d="M40 66c-17 9 17 13 1 27" stroke="#253ff0" strokeWidth="1.6" />
-          {perfil === "estandar" && <>
-            <path d="m34 71 7 3-7 4Zm11 10-7 3 7 4Z" fill="#253ff0" />
-            <path d="m43 89-6 2 6 4Z" fill="#3155f5" />
-          </>}
-          <path d="M40 35c-2 16-13 20-22 26" stroke="#f7faff" strokeWidth=".8" />
-        </>}
-      </g>
-    </svg>
-  );
+  return <VolantinPapel banda="ideal" perfil={perfil} encuadre="icono" className="volantin" />;
 }
 export function MarcaVolantin() {
   return <Volantin />;

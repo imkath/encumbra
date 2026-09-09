@@ -99,3 +99,28 @@ test("sin amanecer confirmado no recomienda ni agenda una ventana diurna", () =>
   const lectura = lecturasParques(pronostico, "estandar", ahora, null)[0];
   assert.equal(lectura?.ventanaDiurna, null);
 });
+
+test("hoy y mañana respetan Santiago durante el cambio de hora y de año", async () => {
+  const { diaDeSalida } = await import("../lib/salida.ts");
+  assert.equal(diaDeSalida(new Date("2026-09-05T23:30:00-04:00"), 0), "2026-09-05");
+  assert.equal(diaDeSalida(new Date("2026-09-05T23:30:00-04:00"), 1), "2026-09-06");
+  assert.equal(diaDeSalida(new Date("2026-12-31T23:30:00-03:00"), 1), "2027-01-01");
+});
+
+test("el día elegido limita horas, ventana y puesta de sol sin reutilizar datos de otro día", () => {
+  const zona = pronostico.zonas[0]!;
+  const datos: Pronostico = { ...pronostico, zonas: [{ ...zona,
+    salidaSol: ["2026-09-05T07:00:00-04:00", "2026-09-06T08:00:00-03:00"],
+    puestaSol: ["2026-09-05T19:00:00-04:00", "2026-09-06T20:00:00-03:00"],
+    horas: [5, 6].flatMap((dia) => [16, 17].map((hora) => ({ ...zona.horas[0]!, fecha: `2026-09-0${dia}T${hora}:00:00-0${dia === 5 ? 4 : 3}:00` }))),
+  }] };
+  const manana = lecturasParques(datos, "estandar", ahora, null, "2026-09-06")[0]!;
+  assert.equal(manana.horas.length, 2);
+  assert.ok(manana.horas.every((h) => h.fecha.startsWith("2026-09-06")));
+  assert.ok(manana.ventanaDiurna?.inicio.startsWith("2026-09-06"));
+  assert.equal(manana.luz.fecha, "2026-09-06T20:00:00-03:00");
+  const vacio = lecturasParques(datos, "estandar", ahora, null, "2026-09-07")[0]!;
+  assert.equal(vacio.horas.length, 0);
+  assert.equal(vacio.ventanaDiurna, null);
+  assert.equal(vacio.luz.fecha, null);
+});
