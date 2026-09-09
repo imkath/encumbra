@@ -4,6 +4,7 @@
   flex-direction: column;
   padding-inline: clamp(1.5rem, 5vw, 5rem);
   background: var(--brand-bone);
+  overflow: clip;
 }
 
 .header {
@@ -33,21 +34,13 @@
   position: relative;
   width: min(100%, 24rem);
   justify-self: center;
-  aspect-ratio: 1.8;
-}
-
-.kite {
-  --paper-base: var(--brand-yellow);
-  position: absolute;
-  width: 80%;
-  height: 100%;
-  inset: -12% 0 auto auto;
+  aspect-ratio: 1.2;
 }
 
 .number {
   position: absolute;
   bottom: 0;
-  left: 0;
+  right: 0;
   font-size: clamp(5rem, 20vw, 6rem);
   line-height: .85;
   font-weight: 900;
@@ -116,7 +109,6 @@
 
   .message { grid-area: 1 / 1; }
   .illustration { grid-area: 1 / 2; aspect-ratio: 1; }
-  .kite { width: 100%; inset-block-start: -5%; }
 }
 
 @media (forced-colors: active) {

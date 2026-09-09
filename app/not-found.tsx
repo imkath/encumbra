@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Marca } from "@/components/Marca.tsx";
-import { VolantinPapel } from "@/components/VolantinPapel.tsx";
+import { VolantinPerdido } from "@/components/VolantinPerdido.tsx";
 import styles from "./not-found.module.css";
 
 export const metadata: Metadata = {
@@ -19,7 +19,7 @@ export default function NotFound() {
       </header>
       <main className={styles.main}>
         <div className={styles.illustration} aria-hidden="true">
-          <VolantinPapel banda="liviano" className={styles.kite} />
+          <VolantinPerdido />
           <span className={styles.number}>404</span>
         </div>
         <div className={styles.message}>
