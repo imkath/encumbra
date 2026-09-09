@@ -77,11 +77,23 @@ describe("modo volar", () => {
 
     assert.deepEqual(
       estadoVentana(ventanas, new Date("2026-09-01T16:35:00-04:00")),
-      { tipo: "activa", texto: "te quedan 25 min" },
+      {
+        tipo: "activa",
+        texto: "te quedan 25 min",
+        glosa: "te quedan",
+        valor: "25 min",
+        hasta: ventanas[0]?.fin,
+      },
     );
     assert.deepEqual(
       estadoVentana(ventanas, new Date("2026-09-01T14:35:00-04:00")),
-      { tipo: "proxima", texto: "en 25 min anda" },
+      {
+        tipo: "proxima",
+        texto: "en 25 min anda",
+        glosa: "anda en",
+        valor: "25 min",
+        hasta: ventanas[0]?.inicio,
+      },
     );
   });
 

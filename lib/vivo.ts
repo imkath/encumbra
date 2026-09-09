@@ -1,3 +1,4 @@
+import { minutosLegibles } from "./formato.ts";
 import type { Pronostico } from "./openmeteo.ts";
 import { horaVigente } from "./planear.ts";
 import { proximaVentana, ventanaActiva, type Ventana } from "./ventanas.ts";
@@ -10,10 +11,15 @@ type PronosticoConDatos = Exclude<Pronostico, { readonly estado: "sin-datos" }>;
 
 export type Tendencia = "sube" | "baja" | "parejo";
 
-export type EstadoVentana =
-  | { readonly tipo: "activa"; readonly texto: string }
-  | { readonly tipo: "proxima"; readonly texto: string }
-  | { readonly tipo: "sin-ventana"; readonly texto: "sin ventana ideal" };
+export type EstadoVentana = {
+  readonly tipo: "activa" | "proxima" | "sin-ventana";
+  readonly texto: string;
+  /** Split apart so the field screen can label the number instead of inlining it. */
+  readonly glosa: string;
+  readonly valor: string;
+  /** When the window ends (active) or starts (upcoming), to weigh against sunset. */
+  readonly hasta: string | null;
+};
 
 export type EstadoLuz =
   | {
@@ -43,22 +49,6 @@ const esRegistro = (valor: unknown): valor is Registro =>
 
 const esNumero = (valor: unknown): valor is number =>
   typeof valor === "number" && Number.isFinite(valor);
-
-function minutosLegibles(milisegundos: number): string {
-  const minutosTotales = Math.max(1, Math.ceil(milisegundos / 60_000));
-  const horas = Math.floor(minutosTotales / 60);
-  const minutos = minutosTotales % 60;
-
-  if (horas === 0) {
-    return `${minutos} min`;
-  }
-
-  if (minutos === 0) {
-    return `${horas} h`;
-  }
-
-  return `${horas} h ${minutos} min`;
-}
 
 export function tendencia60(
   horas: PronosticoConDatos["zonas"][number]["horas"],
@@ -99,21 +89,35 @@ export function estadoVentana(
   const activa = ventanaActiva(candidatas, ahora);
 
   if (activa) {
+    const resta = minutosLegibles(Date.parse(activa.fin) - ahora.getTime());
     return {
       tipo: "activa",
-      texto: `te quedan ${minutosLegibles(Date.parse(activa.fin) - ahora.getTime())}`,
+      texto: `te quedan ${resta}`,
+      glosa: "te quedan",
+      valor: resta,
+      hasta: activa.fin,
     };
   }
 
   const proxima = proximaVentana(candidatas, ahora);
   if (proxima) {
+    const falta = minutosLegibles(Date.parse(proxima.inicio) - ahora.getTime());
     return {
       tipo: "proxima",
-      texto: `en ${minutosLegibles(Date.parse(proxima.inicio) - ahora.getTime())} anda`,
+      texto: `en ${falta} anda`,
+      glosa: "anda en",
+      valor: falta,
+      hasta: proxima.inicio,
     };
   }
 
-  return { tipo: "sin-ventana", texto: "sin ventana ideal" };
+  return {
+    tipo: "sin-ventana",
+    texto: "sin ventana ideal",
+    glosa: "sin ventana",
+    valor: "hoy no",
+    hasta: null,
+  };
 }
 
 function diaSantiago(fecha: Date): string {
@@ -158,7 +162,7 @@ function escaparIcs(texto: string): string {
 }
 
 export function crearCalendario(
-  ventana: Ventana,
+  ventana: Pick<Ventana, "inicio" | "fin">,
   zona: string,
   creadoEn: Date,
 ): string {
