@@ -95,9 +95,9 @@ export function contextoSalida(
   actualizado: boolean,
 ): { titulo: string; detalle: string; estado: string } | null {
   if (!hora || hora.banda === "peligro") return null;
-  if (!actualizado) return { titulo: "Actualiza antes de salir", detalle: "Este pronóstico puede haber cambiado. Consulta los datos más recientes.", estado: "sin-datos" };
+  if (!actualizado) return { titulo: "Actualiza antes de salir", detalle: "Este pronóstico puede estar viejo. Actualízalo antes de salir.", estado: "sin-datos" };
   if (luz === false) return { titulo: "Espera a que haya luz", detalle: "Ese horario es de noche. Revisa la próxima ventana con luz antes de planear tu salida.", estado: "noche" };
-  if (luz === null) return { titulo: "Confirma un horario con luz", detalle: "Falta el horario de amanecer. El viento por sí solo no confirma un buen momento para salir.", estado: "sin-datos" };
+  if (luz === null) return { titulo: "Confirma un horario con luz", detalle: "Falta el horario de amanecer, así que no sabemos si a esa hora hay luz.", estado: "sin-datos" };
   if ((hora.probabilidadPrecipitacion ?? 0) >= 50) return { titulo: "Atento a la lluvia", detalle: "Aunque sople bien, la lluvia puede complicar la salida. Revisa otra hora y las condiciones antes de ir.", estado: "liviano" };
   return null;
 }

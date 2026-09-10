@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Encumbra",
     short_name: "Encumbra",
     description:
-      "El viento de 17 parques de Santiago, para saber dónde vuela tu volantín.",
+      "El viento de los parques de Santiago, para saber dónde vuela tu volantín.",
     lang: "es-CL",
     // Instalada abre en los parques, no en la landing: quien instala ya sabe qué es.
     start_url: "/app",

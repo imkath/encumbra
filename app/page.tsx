@@ -101,7 +101,7 @@ export default async function Landing({ searchParams }: Props) {
             encuadre="tarjeta"
           />
           <div className="portada-ficha__cabeza">
-            <p className="portada-ficha__ahora">Ahora mismo, el mejor</p>
+            <p className="portada-ficha__ahora">El mejor ahora mismo</p>
             <p className="portada-ficha__lugar">{nombreLugar(mejor)}</p>
           </div>
           <div className="portada-ficha__cuerpo">
@@ -112,7 +112,7 @@ export default async function Landing({ searchParams }: Props) {
             <p className="portada-ficha__cuando">
               {banda
                 ? anda && mejor.ventanaDiurna
-                  ? `Buen rato ${cuando(mejor.ventanaDiurna, ahora)}.`
+                  ? `Hay buen rato ${cuando(mejor.ventanaDiurna, ahora)}.`
                   : proxima
                     ? `El mejor rato es ${cuando(proxima.v, ahora)} en ${nombreLugar(proxima.parque)}.`
                     : CONSEJOS[banda]
@@ -165,7 +165,7 @@ export default async function Landing({ searchParams }: Props) {
             </li>
             <li>
               <span className="portada-paso__n">3</span>
-              <strong>Sal, y llévatelo al parque</strong>
+              <strong>Anda al parque y llévatelo</strong>
               <p>
                 Ya en el pasto, la pantalla de terreno te dice cuánto rato te
                 queda de viento y cuánta luz. Funciona sin señal.
@@ -223,12 +223,12 @@ export default async function Landing({ searchParams }: Props) {
           <h2>Cómo lo decide</h2>
           <p className="portada-sub">
             Un modelo calibrado con cinco años de viento de Santiago. Estos son
-            los cortes reales, los mismos que usa la app.
+            los cortes que usa la app.
           </p>
           <ReglaBandas viento={mejor.hora?.viento ?? null} />
           <p className="portada-honestidad">
-            Esto es pronóstico, no medición en terreno. El viento del parque
-            puede ser otro: mira el árbol antes de armar.
+            Esto es pronóstico. El viento del parque puede ser otro, así que
+            mira el árbol antes de armar.
           </p>
         </section>
       </main>

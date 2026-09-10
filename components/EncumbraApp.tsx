@@ -8,6 +8,7 @@ import type { Pronostico } from "@/lib/openmeteo.ts";
 import {
   buscarParques,
   ordenarParques,
+  PARQUES,
   type Coordenadas,
 } from "@/lib/parques.ts";
 import {
@@ -258,7 +259,7 @@ export function EncumbraApp({
       localStorage.setItem("encumbra:parques", JSON.stringify(nuevo));
     } catch {
       setMensaje(
-        "Guardado durante esta sesión. El almacenamiento del navegador no está disponible.",
+        "Guardado solo por ahora. Tu navegador no deja guardarlo para después.",
       );
     }
   }
@@ -503,13 +504,13 @@ export function EncumbraApp({
                         : orden === "guardados"
                           ? "Tus lugares"
                           : ubicacion
-                            ? "A una escapada de ti"
+                            ? "Cerca tuyo"
                             : "Explora los parques"}
                     </h2>
                     <span>
                       {busqueda || orden === "guardados"
                         ? resultados.length
-                        : `${visibles.length} de 17`}
+                        : `${visibles.length} de ${PARQUES.length}`}
                     </span>
                   </div>
                   {pronostico.estado !== "actual" ? (
@@ -559,7 +560,7 @@ export function EncumbraApp({
                       className="ver-todos-app"
                       onClick={() => setListaCompleta(true)}
                     >
-                      Explorar los 17 parques
+                      Explorar los {PARQUES.length} parques
                       <Icono nombre="flecha" />
                     </button>
                   ) : null}
@@ -569,8 +570,8 @@ export function EncumbraApp({
                       {ubicacion
                         ? "Comparamos el viento entre los cinco más cercanos. A igual condición, priorizamos la distancia."
                         : "Ordenamos por el viento de su zona. Usa tu ubicación para considerar la distancia."}{" "}
-                      Las distancias son en línea recta. El pronóstico no
-                      confirma acceso ni seguridad.
+                      Las distancias son en línea recta. El pronóstico no dice nada
+                      del acceso ni de qué tan seguro está el parque.
                     </p>
                   </details>
                 </section>
@@ -622,7 +623,7 @@ export function EncumbraApp({
                     </span>
                     <span>{actualizado ? "Pronóstico" : "Último dato"}</span>
                   </div>
-                  <h2>{contexto?.titulo ?? (hora ? ETIQUETAS[hora.banda] : "El viento, pendiente")}</h2>
+                  <h2>{contexto?.titulo ?? (hora ? ETIQUETAS[hora.banda] : "Todavía sin dato de viento")}</h2>
                   <p>
                     {contexto?.detalle ?? (hora
                       ? `Por viento: ${CONSEJOS[hora.banda]}`
@@ -677,7 +678,7 @@ export function EncumbraApp({
                           ? `${new Intl.DateTimeFormat("es-CL", { timeZone: "America/Santiago", weekday: "short", day: "numeric" }).format(new Date(plan.ventanaDiurna.inicio))} · ${formatearHora(plan.ventanaDiurna.inicio)}–${formatearHora(plan.ventanaDiurna.fin)}. Revisa la lluvia.`
                           : plan.luzConfirmada
                             ? "Puedes revisar el viento hora a hora."
-                            : "No recomendamos un horario sin amanecer confirmado."}
+                            : "Sin el horario de amanecer no podemos decirte si hay luz."}
                       </p>
                     </div>
                     {plan.ventanaDiurna && actualizado ? (
@@ -790,8 +791,7 @@ export function EncumbraApp({
                 <div className="cuidados-intro">
                   <p className="cuidados-etiqueta">Cuidados al encumbrar</p>
                   <h2 id="cuidados-titulo">Para pasarlo bien<br />y volver bien.</h2>
-                  <p>Un par de cuidados antes de soltar hilo.</p>
-                  <span className="cuidados-progreso" role="status">{checks.length} de 3 revisados</span>
+                                    <span className="cuidados-progreso" role="status">{checks.length} de 3 revisados</span>
                 </div>
                 {[
                   { id: "lugar", titulo: "Dónde encumbrar", detalle: "Elige un espacio abierto, lejos de cables y calles. Deja espacio con otras personas." },
@@ -854,10 +854,10 @@ export function EncumbraApp({
               </details>
               <details className="seguridad-app">
                 <summary>Cómo leemos el viento<Icono nombre="abajo" /></summary>
-                <p>El viento indica cuánto sopla en promedio. Las rachas son aumentos breves: si son fuertes, el volantín puede dar tirones aunque el promedio parezca bueno.</p>
-                <p>El perfil importa: uno de papel liviano necesita menos viento que uno acrobático. Al elegir cuál llevas, ajustamos la lectura y los horarios favorables.</p>
+                <p>El viento indica cuánto sopla en promedio. Las rachas son aumentos breves. Si son fuertes, el volantín puede dar tirones aunque el promedio parezca bueno.</p>
+                <p>Uno de papel liviano necesita menos viento que uno acrobático. Al elegir cuál llevas, ajustamos la lectura y los horarios favorables.</p>
                 <p>Usamos el pronóstico de Open-Meteo por zona. Varios parques comparten los mismos datos; árboles, edificios y relieve pueden cambiar lo que sientes en el lugar.</p>
-                <p>Los horarios propuestos combinan viento favorable y luz de día. Revisa también la lluvia y las condiciones al llegar: es una estimación, no una medición en el parque.</p>
+                <p>Los horarios propuestos combinan viento favorable y luz de día. Revisa también la lluvia y cómo está al llegar. Es una estimación hecha desde el pronóstico.</p>
               </details>
               </div>
               <button
