@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo } from "next/font/google";
+import { ServicioOffline } from "@/components/ServicioOffline.tsx";
 import "./globals.css";
 
 // One family for app and landing. The width axis carries the signage register
@@ -15,6 +16,7 @@ const archivo = Archivo({
 export const metadata: Metadata = {
   title: "Encumbra",
   description: "Pronóstico para encumbrar volantines en Santiago.",
+  appleWebApp: { capable: true, title: "Encumbra", statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = {
@@ -30,7 +32,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es-CL">
-      <body className={archivo.variable}>{children}</body>
+      <body className={archivo.variable}>
+        {children}
+        <ServicioOffline />
+      </body>
     </html>
   );
 }

@@ -50,3 +50,6 @@ referencias/
 
 # open-next
 /.open-next/
+
+# estado local de wrangler/miniflare
+.wrangler/
