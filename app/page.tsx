@@ -83,8 +83,8 @@ export default async function Landing({ searchParams }: Props) {
           </h1>
           <p className="portada-explica">
             Encumbra mira el viento de {parques.length} parques de Santiago y te
-            dice en cuál vuela tu volantín, a qué hora y con cuál. Sin cuenta,
-            sin instalar nada.
+            dice en cuál vuela tu volantín, a qué hora y con cuál. En el parque
+            sigue funcionando sin señal.
           </p>
           <a className="portada-accion" href="/app">
             Ver los parques
@@ -168,7 +168,7 @@ export default async function Landing({ searchParams }: Props) {
               <strong>Anda al parque y llévatelo</strong>
               <p>
                 Ya en el pasto, la pantalla de terreno te dice cuánto rato te
-                queda de viento y cuánta luz. Funciona sin señal.
+                queda de viento y cuánta luz.
               </p>
             </li>
           </ol>
