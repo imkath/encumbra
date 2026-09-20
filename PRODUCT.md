@@ -20,7 +20,10 @@ perfiles de volantín; viento, rachas, dirección, probabilidad de lluvia,
 ventanas y luz calculada localmente. Cloudflare Cron escribe una clave KV y las
 visitas solo leen. El modo de vuelo conserva el último dato local. El mapa es
 MapLibre y se carga bajo demanda. El modelo no resuelve diferencias entre
-parques de una misma celda.
+parques de una misma celda. En terreno, la dirección distingue explícitamente
+de dónde viene el viento y hacia dónde va. La rosa mantiene norte arriba como
+base y, tras una acción de la persona, puede orientarse con el sensor del
+teléfono sin guardar la lectura.
 
 ## Brand Commitments
 Voz chilena cercana, instrucciones concretas y una experiencia que se siente

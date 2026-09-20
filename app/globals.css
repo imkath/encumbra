@@ -2844,6 +2844,138 @@ h2,
 .vivo__direccion strong {
   color: inherit;
 }
+.vivo__brujula {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: min(100%, 520px);
+  margin-top: 14px;
+}
+.brujula-viento {
+  position: relative;
+  width: 108px;
+  height: 108px;
+  flex: 0 0 108px;
+  border: 1px solid color-mix(in srgb, var(--vivo-tinta) 34%, transparent);
+  border-radius: 50%;
+  background:
+    linear-gradient(
+      color-mix(in srgb, var(--vivo-tinta) 18%, transparent),
+      color-mix(in srgb, var(--vivo-tinta) 18%, transparent)
+    ) center / 1px 70% no-repeat,
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--vivo-tinta) 18%, transparent),
+      color-mix(in srgb, var(--vivo-tinta) 18%, transparent)
+    ) center / 70% 1px no-repeat,
+    color-mix(in srgb, var(--vivo-tinta) 8%, transparent);
+}
+.brujula-viento__aro {
+  position: absolute;
+  inset: 14px;
+  border: 1px solid color-mix(in srgb, var(--vivo-tinta) 18%, transparent);
+  border-radius: inherit;
+}
+.brujula-viento__punto,
+.brujula-viento__origen,
+.brujula-viento__flecha,
+.brujula-viento__centro {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+.brujula-viento__punto {
+  z-index: 2;
+  color: inherit;
+  font-size: 9px;
+  font-weight: 850;
+  line-height: 1;
+}
+.brujula-viento__punto--n {
+  color: var(--brand-coral);
+}
+.brujula-viento__origen {
+  z-index: 3;
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--vivo-tinta);
+  border-radius: 50%;
+  background: var(--brand-yellow);
+  transform-origin: center;
+}
+.brujula-viento__flecha {
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--vivo-tinta);
+  color: var(--vivo-base);
+  transform-origin: center;
+}
+.brujula-viento__flecha svg {
+  width: 20px;
+  height: 20px;
+}
+.brujula-viento__centro {
+  z-index: 5;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  transform: translate(-50%, -50%);
+}
+.vivo__brujula-lectura {
+  min-width: 0;
+  display: grid;
+  justify-items: start;
+  gap: 4px;
+}
+.vivo__brujula-lectura > p:first-child {
+  display: grid;
+  gap: 1px;
+  font-size: 14px;
+  line-height: 1.25;
+}
+.vivo__brujula-lectura > p:first-child strong {
+  font-size: 16px;
+  font-weight: 850;
+}
+.vivo__brujula-consejo,
+.vivo__brujula-estado,
+.vivo__brujula-lectura small {
+  font-size: 10.5px;
+  line-height: 1.35;
+}
+.vivo__brujula-consejo {
+  font-weight: 720;
+}
+.vivo__brujula-estado,
+.vivo__brujula-lectura small {
+  opacity: 0.76;
+}
+.vivo__brujula-lectura button {
+  min-height: 44px;
+  margin-top: 2px;
+  padding: 0 14px;
+  border: 1px solid color-mix(in srgb, var(--vivo-tinta) 28%, transparent);
+  border-radius: 14px;
+  background: var(--vivo-tinta);
+  color: var(--vivo-base);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.vivo__brujula-lectura button:hover {
+  transform: translateY(-1px);
+}
+.vivo__brujula-lectura button:disabled {
+  cursor: wait;
+  opacity: 0.58;
+  transform: none;
+}
 .vivo__noche {
   display: flex;
   align-items: flex-start;
@@ -3139,6 +3271,8 @@ html { caret-color: var(--brand-ink); }
   .portada-rombo__dentro strong { font-size: 13px; }
   .vivo__pastillas { gap: 6px; }
   .vivo__pastilla { padding: 12px; }
+  .vivo__brujula { gap: 10px; }
+  .brujula-viento { width: 100px; height: 100px; flex-basis: 100px; }
 }
 @media (forced-colors: active) {
   .portada-titular__hueco, .vivo__hueco { color: CanvasText; -webkit-text-stroke: 0; }

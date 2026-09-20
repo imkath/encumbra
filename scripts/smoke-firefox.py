@@ -34,6 +34,7 @@ with sync_playwright() as p:
         color_scheme="light",
         locale="es-CL",
     )
+    movil.grant_permissions(["geolocation"], origin=BASE)
     pagina = movil.new_page()
     pagina.on("console", lambda mensaje: errores.append(mensaje.text) if mensaje.type == "error" else None)
     pagina.on("pageerror", lambda error: errores.append(str(error)))
@@ -94,6 +95,57 @@ with sync_playwright() as p:
         )
     )
     escritorio.close()
+
+    brujula = browser.new_context(
+        viewport={"width": 390, "height": 844},
+        color_scheme="light",
+        locale="es-CL",
+    )
+    brujula.add_init_script(
+        """
+        class OrientacionSimulada extends Event {
+          static async requestPermission() { return 'granted'; }
+          constructor(tipo, datos = {}) {
+            super(tipo);
+            this.alpha = datos.alpha ?? null;
+            this.absolute = datos.absolute ?? false;
+            this.webkitCompassHeading = datos.webkitCompassHeading;
+          }
+        }
+        Object.defineProperty(window, 'DeviceOrientationEvent', {
+          configurable: true,
+          value: OrientacionSimulada,
+        });
+        """
+    )
+    pagina = brujula.new_page()
+    pagina.on("console", lambda mensaje: errores.append(mensaje.text) if mensaje.type == "error" else None)
+    pagina.on("pageerror", lambda error: errores.append(str(error)))
+    resultados.append(
+        revisar_pagina(
+            pagina,
+            "/volar?zona=penalolen&perfil=estandar&parque=parque-penalolen",
+            "volar-mobile-brujula-norte-arriba.png",
+        )
+    )
+    assert pagina.locator("#direccion-viento strong").inner_text().startswith("Viene del")
+    assert pagina.locator("#direccion-viento span").inner_text().startswith("Va hacia el")
+    pagina.get_by_role("button", name="Orientar con mi celular").click()
+    pagina.get_by_text("Buscando el norte", exact=False).wait_for()
+    pagina.evaluate(
+        """window.dispatchEvent(new DeviceOrientationEvent(
+          'deviceorientationabsolute',
+          { alpha: 90, absolute: true }
+        ))"""
+    )
+    pagina.get_by_text("La rosa sigue el norte de tu celular.", exact=True).wait_for()
+    assert pagina.get_by_role("button", name="Dejar norte arriba").is_visible()
+    pagina.screenshot(path=str(SALIDAS / "volar-mobile-brujula-activa.png"), full_page=True)
+    resultados.append({
+        "brujula": pagina.locator(".vivo__brujula").inner_text(),
+        "orientada": pagina.locator(".brujula-viento").get_attribute("data-orientada"),
+    })
+    brujula.close()
     browser.close()
 
     print(json.dumps({"resultados": resultados, "errores_consola": errores}, ensure_ascii=False, indent=2))
