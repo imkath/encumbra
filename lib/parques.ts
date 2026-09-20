@@ -3,8 +3,28 @@ import type { BandaId } from "./bandas.ts";
 
 export type PermisoParque = "autorizado" | "sin-confirmar";
 
-const FUENTE_PARQUEMET_2026 =
+const FUENTE_PARQUEMET =
   "https://www.instagram.com/p/DdAFJBpAZRn/";
+
+const EVIDENCIA_PARQUEMET = {
+  autoridad: "Parquemet",
+  fuente: FUENTE_PARQUEMET,
+  publicadoEn: null,
+  verificadoEn: "2026-09-20",
+  vigencia: "pendiente-de-confirmar",
+  alcance:
+    "Listado consultado de recintos habilitados; confirmar vigencia antes de cada temporada.",
+} as const;
+
+const RIESGO_LA_BANDERA = {
+  autoridad: "Gobierno de Chile / MOP",
+  fuente:
+    "https://www.gob.cl/noticias/38-puntos-mas-riesgosos-elevar-volantin-santiago/",
+  publicadoEn: "2024-09-08",
+  verificadoEn: "2026-09-20",
+  detalle:
+    "Vespucio Sur pasa junto al parque; no cruces la autopista siguiendo un volantín cortado.",
+} as const;
 
 // Las coordenadas ubican el recinto, no prometen un acceso específico.
 // El permiso se mantiene separado de la condición meteorológica.
@@ -61,7 +81,7 @@ const UBICACIONES = [
     lon: -70.760074,
     nombre: "La Hondonada",
     permiso: "autorizado",
-    fuentePermiso: FUENTE_PARQUEMET_2026,
+    fuentePermiso: FUENTE_PARQUEMET,
   },
   {
     id: "parque-brasil",
@@ -70,7 +90,7 @@ const UBICACIONES = [
     lon: -70.613582,
     nombre: "Parque Brasil",
     permiso: "autorizado",
-    fuentePermiso: FUENTE_PARQUEMET_2026,
+    fuentePermiso: FUENTE_PARQUEMET,
   },
   {
     id: "parque-la-castrina",
@@ -79,7 +99,7 @@ const UBICACIONES = [
     lon: -70.629167,
     nombre: "La Castrina",
     permiso: "autorizado",
-    fuentePermiso: FUENTE_PARQUEMET_2026,
+    fuentePermiso: FUENTE_PARQUEMET,
   },
   {
     id: "parque-andre-jarlan",
@@ -88,7 +108,7 @@ const UBICACIONES = [
     lon: -70.669826,
     nombre: "André Jarlán",
     permiso: "autorizado",
-    fuentePermiso: FUENTE_PARQUEMET_2026,
+    fuentePermiso: FUENTE_PARQUEMET,
   },
   {
     id: "parque-bernardo-leighton",
@@ -97,7 +117,7 @@ const UBICACIONES = [
     lon: -70.694895,
     nombre: "Bernardo Leighton",
     permiso: "autorizado",
-    fuentePermiso: FUENTE_PARQUEMET_2026,
+    fuentePermiso: FUENTE_PARQUEMET,
   },
   {
     id: "parque-cerrillos",
@@ -106,7 +126,7 @@ const UBICACIONES = [
     lon: -70.697599,
     nombre: "Parque Bicentenario Cerrillos",
     permiso: "autorizado",
-    fuentePermiso: FUENTE_PARQUEMET_2026,
+    fuentePermiso: FUENTE_PARQUEMET,
   },
   {
     id: "parque-mapuhue",
@@ -115,7 +135,7 @@ const UBICACIONES = [
     lon: -70.629588,
     nombre: "Mapuhue",
     permiso: "autorizado",
-    fuentePermiso: FUENTE_PARQUEMET_2026,
+    fuentePermiso: FUENTE_PARQUEMET,
   },
   {
     id: "parque-la-bandera",
@@ -124,8 +144,8 @@ const UBICACIONES = [
     lon: -70.643102,
     nombre: "La Bandera",
     permiso: "autorizado",
-    fuentePermiso: FUENTE_PARQUEMET_2026,
-    riesgoVial: "Vespucio Sur pasa junto al parque; no cruces la autopista siguiendo un volantín cortado.",
+    fuentePermiso: FUENTE_PARQUEMET,
+    riesgoVial: RIESGO_LA_BANDERA,
   },
   {
     id: "parque-la-platina",
@@ -134,7 +154,7 @@ const UBICACIONES = [
     lon: -70.612685,
     nombre: "La Platina",
     permiso: "autorizado",
-    fuentePermiso: FUENTE_PARQUEMET_2026,
+    fuentePermiso: FUENTE_PARQUEMET,
   },
   {
     id: "parque-penalolen",
@@ -143,7 +163,7 @@ const UBICACIONES = [
     lon: -70.547211,
     nombre: "Peñalolén",
     permiso: "autorizado",
-    fuentePermiso: FUENTE_PARQUEMET_2026,
+    fuentePermiso: FUENTE_PARQUEMET,
   },
   {
     id: "parque-de-la-familia",
@@ -152,7 +172,7 @@ const UBICACIONES = [
     lon: -70.68009,
     nombre: "Parque de la Familia",
     permiso: "autorizado",
-    fuentePermiso: FUENTE_PARQUEMET_2026,
+    fuentePermiso: FUENTE_PARQUEMET,
   },
   {
     id: "parque-mahuidahue",
@@ -161,7 +181,7 @@ const UBICACIONES = [
     lon: -70.618319,
     nombre: "Mahuidahue",
     permiso: "autorizado",
-    fuentePermiso: FUENTE_PARQUEMET_2026,
+    fuentePermiso: FUENTE_PARQUEMET,
   },
   {
     id: "parque-pierre-dubois",
@@ -170,7 +190,7 @@ const UBICACIONES = [
     lon: -70.671374,
     nombre: "Pierre Dubois",
     permiso: "autorizado",
-    fuentePermiso: FUENTE_PARQUEMET_2026,
+    fuentePermiso: FUENTE_PARQUEMET,
   },
   {
     id: "parque-mapocho-rio-tramo-1",
@@ -180,7 +200,7 @@ const UBICACIONES = [
     lon: -70.699573,
     nombre: "Mapocho Río · tramo 1",
     permiso: "autorizado",
-    fuentePermiso: FUENTE_PARQUEMET_2026,
+    fuentePermiso: FUENTE_PARQUEMET,
   },
   {
     id: "parque-mapocho-rio-tramo-2",
@@ -190,7 +210,7 @@ const UBICACIONES = [
     lon: -70.715551,
     nombre: "Mapocho Río · tramo 2",
     permiso: "autorizado",
-    fuentePermiso: FUENTE_PARQUEMET_2026,
+    fuentePermiso: FUENTE_PARQUEMET,
   },
   {
     id: "parque-mapocho-rio-tramo-3",
@@ -200,7 +220,7 @@ const UBICACIONES = [
     lon: -70.722799,
     nombre: "Mapocho Río · tramo 3",
     permiso: "autorizado",
-    fuentePermiso: FUENTE_PARQUEMET_2026,
+    fuentePermiso: FUENTE_PARQUEMET,
   },
   {
     id: "parque-mapocho-rio-tramo-4",
@@ -210,7 +230,7 @@ const UBICACIONES = [
     lon: -70.739898,
     nombre: "Mapocho Río · tramo 4",
     permiso: "autorizado",
-    fuentePermiso: FUENTE_PARQUEMET_2026,
+    fuentePermiso: FUENTE_PARQUEMET,
   },
   {
     id: "parque-mapocho-rio-tramo-5",
@@ -220,7 +240,7 @@ const UBICACIONES = [
     lon: -70.751196,
     nombre: "Mapocho Río · tramo 5",
     permiso: "autorizado",
-    fuentePermiso: FUENTE_PARQUEMET_2026,
+    fuentePermiso: FUENTE_PARQUEMET,
   },
   {
     id: "parque-mapocho-rio-tramo-6",
@@ -230,7 +250,7 @@ const UBICACIONES = [
     lon: -70.761354,
     nombre: "Mapocho Río · tramo 6",
     permiso: "autorizado",
-    fuentePermiso: FUENTE_PARQUEMET_2026,
+    fuentePermiso: FUENTE_PARQUEMET,
   },
 ] as const;
 export const PARQUES = ZONAS.flatMap((zona) =>
@@ -241,8 +261,12 @@ export const PARQUES = ZONAS.flatMap((zona) =>
         parque.nombre.toLocaleLowerCase("es-CL"),
     );
     if (!ubicacion) throw new Error(`Falta ubicación de ${parque.nombre}`);
+    const evidenciaPermiso = ubicacion.fuentePermiso
+      ? EVIDENCIA_PARQUEMET
+      : null;
     return {
       ...ubicacion,
+      evidenciaPermiso,
       recintoId:
         "recintoId" in ubicacion ? ubicacion.recintoId : ubicacion.id,
       nombre: parque.nombre,

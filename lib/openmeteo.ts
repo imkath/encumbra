@@ -1,5 +1,3 @@
-import { cache } from "react";
-
 import type { BandaId } from "./bandas.ts";
 import { banda } from "./score.ts";
 import { ventanas, type Ventana } from "./ventanas.ts";
@@ -318,11 +316,3 @@ export function crearCargadorPronostico(
     }
   };
 }
-
-const cargarPronostico = crearCargadorPronostico(
-  fetch,
-  () => new Date().toISOString(),
-  console.error,
-);
-
-export const getPronostico = cache(cargarPronostico);

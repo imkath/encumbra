@@ -1,7 +1,7 @@
 import { elegirParqueInicial } from "@/lib/salida.ts";
 import { Vivo } from "@/components/Vivo.tsx";
 import type { Perfil } from "@/lib/bandas.ts";
-import { getPronostico } from "@/lib/openmeteo.ts";
+import { getPronostico } from "@/server/pronostico.ts";
 import { ZONAS } from "@/lib/zonas.ts";
 
 export const dynamic = "force-dynamic";

@@ -22,7 +22,15 @@ test("solo propone parques con autorización respaldada", () => {
   assert.equal(proponibles.length, 19);
   assert.equal(contarRecintos(proponibles), 14);
   assert.ok(proponibles.every((parque) => parque.permiso === "autorizado"));
-  assert.ok(proponibles.every((parque) => parque.fuentePermiso));
+  assert.ok(
+    proponibles.every(
+      (parque) =>
+        parque.evidenciaPermiso?.autoridad === "Parquemet" &&
+        parque.evidenciaPermiso.fuente.startsWith("https://") &&
+        parque.evidenciaPermiso.verificadoEn === "2026-09-20" &&
+        parque.evidenciaPermiso.vigencia === "pendiente-de-confirmar",
+    ),
+  );
   assert.ok(!proponibles.some((parque) => parque.nombre === "San Cristóbal"));
   assert.ok(proponibles.some((parque) => parque.nombre === "Pierre Dubois"));
   assert.equal(
@@ -35,6 +43,14 @@ test("solo propone parques con autorización respaldada", () => {
       (parque) => parque.permiso === "sin-confirmar",
     ),
   );
+});
+
+test("el riesgo vial conserva fuente, fecha y alcance", () => {
+  const bandera = PARQUES.find((parque) => parque.id === "parque-la-bandera");
+  assert.ok(bandera && "riesgoVial" in bandera);
+  assert.equal(bandera.riesgoVial.autoridad, "Gobierno de Chile / MOP");
+  assert.equal(bandera.riesgoVial.publicadoEn, "2024-09-08");
+  assert.match(bandera.riesgoVial.fuente, /^https:\/\/www\.gob\.cl\//);
 });
 test("distancia cero y búsqueda sin acentos por comuna", () => {
   assert.equal(distanciaKm({ lat: -33, lon: -70 }, { lat: -33, lon: -70 }), 0);

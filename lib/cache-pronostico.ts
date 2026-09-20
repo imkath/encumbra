@@ -1,0 +1,33 @@
+import type { Pronostico } from "./openmeteo.ts";
+import {
+  leerPronosticoGuardado,
+  serializarPronostico,
+} from "./vivo.ts";
+
+export const CLAVE_PRONOSTICO = "pronostico:santiago:v1";
+export const FRESCURA_PRONOSTICO_MS = 20 * 60 * 1000;
+
+const SIN_DATOS = {
+  estado: "sin-datos",
+  actualizadoEn: null,
+  zonas: [],
+} as const satisfies Pronostico;
+
+export function empaquetarPronostico(pronostico: Pronostico): string {
+  return serializarPronostico(pronostico);
+}
+
+export function leerPronosticoCache(
+  texto: string | null,
+  ahora: Date,
+): Pronostico {
+  const guardado = leerPronosticoGuardado(texto);
+  if (!guardado) return SIN_DATOS;
+
+  const antiguedad = ahora.getTime() - Date.parse(guardado.actualizadoEn);
+  return {
+    ...guardado,
+    estado:
+      antiguedad <= FRESCURA_PRONOSTICO_MS ? "actual" : "desactualizado",
+  };
+}

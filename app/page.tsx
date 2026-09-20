@@ -5,7 +5,7 @@ import {
   formatearVentana,
   formatearVelocidad,
 } from "@/lib/formato.ts";
-import { getPronostico } from "@/lib/openmeteo.ts";
+import { getPronostico } from "@/server/pronostico.ts";
 import { ordenarParques } from "@/lib/parques.ts";
 import { lecturasParques, type LecturaParque } from "@/lib/salida.ts";
 import { Icono } from "@/components/Icono.tsx";

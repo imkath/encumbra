@@ -1,5 +1,5 @@
 import { EncumbraApp } from "@/components/EncumbraApp.tsx";
-import { getPronostico } from "@/lib/openmeteo.ts";
+import { getPronostico } from "@/server/pronostico.ts";
 import type { Perfil } from "@/lib/bandas.ts";
 export const dynamic = "force-dynamic";
 type Props = {

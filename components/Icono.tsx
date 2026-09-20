@@ -1,6 +1,7 @@
 import { VolantinPapel } from "./VolantinPapel.tsx";
 import type { CSSProperties } from "react";
 const trazos = {
+  alerta: <><path d="M12 3 2.8 20h18.4L12 3Z" /><path d="M12 9v5m0 3h.01" /></>,
   luna: <path d="M20 14a8 8 0 0 1-10-10 8 8 0 1 0 10 10Z" />,
   calendario: <><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M7 3v4m10-4v4M3 10h18m-9 3v5m-2.5-2.5h5" /></>,
   buscar: (

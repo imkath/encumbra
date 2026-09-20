@@ -691,8 +691,8 @@ export function EncumbraApp({
                     <Icono nombre="arbol" />
                     {parque.permiso === "autorizado" ? (
                       <>
-                        Autorizado para encumbrar según Parquemet. Respeta las
-                        reglas y horarios del recinto.
+                        Incluido en el listado consultado de Parquemet. Confirma
+                        reglas, vigencia y horarios del recinto antes de ir.
                       </>
                     ) : (
                       <>
@@ -701,6 +701,18 @@ export function EncumbraApp({
                       </>
                     )}
                   </p>
+                  {"riesgoVial" in parque ? (
+                    <aside className="contexto-aviso" data-estado="peligro">
+                      <Icono nombre="alerta" />
+                      <span>
+                        <strong>Ojo con Vespucio Sur</strong>
+                        {parque.riesgoVial.detalle}{" "}
+                        <a href={parque.riesgoVial.fuente}>
+                          Fuente MOP, {parque.riesgoVial.publicadoEn.slice(0, 4)}
+                        </a>
+                      </span>
+                    </aside>
+                  ) : null}
                 </div>
                 <button
                   className="icon-button"
