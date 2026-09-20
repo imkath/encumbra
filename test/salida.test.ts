@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { lecturasParques, elegirParqueInicial } from "../lib/salida.ts";
+import {
+  lecturasParques,
+  elegirParqueInicial,
+  lecturaUbicacion,
+} from "../lib/salida.ts";
 import type { Pronostico } from "../lib/openmeteo.ts";
 
 const ahora = new Date("2026-09-05T16:15:00-04:00");
@@ -57,6 +61,41 @@ test("selección respeta parque explícito, zona y fallback válido", () => {
     "parque-penalolen",
   );
   assert.equal(elegirParqueInicial(undefined, undefined).permiso, "autorizado");
+});
+
+test("expone una lectura propia para planear desde la ubicación", async () => {
+  const modulo = await import("../lib/salida.ts");
+  assert.equal(typeof modulo.lecturaUbicacion, "function");
+});
+
+test("la salida desde ubicación usa la celda más cercana sin inventar un parque", () => {
+  const lectura = lecturaUbicacion(
+    pronostico,
+    "estandar",
+    ahora,
+    { lat: -33.402778, lon: -70.575556 },
+    "2026-09-05",
+  );
+
+  assert.equal(lectura?.id, "ubicacion");
+  assert.equal(lectura?.nombre, "Donde estoy");
+  assert.equal(lectura?.zonaId, "araucano-san-cristobal");
+  assert.equal(lectura?.zonaNombre, "Araucano · San Cristóbal");
+  assert.equal(lectura?.hora?.banda, "ideal");
+  assert.equal(lectura?.horas.length, 1);
+  assert.equal(lectura && "permiso" in lectura, false);
+});
+
+test("sin una celda meteorológica no atribuye datos a la ubicación", () => {
+  assert.equal(
+    lecturaUbicacion(
+      { estado: "sin-datos", actualizadoEn: null, zonas: [] },
+      "estandar",
+      ahora,
+      { lat: -33.45, lon: -70.65 },
+    ),
+    null,
+  );
 });
 
 test("no ofrece tramo de madrugada como ventana de salida", () => {

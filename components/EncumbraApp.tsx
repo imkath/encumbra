@@ -17,31 +17,33 @@ import {
   diaDeSalida,
   luzEnHorario,
   elegirParqueInicial,
+  lecturaUbicacion,
   lecturasParques,
   type LecturaParque,
 } from "@/lib/salida.ts";
 import { formatearHora } from "@/lib/formato.ts";
-import { adaptarZonaAlPerfil, horaVigente } from "@/lib/planear.ts";
 import { cardinal, fraseDireccion } from "@/lib/viento.ts";
 import {
   leerPronosticoGuardado,
   serializarPronostico,
-  zonaMasCercana,
 } from "@/lib/vivo.ts";
 import { Icono, Volantin } from "./Icono.tsx";
 import { AgregarCalendario } from "./AgregarCalendario.tsx";
 import { Marca } from "./Marca.tsx";
+import { SelectorTema } from "./SelectorTema.tsx";
 
 const Mapa = dynamic(() => import("./MapaParques.tsx"), {
   ssr: false,
   loading: () => <div className="mapa-espera">Abriendo mapa…</div>,
 });
 type Vista = "parques" | "salida" | "guia";
+type Destino = "parque" | "ubicacion";
 type Props = {
   inicial: Pronostico;
   perfilInicial: Perfil;
   parqueInicial?: string;
   zonaInicial?: string;
+  destinoInicial?: Destino;
   vistaInicial: Vista;
   servidoEn: string;
 };
@@ -77,6 +79,7 @@ export function EncumbraApp({
   perfilInicial,
   parqueInicial,
   zonaInicial,
+  destinoInicial = "parque",
   vistaInicial,
   servidoEn,
 }: Props) {
@@ -85,6 +88,7 @@ export function EncumbraApp({
   const [seleccionado, setSeleccionado] = useState<string>(
     () => elegirParqueInicial(parqueInicial, zonaInicial).id,
   );
+  const [destino, setDestino] = useState<Destino>(destinoInicial);
   const [pronostico, setPronostico] = useState(inicial);
   const [ahora, setAhora] = useState(() => new Date(servidoEn));
   const [ubicacion, setUbicacion] = useState<Coordenadas | null>(null);
@@ -137,6 +141,7 @@ export function EncumbraApp({
         v = params.get("vista"),
         p = params.get("perfil");
       setVista(esVista(v) ? v : "parques");
+      setDestino(params.get("destino") === "ubicacion" ? "ubicacion" : "parque");
       if (esPerfil(p)) setPerfil(p);
       setSeleccionado(
         elegirParqueInicial(
@@ -193,20 +198,10 @@ export function EncumbraApp({
     () => lecturasParques(pronostico, perfil, ahora, ubicacion),
     [pronostico, perfil, ahora, ubicacion],
   );
-  const zonaAquiBase = ubicacion
-    ? zonaMasCercana(
-        ubicacion,
-        pronostico.zonas.map((zona) => ({
-          ...zona,
-          lat: zona.celda.lat,
-          lon: zona.celda.lon,
-        })),
-      )
+  const lecturaAqui = ubicacion
+    ? lecturaUbicacion(pronostico, perfil, ahora, ubicacion)
     : null;
-  const zonaAqui = zonaAquiBase
-    ? adaptarZonaAlPerfil(zonaAquiBase, perfil)
-    : null;
-  const horaAqui = zonaAqui ? horaVigente(zonaAqui.horas, ahora) : null;
+  const horaAqui = lecturaAqui?.hora ?? null;
   const parque = parques.find((p) => p.id === seleccionado) ?? parques[0]!;
   const proponibles = parquesProponibles(parques);
   const recintosAutorizados = contarRecintos(proponibles);
@@ -226,14 +221,24 @@ export function EncumbraApp({
       ? resultados
       : resultados.slice(0, 5);
   const fechaPlan = diaDeSalida(ahora, diaElegido);
-  const plan = lecturasParques(pronostico, perfil, ahora, ubicacion, fechaPlan).find((p) => p.id === parque.id)!;
+  const planParque = lecturasParques(
+    pronostico,
+    perfil,
+    ahora,
+    ubicacion,
+    fechaPlan,
+  ).find((p) => p.id === parque.id)!;
+  const planUbicacion = ubicacion
+    ? lecturaUbicacion(pronostico, perfil, ahora, ubicacion, fechaPlan)
+    : null;
+  const plan = destino === "ubicacion" ? planUbicacion : planParque;
   const actualizado = pronostico.estado === "actual";
-  const zonaElegida = pronostico.zonas.find((z) => z.id === parque.zonaId);
+  const zonaElegida = pronostico.zonas.find((z) => z.id === plan?.zonaId);
   const luzDeHora = (fecha: string) => luzEnHorario(fecha, zonaElegida?.salidaSol ?? [], zonaElegida?.puestaSol ?? []);
-  const hora = plan.horas.find((h) => h.fecha === horaElegida)
-    ?? (diaElegido === 0 ? plan.horas[0] : plan.horas.find((h) => plan.ventanaDiurna && Date.parse(h.fecha) >= Date.parse(plan.ventanaDiurna.inicio)))
-    ?? (diaElegido === 1 ? plan.horas.find((h) => luzDeHora(h.fecha)) : null)
-    ?? plan.horas[0] ?? null;
+  const hora = plan?.horas.find((h) => h.fecha === horaElegida)
+    ?? (diaElegido === 0 ? plan?.horas[0] : plan?.horas.find((h) => plan.ventanaDiurna && Date.parse(h.fecha) >= Date.parse(plan.ventanaDiurna.inicio)))
+    ?? (diaElegido === 1 ? plan?.horas.find((h) => luzDeHora(h.fecha)) : null)
+    ?? plan?.horas[0] ?? null;
   useEffect(() => {
     const cinta = cintaHoras.current;
     const activa = cinta?.querySelector<HTMLButtonElement>('[aria-pressed="true"]');
@@ -248,19 +253,30 @@ export function EncumbraApp({
           ?.id
       : undefined;
 
-  function navegar(v: Vista, id = seleccionado) {
+  function navegar(
+    v: Vista,
+    id = seleccionado,
+    nuevoDestino: Destino = destino,
+    coordenadas = ubicacion,
+  ) {
     setVista(v);
     setSeleccionado(id);
+    setDestino(nuevoDestino);
     setHoraElegida(null);
     setMensaje("");
-    const p = elegirParqueInicial(id);
-    const params = new URLSearchParams({
-      parque: id,
-      zona: p.zonaId,
-      perfil,
-      vista: v,
-    });
-    history.pushState(null, "", `/?${params}`);
+    const params = new URLSearchParams({ perfil, vista: v });
+    if (nuevoDestino === "ubicacion") {
+      params.set("destino", "ubicacion");
+      const lectura = coordenadas
+        ? lecturaUbicacion(pronostico, perfil, ahora, coordenadas)
+        : null;
+      if (lectura) params.set("zona", lectura.zonaId);
+    } else {
+      const p = elegirParqueInicial(id);
+      params.set("parque", id);
+      params.set("zona", p.zonaId);
+    }
+    history.pushState(null, "", `/app?${params}`);
     requestAnimationFrame(() => {
       contenido.current?.scrollTo(0, 0);
       titulo.current?.focus({ preventScroll: true });
@@ -286,7 +302,7 @@ export function EncumbraApp({
       );
     }
   }
-  function localizar() {
+  function localizar(usarEnSalida = false) {
     if (!navigator.geolocation) {
       setMensaje(
         "Tu navegador no permite ubicación. Busca por parque o comuna.",
@@ -297,9 +313,17 @@ export function EncumbraApp({
     setMensaje("");
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
-        setUbicacion({ lat: coords.latitude, lon: coords.longitude });
+        const coordenadas = { lat: coords.latitude, lon: coords.longitude };
+        setUbicacion(coordenadas);
         setLocalizando(false);
-        setMensaje("Ubicación lista. Distancias en línea recta.");
+        if (usarEnSalida) {
+          navegar("salida", seleccionado, "ubicacion", coordenadas);
+        }
+        setMensaje(
+          usarEnSalida
+            ? "Listo. Mi salida usa el pronóstico de la celda más cercana."
+            : "Ubicación lista. Distancias en línea recta.",
+        );
       },
       (err) => {
         setLocalizando(false);
@@ -312,7 +336,7 @@ export function EncumbraApp({
       { timeout: 10000, maximumAge: 60000 },
     );
   }
-  const elegirDesdeMapa = (id: string) => navegar("salida", id);
+  const elegirDesdeMapa = (id: string) => navegar("salida", id, "parque");
   const activoNav = (v: Vista) => (vista === v ? ("page" as const) : undefined);
 
   function fila(p: LecturaParque, indice: number) {
@@ -327,7 +351,7 @@ export function EncumbraApp({
       >
         <button
           className="parque-abrir"
-          onClick={() => navegar("salida", p.id)}
+          onClick={() => navegar("salida", p.id, "parque")}
         >
           <span className="parque-simbolo">
             {indice + 1}
@@ -385,6 +409,7 @@ export function EncumbraApp({
           <Marca />
         </button>
         <span className="app-ciudad">Santiago, Chile</span>
+        <SelectorTema compacto />
         <label className="perfil-rapido">
           <IconoPerfil perfil={perfil} />
           <span className="sr-only">Tu volantín</span>
@@ -455,7 +480,7 @@ export function EncumbraApp({
                 </label>
                   <button
                     className="icon-button boton-ubicacion"
-                    onClick={localizar}
+                    onClick={() => localizar()}
                     disabled={localizando}
                     aria-label={
                       localizando ? "Buscando ubicación" : "Usar mi ubicación"
@@ -481,19 +506,29 @@ export function EncumbraApp({
                           Pronóstico de la celda más cercana. No necesitas elegir un parque.
                         </small>
                       </div>
-                      <button
-                        type="button"
-                        onClick={localizar}
-                        disabled={localizando}
-                      >
-                        Actualizar
-                      </button>
+                      <span className="donde-estoy__acciones">
+                        <button
+                          type="button"
+                          onClick={() => localizar()}
+                          disabled={localizando}
+                        >
+                          Actualizar
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            navegar("salida", seleccionado, "ubicacion")
+                          }
+                        >
+                          Planear aquí
+                        </button>
+                      </span>
                     </div>
                   ) : (
                     <button
                       type="button"
                       className="donde-estoy__accion"
-                      onClick={localizar}
+                      onClick={() => localizar(true)}
                       disabled={localizando}
                     >
                       <span className="donde-estoy__icono">
@@ -560,7 +595,7 @@ export function EncumbraApp({
                     />
                     <button
                       className="mapa-mi-ubicacion icon-button"
-                      onClick={localizar}
+                      onClick={() => localizar()}
                       disabled={localizando}
                       aria-label="Centrar en mi ubicación"
                     >
@@ -655,6 +690,33 @@ export function EncumbraApp({
           ) : null}
           {vista === "salida" ? (
             <div className="salida-screen">
+              <div
+                className="destino-salida"
+                role="group"
+                aria-label="Lugar de esta salida"
+              >
+                <button
+                  type="button"
+                  aria-pressed={destino === "ubicacion"}
+                  onClick={() =>
+                    ubicacion
+                      ? navegar("salida", seleccionado, "ubicacion")
+                      : localizar(true)
+                  }
+                  disabled={localizando}
+                >
+                  <Icono nombre="ubicacion" />
+                  {localizando ? "Ubicando…" : "Donde estoy"}
+                </button>
+                <button
+                  type="button"
+                  aria-pressed={destino === "parque"}
+                  onClick={() => navegar("salida", seleccionado, "parque")}
+                >
+                  <Icono nombre="arbol" />
+                  Parque elegido
+                </button>
+              </div>
               <div className="app-heading">
                 <div>
                   <button
@@ -662,16 +724,21 @@ export function EncumbraApp({
                     onClick={() => navegar("parques")}
                   >
                     <Icono nombre="atras" />
-                    Cambiar parque
+                    Explorar lugares
                   </button>
                   <h1 ref={titulo} tabIndex={-1}>
-                    {parque.nombre}
+                    {destino === "ubicacion" ? "Donde estoy" : parque.nombre}
                   </h1>
                   <p>
-                    {parque.comuna}
-                    {parque.distancia !== null
-                      ? ` · ${distancia(parque.distancia)}`
-                      : ""}
+                    {destino === "ubicacion"
+                      ? plan
+                        ? `Celda meteorológica ${plan.zonaNombre}`
+                        : "Activa tu ubicación para preparar esta salida."
+                      : `${parque.comuna}${
+                          parque.distancia !== null
+                            ? ` · ${distancia(parque.distancia)}`
+                            : ""
+                        }`}
                   </p>
                   {hora?.direccion !== null && hora?.direccion !== undefined ? (
                     <p className="viento-direccion">
@@ -687,9 +754,17 @@ export function EncumbraApp({
                       </span>
                     </p>
                   ) : null}
-                  <p className="permiso-detalle" data-permiso={parque.permiso}>
-                    <Icono nombre="arbol" />
-                    {parque.permiso === "autorizado" ? (
+                  {destino === "ubicacion" ? (
+                    <p className="permiso-detalle permiso-detalle--ubicacion">
+                      <Icono nombre="ubicacion" />
+                      El pronóstico usa la celda más cercana. No confirma que
+                      este lugar sea abierto, seguro ni autorizado para
+                      encumbrar.
+                    </p>
+                  ) : (
+                    <p className="permiso-detalle" data-permiso={parque.permiso}>
+                      <Icono nombre="arbol" />
+                      {parque.permiso === "autorizado" ? (
                       <>
                         Incluido en el listado consultado de Parquemet. Confirma
                         reglas, vigencia y horarios del recinto antes de ir.
@@ -699,9 +774,10 @@ export function EncumbraApp({
                         No tenemos una autorización vigente confirmada para
                         este parque. Revisa con su administración antes de ir.
                       </>
-                    )}
-                  </p>
-                  {"riesgoVial" in parque ? (
+                      )}
+                    </p>
+                  )}
+                  {destino === "parque" && "riesgoVial" in parque ? (
                     <aside className="contexto-aviso" data-estado="peligro">
                       <Icono nombre="alerta" />
                       <span>
@@ -714,15 +790,19 @@ export function EncumbraApp({
                     </aside>
                   ) : null}
                 </div>
-                <button
-                  className="icon-button"
-                  aria-label={`${favoritos.includes(parque.id) ? "Quitar" : "Guardar"} ${parque.nombre}`}
-                  aria-pressed={favoritos.includes(parque.id)}
-                  onClick={() => guardar(parque.id)}
-                >
-                  <Icono nombre="guardar" />
-                </button>
+                {destino === "parque" ? (
+                  <button
+                    className="icon-button"
+                    aria-label={`${favoritos.includes(parque.id) ? "Quitar" : "Guardar"} ${parque.nombre}`}
+                    aria-pressed={favoritos.includes(parque.id)}
+                    onClick={() => guardar(parque.id)}
+                  >
+                    <Icono nombre="guardar" />
+                  </button>
+                ) : null}
               </div>
+              {plan ? (
+                <>
               <div className="dias-salida" role="group" aria-label="Día de la salida">
                 {([0, 1] as const).map((dia) => <button key={dia} type="button" aria-pressed={diaElegido === dia} onClick={() => { setDiaElegido(dia); setHoraElegida(null); }}>{dia === 0 ? "Hoy" : "Mañana"}</button>)}
               </div>
@@ -734,7 +814,7 @@ export function EncumbraApp({
                 >
                   <div className="parte-viento__hora">
                     <span>
-                      {hora ? (diaElegido === 1 ? `Mañana · ${formatearHora(hora.fecha)}` : hora.fecha === parque.hora?.fecha ? "Ahora" : `Hoy · ${formatearHora(hora.fecha)}`) : (diaElegido === 1 ? "Mañana · sin datos" : "Hoy · sin datos")}
+                      {hora ? (diaElegido === 1 ? `Mañana · ${formatearHora(hora.fecha)}` : hora.fecha === plan.hora?.fecha ? "Ahora" : `Hoy · ${formatearHora(hora.fecha)}`) : (diaElegido === 1 ? "Mañana · sin datos" : "Hoy · sin datos")}
                     </span>
                     <span>{actualizado ? "Pronóstico" : "Último dato"}</span>
                   </div>
@@ -794,7 +874,7 @@ export function EncumbraApp({
                       </p>
                     </div>
                     {plan.ventanaDiurna && actualizado ? (
-                      <AgregarCalendario ventana={plan.ventanaDiurna} lugar={parque.nombre} />
+                      <AgregarCalendario ventana={plan.ventanaDiurna} lugar={destino === "ubicacion" ? "Donde estoy" : parque.nombre} />
                     ) : null}
                   </div>
                   {plan.horas.length ? (
@@ -817,7 +897,7 @@ export function EncumbraApp({
                             onClick={() => setHoraElegida(h.fecha)}
                           >
                             <time dateTime={h.fecha}>
-                              {diaElegido === 0 && h.fecha === parque.hora?.fecha ? "Ahora" : formatearHora(h.fecha)}
+                              {diaElegido === 0 && h.fecha === plan.hora?.fecha ? "Ahora" : formatearHora(h.fecha)}
                             </time>
                             <Icono nombre={luzDeHora(h.fecha) === false ? "luna" : "viento"} />
                             <strong>{Math.round(h.viento)}<small> km/h</small></strong>
@@ -847,8 +927,8 @@ export function EncumbraApp({
                     </strong>
                   </div>
                   <p className="nota-modelo">
-                    Viento estimado para la zona {parque.zonaNombre}. Los
-                    parques de esa zona comparten pronóstico.
+                    Viento estimado para la zona {plan.zonaNombre}. Los lugares
+                    dentro de esa celda comparten pronóstico.
                   </p>
                 </div>
               </div>
@@ -867,6 +947,26 @@ export function EncumbraApp({
                   <Icono nombre="refrescar" />
                 </button>
               </div>
+                </>
+              ) : (
+                <section className="salida-sin-ubicacion">
+                  <span><Icono nombre="ubicacion" /></span>
+                  <h2>Traigamos el viento hasta donde estás</h2>
+                  <p>
+                    Tu ubicación se usa solo ahora para elegir la celda de
+                    pronóstico más cercana. No se guarda.
+                  </p>
+                  <button
+                    type="button"
+                    className="app-primary"
+                    onClick={() => localizar(true)}
+                    disabled={localizando}
+                  >
+                    <Icono nombre="ubicacion" />
+                    {localizando ? "Buscando tu ubicación…" : "Usar mi ubicación"}
+                  </button>
+                </section>
+              )}
             </div>
           ) : null}
           {vista === "guia" ? (
@@ -985,21 +1085,35 @@ export function EncumbraApp({
             </div>
           ) : null}
         </div>
-        {vista === "salida" ? (
-          <div className="salida-acciones">
-            <a
-              className="app-primary"
-              href={`https://www.google.com/maps/dir/?api=1&destination=${parque.lat},${parque.lon}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Icono nombre="salir" />
-              Cómo llegar
-              <span className="sr-only"> (abre Google Maps)</span>
-            </a>
+        {vista === "salida" && plan ? (
+          <div
+            className={`salida-acciones${destino === "ubicacion" ? " salida-acciones--ubicacion" : ""}`}
+          >
+            {destino === "parque" ? (
+              <a
+                className="app-primary"
+                href={`https://www.google.com/maps/dir/?api=1&destination=${parque.lat},${parque.lon}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Icono nombre="salir" />
+                Cómo llegar
+                <span className="sr-only"> (abre Google Maps)</span>
+              </a>
+            ) : (
+              <button
+                type="button"
+                className="app-primary"
+                onClick={() => localizar(true)}
+                disabled={localizando}
+              >
+                <Icono nombre="ubicacion" />
+                Actualizar ubicación
+              </button>
+            )}
             <a
               className="app-secondary"
-              href={`/volar?zona=${parque.zonaId}&perfil=${perfil}&parque=${parque.id}`}
+              href={`/volar?zona=${plan.zonaId}&perfil=${perfil}${destino === "ubicacion" ? "&destino=ubicacion" : `&parque=${parque.id}`}`}
             >
               <Icono nombre="viento" />
               Ya estoy afuera

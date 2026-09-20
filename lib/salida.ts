@@ -1,5 +1,5 @@
 import type { Perfil } from "./bandas.ts";
-import type { Pronostico } from "./openmeteo.ts";
+import type { Pronostico, ZonaPronostico } from "./openmeteo.ts";
 import {
   PARQUES,
   distanciaKm,
@@ -12,7 +12,7 @@ import {
   proximasDoceHoras,
 } from "./planear.ts";
 import { ventanas, ventanaActiva, proximaVentana } from "./ventanas.ts";
-import { estadoLuz } from "./vivo.ts";
+import { estadoLuz, zonaMasCercana } from "./vivo.ts";
 
 export function elegirParqueInicial(id?: string, zona?: string) {
   const elegido =
@@ -31,6 +31,70 @@ export function diaDeSalida(ahora: Date, dia: 0 | 1): string {
   return new Date(Date.UTC(valor("year"), valor("month") - 1, valor("day") + dia)).toISOString().slice(0, 10);
 }
 
+function lecturaZona(
+  zona: ZonaPronostico,
+  perfil: Perfil,
+  ahora: Date,
+  dia?: string,
+) {
+  const horas = adaptarHorasAlPerfil(zona.horas, perfil).filter(
+    (hora) => !dia || diaDeSalida(new Date(hora.fecha), 0) === dia,
+  );
+  const hora = horaVigente(horas, ahora);
+  const tramos = ventanas(horas, perfil);
+  const amaneceres = (zona.salidaSol ?? []).filter(
+    (fecha) => !dia || diaDeSalida(new Date(fecha), 0) === dia,
+  );
+  const periodos = amaneceres.flatMap((inicio) => {
+    const fin = zona.puestaSol.find(
+      (fecha) => fecha.slice(0, 10) === inicio.slice(0, 10),
+    );
+    return fin ? [{ inicio: Date.parse(inicio), fin: Date.parse(fin) }] : [];
+  });
+  const tramosDiurnos = tramos
+    .flatMap((tramo) =>
+      periodos.flatMap((periodo) => {
+        const inicio = Math.max(Date.parse(tramo.inicio), periodo.inicio);
+        const fin = Math.min(Date.parse(tramo.fin), periodo.fin);
+        return fin > inicio && fin > ahora.getTime()
+          ? [
+              {
+                ...tramo,
+                inicio: new Date(inicio).toISOString(),
+                fin: new Date(fin).toISOString(),
+              },
+            ]
+          : [];
+      }),
+    )
+    .sort((a, b) => Date.parse(a.inicio) - Date.parse(b.inicio));
+
+  return {
+    hora,
+    banda: hora?.banda ?? null,
+    horas: dia
+      ? horas.filter(
+          (dato) => Date.parse(dato.fecha) + 3_600_000 > ahora.getTime(),
+        )
+      : proximasDoceHoras(horas, ahora),
+    ventanaDiurna: tramosDiurnos[0] ?? null,
+    luzConfirmada: periodos.length > 0,
+    esDeDia: periodos.some(
+      (periodo) =>
+        periodo.inicio <= ahora.getTime() && ahora.getTime() < periodo.fin,
+    ),
+    ventana: ventanaActiva(tramos, ahora) ?? proximaVentana(tramos, ahora),
+    luz: dia
+      ? {
+          fecha:
+            zona.puestaSol.find(
+              (fecha) => diaDeSalida(new Date(fecha), 0) === dia,
+            ) ?? null,
+        }
+      : estadoLuz(zona.puestaSol, ahora),
+  };
+}
+
 export function lecturasParques(
   pronostico: Pronostico,
   perfil: Perfil,
@@ -40,50 +104,52 @@ export function lecturasParques(
 ) {
   return PARQUES.map((parque) => {
     const zona = pronostico.zonas.find((z) => z.id === parque.zonaId);
-    const horas = zona ? adaptarHorasAlPerfil(zona.horas, perfil).filter((h) => !dia || diaDeSalida(new Date(h.fecha), 0) === dia) : [];
-    const hora = horaVigente(horas, ahora);
-    const tramos = ventanas(horas, perfil);
-    const amaneceres = (zona?.salidaSol ?? []).filter((f) => !dia || diaDeSalida(new Date(f), 0) === dia);
-    const periodos = amaneceres.flatMap((inicio) => {
-      const fin = zona?.puestaSol.find(
-        (f) => f.slice(0, 10) === inicio.slice(0, 10),
-      );
-      return fin ? [{ inicio: Date.parse(inicio), fin: Date.parse(fin) }] : [];
-    });
-    const tramosDiurnos = tramos
-      .flatMap((tramo) =>
-        periodos.flatMap((periodo) => {
-          const inicio = Math.max(Date.parse(tramo.inicio), periodo.inicio);
-          const fin = Math.min(Date.parse(tramo.fin), periodo.fin);
-          return fin > inicio && fin > ahora.getTime()
-            ? [
-                {
-                  ...tramo,
-                  inicio: new Date(inicio).toISOString(),
-                  fin: new Date(fin).toISOString(),
-                },
-              ]
-            : [];
-        }),
-      )
-      .sort((a, b) => Date.parse(a.inicio) - Date.parse(b.inicio));
+    const lectura = zona ? lecturaZona(zona, perfil, ahora, dia) : null;
     return {
       ...parque,
-      hora,
-      banda: hora?.banda ?? null,
-      horas: dia ? horas.filter((h) => Date.parse(h.fecha) + 3600000 > ahora.getTime()) : proximasDoceHoras(horas, ahora),
-      ventanaDiurna: tramosDiurnos[0] ?? null,
-      luzConfirmada: periodos.length > 0,
-      esDeDia: periodos.some(
-        (p) => p.inicio <= ahora.getTime() && ahora.getTime() < p.fin,
-      ),
-      ventana: ventanaActiva(tramos, ahora) ?? proximaVentana(tramos, ahora),
-      luz: dia ? { fecha: zona?.puestaSol.find((f) => diaDeSalida(new Date(f), 0) === dia) ?? null } : estadoLuz(zona?.puestaSol ?? [], ahora),
+      hora: lectura?.hora ?? null,
+      banda: lectura?.banda ?? null,
+      horas: lectura?.horas ?? [],
+      ventanaDiurna: lectura?.ventanaDiurna ?? null,
+      luzConfirmada: lectura?.luzConfirmada ?? false,
+      esDeDia: lectura?.esDeDia ?? false,
+      ventana: lectura?.ventana ?? null,
+      luz:
+        lectura?.luz ??
+        (dia ? { fecha: null } : estadoLuz([], ahora)),
       distancia: ubicacion ? distanciaKm(ubicacion, parque) : null,
     };
   });
 }
 export type LecturaParque = ReturnType<typeof lecturasParques>[number];
+
+export function lecturaUbicacion(
+  pronostico: Pronostico,
+  perfil: Perfil,
+  ahora: Date,
+  ubicacion: Coordenadas,
+  dia?: string,
+) {
+  const zona = zonaMasCercana(
+    ubicacion,
+    pronostico.zonas.map((dato) => ({
+      ...dato,
+      lat: dato.celda.lat,
+      lon: dato.celda.lon,
+    })),
+  );
+  if (!zona) return null;
+
+  return {
+    id: "ubicacion" as const,
+    nombre: "Donde estoy",
+    zonaId: zona.id,
+    zonaNombre: zona.nombre,
+    lat: ubicacion.lat,
+    lon: ubicacion.lon,
+    ...lecturaZona(zona, perfil, ahora, dia),
+  };
+}
 
 /** Daylight is checked for the selected instant, including tomorrow's hours. */
 export function luzEnHorario(fecha: string, amaneceres: readonly string[], puestas: readonly string[]): boolean | null {

@@ -17,6 +17,11 @@
   --app-good-soft: var(--brand-soft);
   --app-warning: #75500e;
   --app-danger: #a92822;
+  --app-panel: #ebe7dc;
+  --app-control: var(--brand-soft);
+  --app-selected-bg: var(--brand-ink);
+  --app-selected-ink: var(--brand-bone);
+  --app-shadow: #25252024;
   --color-surface: var(--app-surface);
   --color-text-primary: var(--app-ink);
   --color-text-secondary: var(--app-muted);
@@ -30,32 +35,48 @@
   --dur-tap: 160ms;
 }
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme]) {
     color-scheme: dark;
-    --app-bg: #121a23;
-    --app-surface: #1a2530;
-    --app-ink: #faf3df;
-    --app-muted: #c3bba9;
-    --app-line: #3b4650;
-    --app-action: #ffdc5c;
-    --app-action-soft: #35382e;
-    --app-good: #8bd7a8;
-    --app-good-soft: #21382e;
-    --app-warning: #ffd17a;
-    --app-danger: #ff9188;
-    --color-verdict-bg: #26323c;
-    --color-verdict-ink: #faf3df;
+    --app-bg: #121310;
+    --app-surface: #1b1c19;
+    --app-ink: #f8f4e9;
+    --app-muted: #c4bfb2;
+    --app-line: #41423c;
+    --app-action: #ffda24;
+    --app-action-soft: #353329;
+    --app-good: #91d9aa;
+    --app-good-soft: #23372a;
+    --app-warning: #ffd47d;
+    --app-danger: #ff958d;
+    --app-panel: #242520;
+    --app-control: #292a25;
+    --app-selected-bg: #ffda24;
+    --app-selected-ink: #252520;
+    --app-shadow: #00000066;
+    --color-verdict-bg: #242520;
+    --color-verdict-ink: #f8f4e9;
   }
-  .app-nav button[aria-current] {
-    background: var(--app-ink);
-    color: var(--app-surface);
-  }
-  .mapa-espera,
-  .mapa-cargando,
-  .mapa-error,
-  .mapa-leyenda {
-    color: var(--app-ink);
-  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --app-bg: #121310;
+  --app-surface: #1b1c19;
+  --app-ink: #f8f4e9;
+  --app-muted: #c4bfb2;
+  --app-line: #41423c;
+  --app-action: #ffda24;
+  --app-action-soft: #353329;
+  --app-good: #91d9aa;
+  --app-good-soft: #23372a;
+  --app-warning: #ffd47d;
+  --app-danger: #ff958d;
+  --app-panel: #242520;
+  --app-control: #292a25;
+  --app-selected-bg: #ffda24;
+  --app-selected-ink: #252520;
+  --app-shadow: #00000066;
+  --color-verdict-bg: #242520;
+  --color-verdict-ink: #f8f4e9;
 }
 * {
   box-sizing: border-box;
@@ -3354,52 +3375,175 @@ html { caret-color: var(--brand-ink); }
 .cuidado-texto { display: grid; gap: 5px; }
 .cuidado-texto strong { font-size: 16px; line-height: 1.3; font-weight: 750; }
 
-/* Night use keeps the September palette as accents, but all reading surfaces
-   move to a low-glare sky. This block sits after the legacy brand overrides so
-   semantic theme tokens win the cascade. */
-@media (prefers-color-scheme: dark) {
-  .app-nav,
-  .explorar-lista,
-  .buscador-app,
-  .perfiles-app label,
-  .calendario-opciones > div {
-    background: var(--app-surface);
-    color: var(--app-ink);
-  }
-  .buscador-app {
-    border-color: var(--app-line);
-  }
-  .perfil-rapido {
-    background: #2b3740;
-    color: var(--app-ink);
-  }
-  .segmentos button[aria-pressed="true"],
-  .app-nav button[aria-current],
-  .dias-salida button[aria-pressed="true"] {
-    background: var(--app-ink);
-    color: var(--app-surface);
-  }
-  .app-nav button:not([aria-current]),
-  .segmentos button:not([aria-pressed="true"]) {
-    color: var(--app-muted);
-  }
-  .app-nav button:hover {
-    background: var(--app-action-soft);
-    color: var(--app-ink);
-  }
-  .parque-fila--sugerido .parque-identidad strong {
-    color: var(--app-ink);
-  }
-  [data-estado="ideal"] { --estado-ink: #8bd7a8; }
-  [data-estado="liviano"] { --estado-ink: #ffd45e; }
-  [data-estado="plancha"] { --estado-ink: #d0c7b5; }
-  [data-estado="bravo"] { --estado-ink: #ffb36d; }
-  [data-estado="peligro"] { --estado-ink: #ff9188; }
-  .mapa-lienzo .maplibregl-canvas {
-    filter: brightness(0.58) saturate(0.72) contrast(1.12);
-  }
+/* Reading surfaces follow semantic tokens in both themes. Dark mode is a
+   composed charcoal palette; state cards keep their meteorological colors. */
+.app-nav,
+.explorar-lista,
+.buscador-app,
+.perfiles-app label,
+.calendario-opciones > div {
+  background: var(--app-surface);
+  color: var(--app-ink);
+}
+.buscador-app { border-color: var(--app-line); }
+.perfil-rapido { background: var(--app-control); color: var(--app-ink); }
+.segmentos button[aria-pressed="true"],
+.app-nav button[aria-current],
+.dias-salida button[aria-pressed="true"],
+.destino-salida button[aria-pressed="true"] {
+  background: var(--app-selected-bg);
+  color: var(--app-selected-ink);
+}
+.app-nav button:not([aria-current]),
+.segmentos button:not([aria-pressed="true"]) { color: var(--app-muted); }
+.app-nav button:hover { background: var(--app-action-soft); color: var(--app-ink); }
+.parque-fila--sugerido .parque-identidad strong { color: var(--app-ink); }
+:root[data-theme="dark"] :is(.parque-condicion, .horas-cinta button)[data-estado="ideal"] { --estado-ink: #91d9aa; }
+:root[data-theme="dark"] :is(.parque-condicion, .horas-cinta button)[data-estado="liviano"] { --estado-ink: #ffd45e; }
+:root[data-theme="dark"] :is(.parque-condicion, .horas-cinta button)[data-estado="plancha"] { --estado-ink: #d5cdbd; }
+:root[data-theme="dark"] :is(.parque-condicion, .horas-cinta button)[data-estado="bravo"] { --estado-ink: #ffb36d; }
+:root[data-theme="dark"] :is(.parque-condicion, .horas-cinta button)[data-estado="peligro"] { --estado-ink: #ff958d; }
+:root[data-theme="dark"] .mapa-lienzo .maplibregl-canvas {
+  filter: brightness(0.58) saturate(0.72) contrast(1.12);
 }
 .cuidado-texto small { font-size: 14px; line-height: 1.55; color: var(--app-muted); }
 .checklist-app label:has(input:checked) .cuidado-texto { text-decoration: none; opacity: 1; }
 
 .portada-contacto { display: inline-flex; align-items: center; min-height: 44px; color: var(--app-muted); font-size: 12px; text-decoration: underline; text-underline-offset: 3px; }
+
+/* Theme control: server-rendered and handled before hydration by the layout. */
+.selector-tema {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--app-line);
+  border-radius: 14px;
+  background: var(--app-control);
+  color: var(--app-ink);
+  font-size: 12px;
+  font-weight: 700;
+  flex: none;
+}
+.selector-tema:hover { background: var(--app-action-soft); }
+.selector-tema > span { display: inline-grid; place-items: center; }
+.selector-tema svg { width: 18px; height: 18px; }
+.selector-tema__luna { display: none !important; }
+:root[data-theme="dark"] .selector-tema__sol { display: none !important; }
+:root[data-theme="dark"] .selector-tema__luna { display: inline-grid !important; }
+.selector-tema--compacto { width: 42px; min-width: 42px; padding: 0; }
+.selector-tema--compacto .selector-tema__texto { display: none; }
+.portada-barra__acciones { display: flex; align-items: center; gap: 10px; }
+
+/* Mi salida can be anchored to a selected park or to the current coordinates. */
+.destino-salida {
+  display: flex;
+  gap: 4px;
+  width: fit-content;
+  max-width: 100%;
+  margin-bottom: 18px;
+  padding: 4px;
+  border: 1px solid var(--app-line);
+  border-radius: 16px;
+  background: var(--app-bg);
+}
+.destino-salida button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 0 13px;
+  border-radius: 12px;
+  color: var(--app-muted);
+  font-size: 12px;
+  font-weight: 750;
+}
+.destino-salida button svg { width: 18px; height: 18px; }
+.destino-salida button:not([aria-pressed="true"]):hover {
+  background: var(--app-control);
+  color: var(--app-ink);
+}
+.permiso-detalle--ubicacion { color: var(--app-muted); }
+.salida-sin-ubicacion {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+  max-width: 520px;
+  padding: clamp(24px, 7vw, 44px);
+  border-radius: 20px;
+  background: var(--app-panel);
+}
+.salida-sin-ubicacion > span {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 15px 15px 15px 5px;
+  background: var(--brand-yellow);
+  color: var(--brand-ink);
+}
+.salida-sin-ubicacion h2 {
+  font-size: clamp(24px, 6vw, 34px);
+  line-height: 1.05;
+  letter-spacing: -.035em;
+}
+.salida-sin-ubicacion p { max-width: 42ch; color: var(--app-muted); }
+.salida-sin-ubicacion .app-primary { margin-top: 6px; }
+.donde-estoy__acciones { display: grid; gap: 2px; flex: none; }
+.donde-estoy__acciones button {
+  min-height: 30px;
+  padding: 0 8px;
+  color: var(--brand-ink);
+  font-size: 11px;
+  font-weight: 750;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.donde-estoy__acciones button:last-child {
+  border-radius: 8px;
+  background: var(--brand-ink);
+  color: var(--brand-bone);
+  text-decoration: none;
+}
+
+/* State surfaces own their ink. App theme text must never leak into them. */
+.parte-viento,
+.parte-viento__hora,
+.parte-viento > p,
+.parte-viento__datos dt { color: var(--state-ink); }
+
+/* Dark is deliberately warm charcoal, not a blue inversion of the light UI. */
+:root[data-theme="dark"] .portada-cielo,
+:root[data-theme="dark"] .mapa-superficie,
+:root[data-theme="dark"] .mapa-lienzo,
+:root[data-theme="dark"] .mapa-espera {
+  background: var(--app-panel);
+}
+:root[data-theme="dark"] .horas-cinta [data-luz="noche"],
+:root[data-theme="dark"] .calendario-opciones a:hover,
+:root[data-theme="dark"] .cuidados-progreso {
+  background: var(--app-control);
+}
+:root[data-theme="dark"] .cuidados-progreso { color: var(--app-ink); }
+:root[data-theme="dark"] .mapa-lienzo .maplibregl-ctrl-group,
+:root[data-theme="dark"] .mapa-lienzo .maplibregl-ctrl-group button {
+  background: var(--app-control);
+  color: var(--app-ink);
+}
+:root[data-theme="dark"] .cielo-relleno { opacity: .72; }
+:root[data-theme="dark"] .cielo-etiqueta { color: #3d3108; }
+:root[data-theme="dark"] .app-screen,
+:root[data-theme="dark"] .horas-cinta {
+  scrollbar-color: #5d5f57 transparent;
+}
+
+@media (max-width: 359px) {
+  .app-topbar { gap: 8px; }
+  .selector-tema--compacto { width: 38px; min-width: 38px; }
+  .destino-salida { width: 100%; }
+  .destino-salida button { flex: 1; padding-inline: 8px; font-size: 11px; }
+  .donde-estoy__resultado { align-items: flex-start; }
+}

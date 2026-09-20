@@ -28,6 +28,7 @@ import { Marca } from "@/components/Marca.tsx";
 import { VolantinCampo } from "@/components/VolantinCampo.tsx";
 import { Icono } from "@/components/Icono.tsx";
 import { cardinal, fraseDireccion } from "@/lib/viento.ts";
+import { SelectorTema } from "@/components/SelectorTema.tsx";
 
 const CLAVE_MODO = "encumbra:modo";
 const CLAVE_PRONOSTICO = "encumbra:pronostico:v1";
@@ -40,6 +41,7 @@ type VivoProps = {
   readonly perfilInicial: Perfil;
   readonly zonaInicial: string;
   readonly parqueInicial?: string;
+  readonly desdeUbicacion?: boolean;
   readonly servidoEn: string;
 };
 
@@ -86,6 +88,7 @@ export function Vivo({
   perfilInicial,
   zonaInicial,
   parqueInicial,
+  desdeUbicacion = false,
   servidoEn,
 }: VivoProps) {
   const router = useRouter();
@@ -193,7 +196,7 @@ export function Vivo({
     window.localStorage.setItem(CLAVE_MODO, "planear");
     window.localStorage.setItem(CLAVE_ZONA, zonaInicial);
     router.push(
-      `/?zona=${encodeURIComponent(zonaInicial)}&perfil=${perfilInicial}&vista=salida${parqueInicial ? `&parque=${encodeURIComponent(parqueInicial)}` : ""}`,
+      `/app?zona=${encodeURIComponent(zonaInicial)}&perfil=${perfilInicial}&vista=salida${desdeUbicacion ? "&destino=ubicacion" : parqueInicial ? `&parque=${encodeURIComponent(parqueInicial)}` : ""}`,
     );
   }
 
@@ -251,10 +254,11 @@ export function Vivo({
         <div>
         <Link href="/" className="vivo__marca" aria-label="Encumbra, inicio"><Marca /></Link>
         <p className="vivo__zona">
-          {zona.nombre}
+          {desdeUbicacion ? "Donde estoy" : zona.nombre}
           <span>volantín {NOMBRES_PERFIL[perfilInicial]}</span>
         </p>
         </div>
+        <SelectorTema compacto />
         {/* How old the reading is, not what time it is: the phone already shows the clock. */}
         <p
           className={

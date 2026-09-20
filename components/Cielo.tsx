@@ -38,8 +38,8 @@ export function Cielo({ horas, ahora }: Props) {
         >
           <defs>
             <linearGradient id="cielo-relleno" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="var(--brand-ink)" stopOpacity="0.20" />
-              <stop offset="100%" stopColor="var(--brand-ink)" stopOpacity="0.02" />
+              <stop offset="0%" stopColor="var(--app-ink)" stopOpacity="0.20" />
+              <stop offset="100%" stopColor="var(--app-ink)" stopOpacity="0.02" />
             </linearGradient>
           </defs>
           <rect

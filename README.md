@@ -13,13 +13,13 @@ Producción: **[encumbra.nvrkth.com/app](https://encumbra.nvrkth.com/app)**
   permiso sin confirmar.
 - Pronóstico horario para seis celdas de ICON en Santiago.
 - Perfiles de volantín liviano, tradicional con cola y acrobático.
-- Ubicación explícita para consultar la celda disponible más cercana, sin
-  guardar la coordenada.
+- Ubicación explícita como destino propio de «Mi salida», sin asociarla a un
+  parque ni guardar la coordenada.
 - Lista, búsqueda, favoritos y mapa MapLibre diferido.
 - Planificación para hoy o mañana, luz, lluvia y calendario.
 - Modo de terreno que conserva el último dato disponible sin señal.
-- Tema claro u oscuro según el sistema; la noche se informa por separado del
-  viento.
+- Tema claro u oscuro elegible y persistido en el navegador; antes de elegir
+  se respeta el sistema. La noche se informa por separado del viento.
 
 ## Arquitectura
 
