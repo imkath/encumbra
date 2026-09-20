@@ -267,6 +267,8 @@ export const PARQUES = ZONAS.flatMap((zona) =>
     return {
       ...ubicacion,
       evidenciaPermiso,
+      tipoLugar: "parque" as const,
+      precision: "recinto" as const,
       recintoId:
         "recintoId" in ubicacion ? ubicacion.recintoId : ubicacion.id,
       nombre: parque.nombre,

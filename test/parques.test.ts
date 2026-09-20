@@ -15,6 +15,8 @@ test("catálogo completo con coordenadas para cada parque", () => {
   assert.ok(
     PARQUES.every((p) => Number.isFinite(p.lat) && Number.isFinite(p.lon)),
   );
+  assert.ok(PARQUES.every((p) => p.tipoLugar === "parque"));
+  assert.ok(PARQUES.every((p) => p.precision === "recinto"));
 });
 test("solo propone parques con autorización respaldada", () => {
   const proponibles = parquesProponibles(PARQUES);

@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useRef, useState } from "react";
 import type { BandaId, Perfil } from "@/lib/bandas.ts";
 import { VolantinPapel } from "./VolantinPapel.tsx";

@@ -1,4 +1,3 @@
-"use client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Map as Mapa, Marker, GeoJSONSource } from "maplibre-gl";
 import type { FeatureCollection, Point } from "geojson";

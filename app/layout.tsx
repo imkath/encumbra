@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo } from "next/font/google";
-import { ServicioOffline } from "@/components/ServicioOffline.tsx";
 import "./globals.css";
 
 // One family for app and landing. The width axis carries the signage register
@@ -37,7 +36,12 @@ export default function RootLayout({
     <html lang="es-CL">
       <body className={archivo.variable}>
         {children}
-        <ServicioOffline />
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              'if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWorker.register("/sw.js").catch(()=>{}),{once:true})}',
+          }}
+        />
       </body>
     </html>
   );

@@ -1,5 +1,3 @@
-"use client";
-
 import { useSyncExternalStore } from "react";
 import type { Ventana } from "@/lib/ventanas.ts";
 import { Icono } from "./Icono.tsx";
