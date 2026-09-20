@@ -299,13 +299,15 @@ instrumento de navegación ni como medición del viento en terreno.
 La guía de despegue se corrigió a partir de la técnica documentada por la
 [American Kitefliers Association](https://www.kite.org/about-kites/how-to-fly-a-kite/)
 y el [manual de Prism Kites](https://prismkites.com/pages/pocket-flyer-manual):
-el piloto queda a barlovento, de espaldas al viento, y el ayudante sostiene el
-volantín a sotavento, delante del piloto. A la señal lo suelta sin lanzarlo;
-en un volantín de un hilo, el piloto recoge hilo mientras gana altura. `/volar`
-traduce eso a «gira a tu izquierda/derecha» y confirma cuando la parte superior
-del teléfono apunta hacia el ayudante. La distancia exacta no se fija porque
-depende del espacio, el volantín y el viento; sí se pide dejar libre el tramo
-entre ambos.
+quien vuela queda a barlovento, de espaldas al viento, y el volantín se ubica a
+sotavento, delante. La ayuda es opcional: AKA y Prism también describen el
+despegue desde la propia mano o con el volantín apoyado más adelante. `/volar`
+traduce la geometría estable a `Tú → Volantín`; no transforma a la persona que
+ayuda en requisito ni añade un selector. La parte superior del teléfono apunta
+al lugar del volantín. En una línea, se deja que el viento lo tome o se suelta
+sin lanzarlo; en multilínea, se prepara al centro de la ventana, se da un paso
+atrás y se tiran ambos mandos, como documentan AKA y el
+[manual Synapse de Prism](https://prismkites.com/pages/synapse-manual).
 
 La implementación móvil sigue las fuentes de cada plataforma. En iPhone usa
 `webkitCompassHeading`, el rumbo real indicado por

@@ -143,7 +143,7 @@ export function guiaDespegue(
     return {
       estado: "alineado" as const,
       diferencia,
-      instruccion: "Así está bien: el viento queda a tu espalda",
+      instruccion: "Listo: el volantín va frente a ti",
     };
   }
 

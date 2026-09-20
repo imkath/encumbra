@@ -24,10 +24,11 @@ parques de una misma celda. En terreno, la dirección distingue explícitamente
 de dónde viene el viento y hacia dónde va. La rosa mantiene norte arriba como
 base y, tras una acción de la persona, puede orientarse con el sensor del
 teléfono sin guardar la lectura. La guía de despegue ubica al piloto con el
-hilo a barlovento y al ayudante con el volantín a sotavento; indica en vivo
-hacia qué lado girar y confirma la alineación sin mostrar grados. La guía toma
-como mira la parte superior visible de la pantalla tanto en vertical como en
-horizontal.
+hilo a barlovento y el volantín delante, a sotavento; indica en vivo hacia qué
+lado girar y confirma la alineación sin mostrar grados. Funciona igual para
+quien despega por su cuenta o recibe ayuda: la asistencia no es un modo ni un
+requisito. La guía toma como mira la parte superior visible de la pantalla tanto
+en vertical como en horizontal.
 
 ## Brand Commitments
 Voz chilena cercana, instrucciones concretas y una experiencia que se siente

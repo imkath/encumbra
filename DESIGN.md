@@ -113,14 +113,20 @@ y no se persiste.
 
 Con la brújula activa, el teléfono se sostiene plano y con la pantalla hacia
 arriba. La parte superior funciona como mira: la UI indica girar a izquierda o
-derecha hasta que apunte hacia el ayudante y el volantín. La composición nombra
-las dos posiciones: quien tiene el hilo queda con la espalda al viento; quien
-sostiene el volantín queda delante, a favor del viento. La confirmación usa
-texto, color y una vibración compatible, nunca movimiento como única señal.
-También recuerda despejar el espacio, soltar sin lanzar y que la brújula orienta
-el pronóstico: no mide el viento real del parque. Si la pantalla está en
-horizontal, la mira sigue la parte superior visible y no el borde original del
-dispositivo.
+derecha hasta que apunte hacia el lugar del volantín. La composición nombra dos
+elementos, no dos personas: `Tú`, con la espalda al viento, y `Volantín`, delante
+a favor del viento. Estar sola/o o recibir ayuda no cambia esa dirección ni
+requiere un selector. La confirmación usa texto, color y una vibración
+compatible, nunca movimiento como única señal. También recuerda que la brújula
+orienta el pronóstico: no mide el viento real del parque. Si la pantalla está
+en horizontal, la mira sigue la parte superior visible y no el borde original
+del dispositivo.
+
+En `/volar` la orientación para despegar domina después del veredicto: instrucción
+grande, rosa y relación `Tú → Volantín`. Procedencia, destino, técnica y límite
+del sensor permanecen visibles pero un nivel abajo. El volantín ilustrado baja
+de intensidad detrás de la lectura en móvil y recupera presencia cuando tiene
+su propia columna. No usar una tarjeta flotante ni un selector de acompañantes.
 
 
 ## Favicon
