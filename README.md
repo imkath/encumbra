@@ -1,43 +1,109 @@
-# Encumbra v2
+# Encumbra
 
-Webapp mobile-first que responde una sola pregunta: **¿anda el volantín, cuándo y dónde?**
-Santiago de Chile, viento en tiempo real, veredicto en una palabra.
+Webapp mobile-first para saber si anda el volantín, cuándo y en qué lugar de
+Santiago. Traduce viento, rachas, lluvia, luz y tipo de volantín en una decisión
+simple, sin mostrar el score interno ni inventar diferencias entre parques que
+comparten la misma celda meteorológica.
 
-Reescritura completa desde cero. La v1 (`imkath/encumbra`) se descartó por UX
-desktop-first, un monolito de 1375 líneas y un ranking de parques que afirmaba
-diferencias de viento que el modelo meteorológico no puede ver.
+Producción: **[encumbra.nvrkth.com/app](https://encumbra.nvrkth.com/app)**
 
-## Documentación
+## Qué incluye
 
-| Documento | Qué contiene |
-|---|---|
-| [`docs/01-ANALISIS-V1.md`](docs/01-ANALISIS-V1.md) | Qué hacía la v1, qué se rescata, qué falló y con qué evidencia |
-| [`docs/02-PRODUCTO.md`](docs/02-PRODUCTO.md) | Los dos modos de uso, el alcance, el fundamento de UX |
-| [`docs/03-PLAN.md`](docs/03-PLAN.md) | Arquitectura, contratos, fases, presupuestos |
-| [`DESIGN.md`](DESIGN.md) | Contrato visual: color, tipografía, forma, lista de exclusión |
-| [`docs/12-LANDING.md`](docs/12-LANDING.md) | Dirección visual de la landing, escrita antes de generarla |
-| [`docs/06-CALIBRACION.md`](docs/06-CALIBRACION.md) | De dónde sale cada número, con las fuentes y los datos |
-| [`docs/04-PROMPT-CODEX.md`](docs/04-PROMPT-CODEX.md) | Prompt de implementación |
-| [`docs/05-PROMPT-V0.md`](docs/05-PROMPT-V0.md) | Prompt de exploración visual |
+- 14 recintos con autorización respaldada y parques adicionales buscables con
+  permiso sin confirmar.
+- Pronóstico horario para seis celdas de ICON en Santiago.
+- Perfiles de volantín liviano, tradicional con cola y acrobático.
+- Ubicación explícita para consultar la celda disponible más cercana, sin
+  guardar la coordenada.
+- Lista, búsqueda, favoritos y mapa MapLibre diferido.
+- Planificación para hoy o mañana, luz, lluvia y calendario.
+- Modo de terreno que conserva el último dato disponible sin señal.
+- Tema claro u oscuro según el sistema; la noche se informa por separado del
+  viento.
 
-## Estado
+## Arquitectura
 
-Implementación disponible. La interfaz principal es una app móvil con mapa de parques, favoritos locales, pronóstico horario y preparación de salida. Ver [el cambio de estructura](docs/11-APP-MOVIL.md).
+- Next.js 16, React 19 y TypeScript.
+- Server Components por defecto y exactamente dos fronteras `use client`.
+- Lógica de dominio pura en `lib/`.
+- Open-Meteo `icon_seamless` como única fuente meteorológica activa.
+- Cloudflare Cron cada 10 minutos: valida el pronóstico y lo guarda en una sola
+  clave de Workers KV. Las visitas productivas solo leen KV.
+- Amanecer y puesta de sol calculados localmente.
+- Pruebas nativas de Node, sin framework adicional.
+- Sin librería de componentes, estado, fechas, gráficos, iconos ni fetch.
 
-Los umbrales del dominio están calibrados contra la American Kitefliers
-Association y cinco años de datos horarios de Santiago. Se reproduce con:
+## Documentación vigente
+
+- [PRODUCT.md](PRODUCT.md): contrato funcional y límites del producto.
+- [DESIGN.md](DESIGN.md): contrato visual aplicado.
+- [docs/BITACORA.md](docs/BITACORA.md): decisiones, calibración, arquitectura,
+  bugs conocidos, descartes, deuda y procedimiento de cambios.
+- [AGENTS.md](AGENTS.md): instrucciones operativas para agentes.
+- `public/maps/LICENSE*.md`: licencias y atribuciones del estilo de mapa.
+
+Los planes, prompts y reportes intermedios se consolidaron en la bitácora para
+que no existan varias fuentes contradictorias.
+
+## Requisitos
+
+- Node 22, definido en `.nvmrc`.
+- pnpm.
+- Python 3 solo para reproducir la calibración y el smoke test de navegador.
+
+## Desarrollo local
 
 ```bash
-python3 calibracion/calibrar.py
-```
-
-## Stack
-
-Next 16 · React 19 · Tailwind 4 · TypeScript · Open-Meteo · pnpm · Node 22
-
-## Correr local
-
-```bash
+nvm use
 pnpm install
 pnpm dev
 ```
+
+Abrir <http://localhost:3000>. El script de desarrollo copia primero el worker
+de MapLibre que Next necesita servir desde `public/vendor/`.
+
+## Verificación
+
+```bash
+node --test test/*.test.ts
+pnpm lint
+pnpm build
+python3 calibracion/calibrar.py
+```
+
+Smoke en Firefox visible contra producción:
+
+```bash
+ENCUMBRA_BASE=https://encumbra.nvrkth.com python3 scripts/smoke-firefox.py
+```
+
+No usar `node --test test/`: Node no descubre aquí los archivos TypeScript del
+directorio sin el glob.
+
+## Cloudflare
+
+Vista previa:
+
+```bash
+pnpm preview
+```
+
+Despliegue manual:
+
+```bash
+pnpm run deploy
+```
+
+Debe usarse `pnpm run deploy`; `pnpm deploy` es otro comando de pnpm. La
+configuración de Worker, binding KV y cron vive en `wrangler.jsonc`; el handler
+programado vive en `custom-worker.ts`.
+
+## Límites conocidos
+
+- El first load productivo medido sigue sobre el presupuesto original de
+  120 KB. MapLibre ya está fuera de la carga inicial y no se elevó el techo.
+- ICON aún no se ha validado contra una serie observada de la DMC.
+- No hay fallback meteorológico activo: otro proveedor requiere credenciales y
+  recalibración antes de poder emitir las mismas bandas.
+- Los encuentros comunitarios no se publican como lugares autorizados ni como
+  coordenadas exactas sin evidencia suficiente.

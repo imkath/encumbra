@@ -1,4 +1,4 @@
-// Calibrado en docs/06-CALIBRACION.md contra la AKA y cinco años de
+// Calibrado en docs/BITACORA.md contra la AKA y cinco años de
 // datos horarios de Santiago. Este archivo es la única fuente de umbrales.
 export const PERFILES = {
   liviano: { centro: 12, sigma: 5, techoRacha: 22 },
