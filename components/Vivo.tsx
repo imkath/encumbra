@@ -28,7 +28,6 @@ import { Marca } from "@/components/Marca.tsx";
 import { VolantinCampo } from "@/components/VolantinCampo.tsx";
 import { Icono } from "@/components/Icono.tsx";
 import { rumboDispositivo, trayectoriaViento } from "@/lib/viento.ts";
-import { SelectorTema } from "@/components/SelectorTema.tsx";
 
 const CLAVE_MODO = "encumbra:modo";
 const CLAVE_PRONOSTICO = "encumbra:pronostico:v1";
@@ -474,7 +473,6 @@ export function Vivo({
           <span>volantín {NOMBRES_PERFIL[perfilInicial]}</span>
         </p>
         </div>
-        <SelectorTema compacto />
         {/* How old the reading is, not what time it is: the phone already shows the clock. */}
         <p
           className={

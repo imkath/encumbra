@@ -251,6 +251,11 @@ condición separada del viento: no borra el veredicto, pero advierte usar solo
 lugares conocidos e iluminados, lejos de cables y calles. Esto no recomienda
 encumbrar de noche ni concede acceso.
 
+Por indicación del usuario se retiró el selector de tema de `/volar`: no aporta
+a la consulta en terreno y ocupa espacio en la cabecera. El control permanece
+en las otras vistas y la preferencia guardada se conserva. La paleta de vuelo
+sigue respondiendo al viento y a la luz.
+
 ### Ubicación como salida
 
 El 20 de septiembre de 2026 «Donde estoy» dejó de ser solo una consulta en
