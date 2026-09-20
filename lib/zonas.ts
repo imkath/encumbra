@@ -25,7 +25,7 @@ export const ZONAS = [
       { nombre: "Araucano", comuna: null, tamano: null },
       { nombre: "San Cristóbal", comuna: null, tamano: null },
       { nombre: "Bicentenario", comuna: null, tamano: null },
-      { nombre: "De la Familia", comuna: null, tamano: null },
+      { nombre: "Parque de la Familia", comuna: null, tamano: null },
       { nombre: "Mahuidahue", comuna: null, tamano: null },
     ],
   },
@@ -44,7 +44,7 @@ export const ZONAS = [
     parques: [
       { nombre: "O'Higgins", comuna: null, tamano: null },
       { nombre: "Quinta Normal", comuna: null, tamano: null },
-      { nombre: "Brasil", comuna: null, tamano: null },
+      { nombre: "Parque Brasil", comuna: null, tamano: null },
       { nombre: "La Castrina", comuna: null, tamano: null },
       { nombre: "André Jarlán", comuna: null, tamano: null },
       { nombre: "La Bandera", comuna: null, tamano: null },
@@ -57,7 +57,7 @@ export const ZONAS = [
     lon: -70.6981,
     parques: [
       { nombre: "Bernardo Leighton", comuna: null, tamano: null },
-      { nombre: "Cerrillos", comuna: null, tamano: null },
+      { nombre: "Parque Bicentenario Cerrillos", comuna: null, tamano: null },
     ],
   },
   {

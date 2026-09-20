@@ -8,7 +8,7 @@ import type { Pronostico } from "@/lib/openmeteo.ts";
 import {
   buscarParques,
   ordenarParques,
-  PARQUES,
+  parquesProponibles,
   type Coordenadas,
 } from "@/lib/parques.ts";
 import {
@@ -188,14 +188,16 @@ export function EncumbraApp({
     [pronostico, perfil, ahora, ubicacion],
   );
   const parque = parques.find((p) => p.id === seleccionado) ?? parques[0]!;
+  const proponibles = parquesProponibles(parques);
   const ordenados = ordenarParques(
-    parques,
+    proponibles,
     orden === "cerca" ? "cerca" : "adecuado",
   );
+  const universo = busqueda ? parques : ordenados;
   const resultados = buscarParques(
     orden === "guardados"
-      ? ordenados.filter((p) => favoritos.includes(p.id))
-      : ordenados,
+      ? universo.filter((p) => favoritos.includes(p.id))
+      : universo,
     busqueda,
   );
   const visibles =
@@ -320,6 +322,12 @@ export function EncumbraApp({
                 Buen viento entre {ubicacion ? "tus cercanos" : "las zonas"}
               </small>
             ) : null}
+            <small className="parque-permiso" data-permiso={p.permiso}>
+              <Icono nombre="arbol" />
+              {p.permiso === "autorizado"
+                ? "Autorizado para encumbrar"
+                : "Permiso no confirmado"}
+            </small>
           </span>
           <span
             className="parque-condicion"
@@ -510,7 +518,7 @@ export function EncumbraApp({
                     <span>
                       {busqueda || orden === "guardados"
                         ? resultados.length
-                        : `${visibles.length} de ${PARQUES.length}`}
+                        : `${visibles.length} de ${proponibles.length}`}
                     </span>
                   </div>
                   {pronostico.estado !== "actual" ? (
@@ -560,7 +568,7 @@ export function EncumbraApp({
                       className="ver-todos-app"
                       onClick={() => setListaCompleta(true)}
                     >
-                      Explorar los {PARQUES.length} parques
+                      Explorar los {proponibles.length} parques autorizados
                       <Icono nombre="flecha" />
                     </button>
                   ) : null}
@@ -597,6 +605,20 @@ export function EncumbraApp({
                     {parque.distancia !== null
                       ? ` · ${distancia(parque.distancia)}`
                       : ""}
+                  </p>
+                  <p className="permiso-detalle" data-permiso={parque.permiso}>
+                    <Icono nombre="arbol" />
+                    {parque.permiso === "autorizado" ? (
+                      <>
+                        Autorizado para encumbrar según Parquemet. Respeta las
+                        reglas y horarios del recinto.
+                      </>
+                    ) : (
+                      <>
+                        No tenemos una autorización vigente confirmada para
+                        este parque. Revisa con su administración antes de ir.
+                      </>
+                    )}
                   </p>
                 </div>
                 <button

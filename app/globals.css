@@ -2630,6 +2630,37 @@ h2,
   color: var(--app-good);
   line-height: 1.3;
 }
+.parque-identidad .parque-permiso {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--app-good);
+}
+.parque-identidad .parque-permiso[data-permiso="sin-confirmar"] {
+  color: var(--app-muted);
+}
+.parque-permiso svg {
+  width: 14px;
+  height: 14px;
+}
+.permiso-detalle {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  max-width: 58ch;
+  margin-top: 9px;
+  color: var(--app-good);
+  font-size: 12px;
+  line-height: 1.4;
+}
+.permiso-detalle[data-permiso="sin-confirmar"] {
+  color: var(--app-muted);
+}
+.permiso-detalle svg {
+  width: 17px;
+  height: 17px;
+  margin-top: 1px;
+}
 .parque-condicion {
   display: grid;
   gap: 5px;

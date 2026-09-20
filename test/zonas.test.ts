@@ -19,7 +19,7 @@ test("las seis zonas reproducen las celdas verificadas de icon_seamless", () => 
           "Araucano",
           "San Cristóbal",
           "Bicentenario",
-          "De la Familia",
+          "Parque de la Familia",
           "Mahuidahue",
         ],
       },
@@ -30,7 +30,7 @@ test("las seis zonas reproducen las celdas verificadas de icon_seamless", () => 
         parques: [
           "O'Higgins",
           "Quinta Normal",
-          "Brasil",
+          "Parque Brasil",
           "La Castrina",
           "André Jarlán",
           "La Bandera",
@@ -39,7 +39,7 @@ test("las seis zonas reproducen las celdas verificadas de icon_seamless", () => 
       {
         lat: -33.4809,
         lon: -70.6981,
-        parques: ["Bernardo Leighton", "Cerrillos"],
+        parques: ["Bernardo Leighton", "Parque Bicentenario Cerrillos"],
       },
       { lat: -33.4648, lon: -70.5472, parques: ["Peñalolén"] },
       {

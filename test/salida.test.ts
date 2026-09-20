@@ -56,7 +56,7 @@ test("selección respeta parque explícito, zona y fallback válido", () => {
     elegirParqueInicial("invalido", "penalolen").id,
     "parque-penalolen",
   );
-  assert.ok(elegirParqueInicial(undefined, undefined).id);
+  assert.equal(elegirParqueInicial(undefined, undefined).permiso, "autorizado");
 });
 
 test("no ofrece tramo de madrugada como ventana de salida", () => {

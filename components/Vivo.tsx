@@ -18,14 +18,12 @@ import {
 import type { Pronostico, ZonaPronostico } from "@/lib/openmeteo.ts";
 import { adaptarZonaAlPerfil, horaVigente } from "@/lib/planear.ts";
 import {
-  crearCalendario,
   estadoLuz,
   estadoVentana,
   leerPronosticoGuardado,
   serializarPronostico,
   tendencia60,
 } from "@/lib/vivo.ts";
-import { lecturasParques } from "@/lib/salida.ts";
 import { Marca } from "@/components/Marca.tsx";
 import { VolantinCampo } from "@/components/VolantinCampo.tsx";
 

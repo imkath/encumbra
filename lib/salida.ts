@@ -1,6 +1,11 @@
 import type { Perfil } from "./bandas.ts";
 import type { Pronostico } from "./openmeteo.ts";
-import { PARQUES, distanciaKm, type Coordenadas } from "./parques.ts";
+import {
+  PARQUES,
+  distanciaKm,
+  parquesProponibles,
+  type Coordenadas,
+} from "./parques.ts";
 import {
   adaptarHorasAlPerfil,
   horaVigente,
@@ -13,7 +18,7 @@ export function elegirParqueInicial(id?: string, zona?: string) {
   const elegido =
     PARQUES.find((p) => p.id === id) ??
     PARQUES.find((p) => p.zonaId === zona) ??
-    PARQUES[0];
+    parquesProponibles(PARQUES)[0];
   if (!elegido) throw new Error("El catálogo de parques está vacío");
   return elegido;
 }

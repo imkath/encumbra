@@ -1,7 +1,13 @@
 import { ZONAS } from "./zonas.ts";
 import type { BandaId } from "./bandas.ts";
-// Coordenadas y comunas: catálogo del usuario github.com/imkath/encumbra/blob/main/lib/parks-data.ts
-// Puntos de referencia, no accesos ni seguridad verificados.
+
+export type PermisoParque = "autorizado" | "sin-confirmar";
+
+const FUENTE_PARQUEMET_2026 =
+  "https://www.instagram.com/p/DdAFJBpAZRn/";
+
+// Las coordenadas ubican el recinto, no prometen un acceso específico.
+// El permiso se mantiene separado de la condición meteorológica.
 const UBICACIONES = [
   {
     id: "parque-ohiggins",
@@ -9,6 +15,8 @@ const UBICACIONES = [
     lat: -33.464167,
     lon: -70.66,
     nombre: "O'Higgins",
+    permiso: "sin-confirmar",
+    fuentePermiso: null,
   },
   {
     id: "parque-araucano",
@@ -16,6 +24,8 @@ const UBICACIONES = [
     lat: -33.402778,
     lon: -70.575556,
     nombre: "Araucano",
+    permiso: "sin-confirmar",
+    fuentePermiso: null,
   },
   {
     id: "cerro-san-cristobal",
@@ -23,6 +33,8 @@ const UBICACIONES = [
     lat: -33.4225,
     lon: -70.630556,
     nombre: "San Cristóbal",
+    permiso: "sin-confirmar",
+    fuentePermiso: null,
   },
   {
     id: "parque-quinta-normal",
@@ -30,6 +42,8 @@ const UBICACIONES = [
     lat: -33.441083,
     lon: -70.685361,
     nombre: "Quinta Normal",
+    permiso: "sin-confirmar",
+    fuentePermiso: null,
   },
   {
     id: "parque-bicentenario",
@@ -37,20 +51,26 @@ const UBICACIONES = [
     lat: -33.400556,
     lon: -70.602222,
     nombre: "Bicentenario",
+    permiso: "sin-confirmar",
+    fuentePermiso: null,
   },
   {
     id: "parque-la-hondonada",
     comuna: "Cerro Navia",
-    lat: -33.426061,
-    lon: -70.754492,
+    lat: -33.425875,
+    lon: -70.760074,
     nombre: "La Hondonada",
+    permiso: "autorizado",
+    fuentePermiso: FUENTE_PARQUEMET_2026,
   },
   {
     id: "parque-brasil",
     comuna: "La Granja",
-    lat: -33.517389,
-    lon: -70.615722,
-    nombre: "Brasil",
+    lat: -33.519262,
+    lon: -70.613582,
+    nombre: "Parque Brasil",
+    permiso: "autorizado",
+    fuentePermiso: FUENTE_PARQUEMET_2026,
   },
   {
     id: "parque-la-castrina",
@@ -58,6 +78,8 @@ const UBICACIONES = [
     lat: -33.511944,
     lon: -70.629167,
     nombre: "La Castrina",
+    permiso: "autorizado",
+    fuentePermiso: FUENTE_PARQUEMET_2026,
   },
   {
     id: "parque-andre-jarlan",
@@ -65,6 +87,8 @@ const UBICACIONES = [
     lat: -33.485221,
     lon: -70.669826,
     nombre: "André Jarlán",
+    permiso: "autorizado",
+    fuentePermiso: FUENTE_PARQUEMET_2026,
   },
   {
     id: "parque-bernardo-leighton",
@@ -72,34 +96,45 @@ const UBICACIONES = [
     lat: -33.465516,
     lon: -70.694895,
     nombre: "Bernardo Leighton",
+    permiso: "autorizado",
+    fuentePermiso: FUENTE_PARQUEMET_2026,
   },
   {
     id: "parque-cerrillos",
     comuna: "Cerrillos",
-    lat: -33.496346,
-    lon: -70.701333,
-    nombre: "Cerrillos",
+    lat: -33.491826,
+    lon: -70.697599,
+    nombre: "Parque Bicentenario Cerrillos",
+    permiso: "autorizado",
+    fuentePermiso: FUENTE_PARQUEMET_2026,
   },
   {
     id: "parque-mapuhue",
     comuna: "La Pintana",
-    lat: -33.579,
-    lon: -70.653333,
+    lat: -33.591431,
+    lon: -70.629588,
     nombre: "Mapuhue",
+    permiso: "autorizado",
+    fuentePermiso: FUENTE_PARQUEMET_2026,
   },
   {
     id: "parque-la-bandera",
     comuna: "San Ramón",
-    lat: -33.542111,
-    lon: -70.640861,
+    lat: -33.542011,
+    lon: -70.643102,
     nombre: "La Bandera",
+    permiso: "autorizado",
+    fuentePermiso: FUENTE_PARQUEMET_2026,
+    riesgoVial: "Vespucio Sur pasa junto al parque; no cruces la autopista siguiendo un volantín cortado.",
   },
   {
     id: "parque-la-platina",
     comuna: "La Pintana",
-    lat: -33.566667,
-    lon: -70.6125,
+    lat: -33.566339,
+    lon: -70.612685,
     nombre: "La Platina",
+    permiso: "autorizado",
+    fuentePermiso: FUENTE_PARQUEMET_2026,
   },
   {
     id: "parque-penalolen",
@@ -107,20 +142,26 @@ const UBICACIONES = [
     lat: -33.464836,
     lon: -70.547211,
     nombre: "Peñalolén",
+    permiso: "autorizado",
+    fuentePermiso: FUENTE_PARQUEMET_2026,
   },
   {
     id: "parque-de-la-familia",
     comuna: "Quinta Normal",
-    lat: -33.424111,
-    lon: -70.680064,
-    nombre: "de la Familia",
+    lat: -33.42402,
+    lon: -70.68009,
+    nombre: "Parque de la Familia",
+    permiso: "autorizado",
+    fuentePermiso: FUENTE_PARQUEMET_2026,
   },
   {
     id: "parque-mahuidahue",
     comuna: "Recoleta",
-    lat: -33.403611,
-    lon: -70.618611,
+    lat: -33.407037,
+    lon: -70.618319,
     nombre: "Mahuidahue",
+    permiso: "autorizado",
+    fuentePermiso: FUENTE_PARQUEMET_2026,
   },
 ] as const;
 export const PARQUES = ZONAS.flatMap((zona) =>
@@ -139,6 +180,12 @@ export const PARQUES = ZONAS.flatMap((zona) =>
     };
   }),
 );
+
+export function parquesProponibles<T extends { permiso: PermisoParque }>(
+  parques: readonly T[],
+): T[] {
+  return parques.filter(({ permiso }) => permiso === "autorizado");
+}
 
 export type Coordenadas = { readonly lat: number; readonly lon: number };
 export function distanciaKm(a: Coordenadas, b: Coordenadas): number {

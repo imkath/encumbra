@@ -5,6 +5,7 @@ import {
   ordenarParques,
   buscarParques,
   PARQUES,
+  parquesProponibles,
 } from "../lib/parques.ts";
 
 test("catálogo completo con coordenadas para cada parque", () => {
@@ -14,12 +15,30 @@ test("catálogo completo con coordenadas para cada parque", () => {
     PARQUES.every((p) => Number.isFinite(p.lat) && Number.isFinite(p.lon)),
   );
 });
+test("solo propone parques con autorización respaldada", () => {
+  const proponibles = parquesProponibles(PARQUES);
+
+  assert.equal(proponibles.length, 12);
+  assert.ok(proponibles.every((parque) => parque.permiso === "autorizado"));
+  assert.ok(proponibles.every((parque) => parque.fuentePermiso));
+  assert.ok(!proponibles.some((parque) => parque.nombre === "San Cristóbal"));
+  assert.ok(
+    buscarParques(PARQUES, "san cristobal").some(
+      (parque) => parque.permiso === "sin-confirmar",
+    ),
+  );
+});
 test("distancia cero y búsqueda sin acentos por comuna", () => {
   assert.equal(distanciaKm({ lat: -33, lon: -70 }, { lat: -33, lon: -70 }), 0);
   assert.ok(
     buscarParques(PARQUES, "penalolen").some((p) => p.nombre === "Peñalolén"),
   );
   assert.ok(buscarParques(PARQUES, "vitacura").length);
+  assert.ok(
+    buscarParques(PARQUES, "bicentenario cerrillos").some(
+      (parque) => parque.id === "parque-cerrillos",
+    ),
+  );
 });
 test("recomienda entre cinco cercanos, sin privilegiar un ideal lejano", () => {
   const items = Array.from({ length: 6 }, (_, i) => ({

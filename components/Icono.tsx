@@ -77,6 +77,12 @@ const trazos = {
       <path d="m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2ZM9 3v16M15 5v16" />
     </>
   ),
+  arbol: (
+    <>
+      <path d="M12 21v-5" />
+      <path d="M8.5 16h7a4 4 0 0 0 .7-7.9A5 5 0 0 0 6.7 9.8 3.5 3.5 0 0 0 8.5 16Z" />
+    </>
+  ),
 } as const;
 export function Icono({
   nombre,
