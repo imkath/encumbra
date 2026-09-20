@@ -48,6 +48,11 @@ persistencia. La búsqueda manual funciona por nombre y comuna. Solo los lugares
 con evidencia de autorización entran en recomendaciones; el pronóstico no
 implica acceso ni seguridad.
 
+La selección manual está disponible para todo el catálogo, incluido Araucano y
+otros parques con permiso sin confirmar. «Explorar todos los parques», el mapa,
+«Cercanos», la búsqueda y «Guardados» incluyen estos lugares con su estado de
+permiso visible. Guardarlos o elegirlos no cambia esa condición.
+
 «Mi salida» acepta dos destinos equivalentes: un parque elegido o «donde
 estoy». El segundo usa la celda ICON más cercana, no hereda permiso ni nombre
 de un parque, no ofrece indicaciones para llegar y vuelve a pedir ubicación al

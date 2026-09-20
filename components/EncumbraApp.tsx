@@ -204,12 +204,15 @@ export function EncumbraApp({
   const horaAqui = lecturaAqui?.hora ?? null;
   const parque = parques.find((p) => p.id === seleccionado) ?? parques[0]!;
   const proponibles = parquesProponibles(parques);
-  const recintosAutorizados = contarRecintos(proponibles);
   const ordenados = ordenarParques(
     proponibles,
     orden === "cerca" ? "cerca" : "adecuado",
   );
-  const universo = busqueda ? parques : ordenados;
+  const explorarCatalogo =
+    Boolean(busqueda.trim()) || listaCompleta || vistaMapa || orden !== "adecuado";
+  const universo = explorarCatalogo
+    ? ordenarParques(parques, orden === "cerca" ? "cerca" : "adecuado")
+    : ordenados;
   const resultados = buscarParques(
     orden === "guardados"
       ? universo.filter((p) => favoritos.includes(p.id))
@@ -549,7 +552,10 @@ export function EncumbraApp({
                   <div className="segmentos" aria-label="Orden de parques">
                     <button
                       aria-pressed={orden === "adecuado"}
-                      onClick={() => setOrden("adecuado")}
+                      onClick={() => {
+                        setOrden("adecuado");
+                        setListaCompleta(false);
+                      }}
                     >
                       Para ti
                     </button>
@@ -620,7 +626,7 @@ export function EncumbraApp({
                     <span>
                       {busqueda || orden === "guardados"
                         ? resultados.length
-                        : `${visibles.length} de ${proponibles.length} puntos · ${recintosAutorizados} parques`}
+                        : `${visibles.length} de ${universo.length} puntos · ${contarRecintos(universo)} parques`}
                     </span>
                   </div>
                   {pronostico.estado !== "actual" ? (
@@ -659,6 +665,7 @@ export function EncumbraApp({
                         onClick={() => {
                           setBusqueda("");
                           setOrden("adecuado");
+                          setListaCompleta(true);
                         }}
                       >
                         Ver todos los parques
@@ -670,7 +677,7 @@ export function EncumbraApp({
                       className="ver-todos-app"
                       onClick={() => setListaCompleta(true)}
                     >
-                      Explorar los {recintosAutorizados} parques autorizados
+                      Explorar todos los parques
                       <Icono nombre="flecha" />
                     </button>
                   ) : null}
@@ -680,8 +687,10 @@ export function EncumbraApp({
                       {ubicacion
                         ? "Comparamos el viento entre los cinco más cercanos. A igual condición, priorizamos la distancia."
                         : "Ordenamos por el viento de su zona. Usa tu ubicación para considerar la distancia."}{" "}
-                      Las distancias son en línea recta. El pronóstico no dice nada
-                      del acceso ni de qué tan seguro está el parque.
+                      En «Para ti» priorizamos parques con autorización
+                      respaldada. Puedes elegir cualquier parque del catálogo;
+                      indicamos si su permiso está sin confirmar. Las distancias
+                      son en línea recta.
                     </p>
                   </details>
                 </section>

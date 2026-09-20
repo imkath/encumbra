@@ -9,8 +9,8 @@ Producción: **[encumbra.nvrkth.com/app](https://encumbra.nvrkth.com/app)**
 
 ## Qué incluye
 
-- 14 recintos con autorización respaldada y parques adicionales buscables con
-  permiso sin confirmar.
+- 14 recintos con autorización respaldada y parques adicionales elegibles,
+  como Araucano, con permiso sin confirmar visible en su ficha.
 - Pronóstico horario para seis celdas de ICON en Santiago.
 - Perfiles de volantín liviano, tradicional con cola y acrobático.
 - Ubicación explícita como destino propio de «Mi salida», sin asociarla a un

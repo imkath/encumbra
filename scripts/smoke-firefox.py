@@ -48,6 +48,24 @@ with sync_playwright() as p:
         "js_first_load_bytes": sum(recurso["bytes"] for recurso in recursos_js),
         "js_recursos": recursos_js,
     })
+    pagina.get_by_role("button", name="Explorar todos los parques", exact=True).click()
+    araucano = pagina.locator(".parques-lista li").filter(
+        has=pagina.get_by_text("Araucano", exact=True)
+    )
+    assert araucano.get_by_text("Permiso no confirmado", exact=True).count() == 1
+    araucano.get_by_role("button", name="Guardar Araucano", exact=True).click()
+    pagina.get_by_role("button", name="Guardados 1", exact=True).click()
+    assert araucano.count() == 1
+    araucano.locator(".parque-abrir").click()
+    pagina.get_by_role("heading", name="Araucano", exact=True).wait_for()
+    assert "autorización vigente confirmada" in pagina.locator(".permiso-detalle").inner_text()
+    assert "parque=parque-araucano" in pagina.url
+    assert "parque=parque-araucano" in pagina.get_by_text("Ya estoy afuera", exact=True).get_attribute("href")
+    pagina.screenshot(path=str(SALIDAS / "app-mobile-araucano.png"), full_page=True)
+    pagina.reload(wait_until="networkidle")
+    pagina.get_by_role("heading", name="Araucano", exact=True).wait_for()
+    resultados.append({"seleccion_manual": "Araucano elegible, guardado y persistente; permiso sin confirmar"})
+    pagina.get_by_role("button", name="Parques", exact=True).click()
     pagina.get_by_role("button", name="Ver si anda donde estoy").click()
     try:
         pagina.get_by_role("heading", name="Donde estoy").wait_for(timeout=12_000)
