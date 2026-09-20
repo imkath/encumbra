@@ -18,8 +18,9 @@ Producción: **[encumbra.nvrkth.com/app](https://encumbra.nvrkth.com/app)**
 - Lista, búsqueda, favoritos y mapa MapLibre diferido.
 - Planificación para hoy o mañana, luz, lluvia y calendario.
 - Modo de terreno que conserva el último dato disponible sin señal y muestra
-  de dónde viene el viento y hacia dónde va. Su brújula puede orientarse con
-  el norte del celular cuando el navegador lo permite.
+  de dónde viene el viento y hacia dónde va. Su brújula guía la posición del
+  piloto y del ayudante para despegar cuando el navegador entrega norte real,
+  en vertical u horizontal.
 - Tema claro u oscuro elegible y persistido en el navegador; antes de elegir
   se respeta el sistema. La noche se informa por separado del viento.
 

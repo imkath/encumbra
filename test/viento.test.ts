@@ -4,7 +4,9 @@ import { describe, test } from "node:test";
 import {
   cardinal,
   fraseDireccion,
+  guiaDespegue,
   rumboDispositivo,
+  suavizarRumbo,
   trayectoriaViento,
 } from "../lib/viento.ts";
 
@@ -56,6 +58,35 @@ describe("dirección del viento", () => {
       }),
       275,
     );
+    assert.equal(
+      rumboDispositivo({
+        alpha: null,
+        absolute: false,
+        webkitCompassHeading: 275,
+        webkitCompassAccuracy: 10,
+      }),
+      275,
+    );
+  });
+
+  test("rechaza la brújula de Safari cuando Apple la marca sin calibrar", () => {
+    assert.equal(
+      rumboDispositivo({
+        alpha: null,
+        absolute: false,
+        webkitCompassHeading: 275,
+        webkitCompassAccuracy: -1,
+      }),
+      null,
+    );
+    assert.equal(
+      rumboDispositivo({
+        alpha: null,
+        absolute: false,
+        webkitCompassHeading: -1,
+      }),
+      null,
+    );
   });
 
   test("convierte la orientación absoluta estándar en rumbo de brújula", () => {
@@ -63,6 +94,26 @@ describe("dirección del viento", () => {
     assert.equal(
       rumboDispositivo({ alpha: 90, absolute: false }, true),
       270,
+    );
+  });
+
+  test("corrige el rumbo respecto de la parte superior visible en paisaje", () => {
+    assert.equal(
+      rumboDispositivo(
+        {
+          alpha: null,
+          absolute: false,
+          webkitCompassHeading: 90,
+          webkitCompassAccuracy: 10,
+        },
+        false,
+        270,
+      ),
+      0,
+    );
+    assert.equal(
+      rumboDispositivo({ alpha: 270, absolute: true }, true, 270),
+      0,
     );
   });
 
@@ -77,5 +128,33 @@ describe("dirección del viento", () => {
       }),
       null,
     );
+  });
+
+  test("guía al piloto para mirar a favor del viento", () => {
+    assert.deepEqual(guiaDespegue(270, 0), {
+      estado: "gira-derecha",
+      diferencia: 90,
+      instruccion: "Gira hacia tu derecha",
+    });
+    assert.deepEqual(guiaDespegue(270, 180), {
+      estado: "gira-izquierda",
+      diferencia: -90,
+      instruccion: "Gira hacia tu izquierda",
+    });
+  });
+
+  test("confirma cuando el teléfono apunta hacia quien sostiene el volantín", () => {
+    assert.deepEqual(guiaDespegue(270, 82), {
+      estado: "alineado",
+      diferencia: 8,
+      instruccion: "Así está bien: el viento queda a tu espalda",
+    });
+    assert.equal(guiaDespegue(null, 82), null);
+  });
+
+  test("suaviza el rumbo sin dar una vuelta completa al cruzar el norte", () => {
+    assert.equal(suavizarRumbo(null, 90), 90);
+    assert.equal(suavizarRumbo(359, 1), 359.5);
+    assert.equal(suavizarRumbo(1, 359), 0.5);
   });
 });

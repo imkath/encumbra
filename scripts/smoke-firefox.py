@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from pathlib import Path
 
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError, sync_playwright
@@ -128,8 +129,14 @@ with sync_playwright() as p:
             this.alpha = datos.alpha ?? null;
             this.absolute = datos.absolute ?? false;
             this.webkitCompassHeading = datos.webkitCompassHeading;
+            this.webkitCompassAccuracy = datos.webkitCompassAccuracy;
           }
         }
+        Object.defineProperty(
+          OrientacionSimulada.prototype,
+          'webkitCompassHeading',
+          { configurable: true, writable: true, value: undefined }
+        );
         Object.defineProperty(window, 'DeviceOrientationEvent', {
           configurable: true,
           value: OrientacionSimulada,
@@ -148,22 +155,78 @@ with sync_playwright() as p:
     )
     assert pagina.locator("#direccion-viento strong").inner_text().startswith("Viene del")
     assert pagina.locator("#direccion-viento span").inner_text().startswith("Va hacia el")
-    pagina.get_by_role("button", name="Orientar con mi celular").click()
+    transformacion_flecha = pagina.locator(".brujula-viento__flecha").get_attribute("style") or ""
+    coincidencia_angulo = re.search(r"rotate\(([-\d.]+)deg\)", transformacion_flecha)
+    assert coincidencia_angulo, transformacion_flecha
+    rumbo_objetivo = float(coincidencia_angulo.group(1))
+    alpha_objetivo = (360 - rumbo_objetivo) % 360
+    pagina.get_by_role("button", name="Orientarme para despegar").click()
     pagina.get_by_text("Buscando el norte", exact=False).wait_for()
     pagina.evaluate(
         """window.dispatchEvent(new DeviceOrientationEvent(
-          'deviceorientationabsolute',
-          { alpha: 90, absolute: true }
+          'deviceorientation',
+          {
+            absolute: false,
+            webkitCompassHeading: -1,
+            webkitCompassAccuracy: -1
+          }
         ))"""
     )
-    pagina.get_by_text("La rosa sigue el norte de tu celular.", exact=True).wait_for()
-    assert pagina.get_by_role("button", name="Dejar norte arriba").is_visible()
+    pagina.get_by_text("La brújula pide calibración", exact=False).wait_for()
+    pagina.evaluate(
+        """rumbo => window.dispatchEvent(new DeviceOrientationEvent(
+          'deviceorientation',
+          {
+            absolute: false,
+            webkitCompassHeading: rumbo,
+            webkitCompassAccuracy: 10
+          }
+        ))""",
+        rumbo_objetivo,
+    )
+    pagina.get_by_text("Así está bien: el viento queda a tu espalda", exact=True).wait_for()
+    assert pagina.get_by_role("button", name="Seguir sin brújula").is_visible()
+    resultado_ios = pagina.locator(".vivo__brujula-giro").inner_text()
+
+    pagina.get_by_role("button", name="Seguir sin brújula").click()
+    pagina.get_by_role("button", name="Orientarme para despegar").click()
+    pagina.get_by_text("Buscando el norte", exact=False).wait_for()
+    pagina.evaluate(
+        """alpha => window.dispatchEvent(new DeviceOrientationEvent(
+          'deviceorientationabsolute',
+          { alpha, absolute: true }
+        ))""",
+        alpha_objetivo,
+    )
+    pagina.get_by_text("Así está bien: el viento queda a tu espalda", exact=True).wait_for()
+    assert pagina.get_by_role("button", name="Seguir sin brújula").is_visible()
     pagina.screenshot(path=str(SALIDAS / "volar-mobile-brujula-activa.png"), full_page=True)
     resultados.append({
         "brujula": pagina.locator(".vivo__brujula").inner_text(),
         "orientada": pagina.locator(".brujula-viento").get_attribute("data-orientada"),
+        "guia_despegue": pagina.locator(".vivo__brujula-giro").inner_text(),
+        "ios_webkit": resultado_ios,
+        "android_absoluto": pagina.locator(".vivo__brujula-giro").inner_text(),
     })
     brujula.close()
+
+    compacto = browser.new_context(
+        viewport={"width": 320, "height": 700},
+        color_scheme="light",
+        locale="es-CL",
+    )
+    pagina = compacto.new_page()
+    resultados.append(
+        revisar_pagina(
+            pagina,
+            "/volar?zona=penalolen&perfil=estandar&parque=parque-penalolen",
+            "volar-320-guia-despegue.png",
+        )
+    )
+    assert pagina.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
+    assert pagina.get_by_text("Tú + hilo", exact=True).is_visible()
+    assert pagina.get_by_text("Ayudante + volantín", exact=True).is_visible()
+    compacto.close()
     browser.close()
 
     print(json.dumps({"resultados": resultados, "errores_consola": errores}, ensure_ascii=False, indent=2))

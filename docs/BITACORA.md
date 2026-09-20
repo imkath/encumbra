@@ -287,14 +287,41 @@ destino («va hacia el oriente») y una rosa compacta: el punto amarillo es la
 procedencia y la flecha apunta hacia donde se mueve el aire. Texto y dibujo
 explican ambas perspectivas para evitar la ambigüedad habitual.
 
-La rosa funciona con norte arriba sin permisos. Solo al tocar «Orientar con mi
-celular» solicita orientación absoluta; no guarda ni envía el rumbo. Safari se
+La rosa funciona con norte arriba sin permisos. Solo al tocar «Orientarme para
+despegar» solicita orientación absoluta; no guarda ni envía el rumbo. Safari se
 lee mediante `webkitCompassHeading` y los navegadores que implementan el evento
 estándar mediante `360 - alpha`. Las lecturas relativas se descartan porque
 parecen plausibles pero no señalan el norte. Si falta sensor, permiso o lectura,
 se conserva el fallback y se dice por qué. La orientación es aproximada y puede
 verse afectada por imanes o estructuras metálicas; no se presenta como
 instrumento de navegación ni como medición del viento en terreno.
+
+La guía de despegue se corrigió a partir de la técnica documentada por la
+[American Kitefliers Association](https://www.kite.org/about-kites/how-to-fly-a-kite/)
+y el [manual de Prism Kites](https://prismkites.com/pages/pocket-flyer-manual):
+el piloto queda a barlovento, de espaldas al viento, y el ayudante sostiene el
+volantín a sotavento, delante del piloto. A la señal lo suelta sin lanzarlo;
+en un volantín de un hilo, el piloto recoge hilo mientras gana altura. `/volar`
+traduce eso a «gira a tu izquierda/derecha» y confirma cuando la parte superior
+del teléfono apunta hacia el ayudante. La distancia exacta no se fija porque
+depende del espacio, el volantín y el viento; sí se pide dejar libre el tramo
+entre ambos.
+
+La implementación móvil sigue las fuentes de cada plataforma. En iPhone usa
+`webkitCompassHeading`, el rumbo real indicado por
+[Apple](https://developer.apple.com/documentation/webkitjs/deviceorientationevent),
+y rechaza `webkitCompassAccuracy === -1`, que Apple define como brújula sin
+calibrar. En Android escucha `deviceorientationabsolute` y calcula el rumbo
+estándar con el teléfono plano. El permiso se solicita tras tocar el botón y
+con acceso absoluto al magnetómetro, de acuerdo con
+[W3C](https://www.w3.org/TR/orientation-event/) y
+[MDN](https://developer.mozilla.org/en-US/docs/Web/API/DeviceOrientationEvent/requestPermission_static).
+Las lecturas se suavizan cruzando norte sin dar una vuelta visual completa.
+Además, el rumbo se corrige con `screen.orientation.angle` para que la mira sea
+la parte superior visible en vertical u horizontal, como establece el sistema
+de coordenadas de la [Screen Orientation API](https://www.w3.org/TR/screen-orientation/).
+No se usa `alpha` relativo de iOS ni se afirma compatibilidad cuando el
+navegador embebido no entrega sensores.
 
 ### Mapa y carga inicial
 

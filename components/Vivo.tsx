@@ -27,7 +27,12 @@ import {
 import { Marca } from "@/components/Marca.tsx";
 import { VolantinCampo } from "@/components/VolantinCampo.tsx";
 import { Icono } from "@/components/Icono.tsx";
-import { rumboDispositivo, trayectoriaViento } from "@/lib/viento.ts";
+import {
+  guiaDespegue,
+  rumboDispositivo,
+  suavizarRumbo,
+  trayectoriaViento,
+} from "@/lib/viento.ts";
 
 const CLAVE_MODO = "encumbra:modo";
 const CLAVE_PRONOSTICO = "encumbra:pronostico:v1";
@@ -40,12 +45,14 @@ type EstadoBrujula =
   | "inactiva"
   | "pidiendo"
   | "buscando"
+  | "calibrando"
   | "activa"
   | "denegada"
   | "sin-sensor";
 
 type EventoOrientacion = DeviceOrientationEvent & {
   readonly webkitCompassHeading?: number;
+  readonly webkitCompassAccuracy?: number;
 };
 
 type ConstructorOrientacion = typeof DeviceOrientationEvent & {
@@ -108,12 +115,14 @@ function bandaVigente(
 
 function BrujulaViento({
   direccion,
+  perfil,
   estado,
   rumboTelefono,
   activar,
   desactivar,
 }: {
   readonly direccion: number;
+  readonly perfil: Perfil;
   readonly estado: EstadoBrujula;
   readonly rumboTelefono: number | null;
   readonly activar: () => void;
@@ -122,29 +131,76 @@ function BrujulaViento({
   const orientada = estado === "activa" && rumboTelefono !== null;
   const rumbo = orientada ? rumboTelefono : 0;
   const trayectoria = trayectoriaViento(direccion, rumbo);
+  const guia = orientada ? guiaDespegue(direccion, rumboTelefono) : null;
+  const estabaAlineado = useRef(false);
+
+  useEffect(() => {
+    const alineado = guia?.estado === "alineado";
+    if (
+      alineado &&
+      !estabaAlineado.current &&
+      "vibrate" in navigator
+    ) {
+      navigator.vibrate(60);
+    }
+    estabaAlineado.current = alineado;
+  }, [guia?.estado]);
+
   if (!trayectoria) return null;
 
   const estadoTexto =
     estado === "activa"
-      ? "La rosa sigue el norte de tu celular."
+      ? "Déjalo plano, con la pantalla hacia arriba."
       : estado === "pidiendo"
         ? "Esperando tu permiso…"
         : estado === "buscando"
-          ? "Buscando el norte… mueve el celular en forma de ocho."
+          ? "Buscando el norte… deja el celular plano."
+          : estado === "calibrando"
+            ? "La brújula pide calibración: mueve el celular en forma de ocho."
           : estado === "denegada"
             ? "Sin permiso, dejamos el norte arriba."
             : estado === "sin-sensor"
               ? "Este navegador no entregó el norte; lo dejamos arriba."
-              : "Norte arriba. Puedes orientarlo con tu celular.";
+              : "Pon el celular plano para usarlo como brújula.";
+
+  const giroIcono =
+    guia?.estado === "gira-derecha"
+      ? 90
+      : guia?.estado === "gira-izquierda"
+        ? -90
+        : 0;
 
   return (
     <section className="vivo__brujula" aria-labelledby="direccion-viento">
+      <p
+        className="vivo__brujula-giro"
+        data-estado={guia?.estado ?? "inactivo"}
+        aria-live="polite"
+      >
+        <span
+          className="vivo__brujula-giro-icono"
+          style={{ transform: `rotate(${giroIcono}deg)` }}
+          aria-hidden="true"
+        >
+          <Icono nombre="direccion" />
+        </span>
+        <span>
+          <small>PARA DESPEGAR</small>
+          <strong>
+            {guia?.instruccion ??
+              "Activa la brújula para saber hacia dónde ponerte"}
+          </strong>
+        </span>
+      </p>
+
       <div
         className="brujula-viento"
         data-orientada={orientada ? "si" : "no"}
+        data-alineada={guia?.estado === "alineado" ? "si" : "no"}
         role="img"
         aria-label={`${trayectoria.vieneDe}. ${trayectoria.vaHacia}. ${orientada ? "Orientada con el norte del celular." : "Con el norte hacia arriba."}`}
       >
+        <span className="brujula-viento__objetivo" aria-hidden="true" />
         <span className="brujula-viento__aro" aria-hidden="true" />
         {PUNTOS_CARDINALES.map(([punto, grados]) => {
           const angulo = ((grados - rumbo + 360) % 360);
@@ -186,14 +242,14 @@ function BrujulaViento({
           <span>{trayectoria.vaHacia}</span>
         </p>
         <p className="vivo__brujula-consejo">
-          Ponte de espaldas al lado de donde viene.
+          La parte superior del celular apunta hacia quien sostiene el volantín.
         </p>
         <p className="vivo__brujula-estado" aria-live="polite">
           {estadoTexto}
         </p>
-        {orientada ? (
+        {orientada || estado === "calibrando" ? (
           <button type="button" onClick={desactivar}>
-            Dejar norte arriba
+            Seguir sin brújula
           </button>
         ) : (
           <button
@@ -205,13 +261,31 @@ function BrujulaViento({
               ? "Orientando…"
               : estado === "denegada"
                 ? "Intentar de nuevo"
-                : "Orientar con mi celular"}
+                : "Orientarme para despegar"}
           </button>
         )}
-        {orientada ? (
-          <small>Orientación aproximada; imanes y metal pueden moverla.</small>
-        ) : null}
       </div>
+
+      <div className="vivo__posiciones">
+        <p>
+          <strong>Tú + hilo</strong>
+          <span>Espalda al viento.</span>
+        </p>
+        <span className="vivo__posiciones-linea" aria-hidden="true" />
+        <p>
+          <strong>Ayudante + volantín</strong>
+          <span>Delante de ti, hacia donde apunta el celular.</span>
+        </p>
+        <small>
+          {perfil === "acrobatico"
+            ? "Dejen libre el espacio y despejen las dos líneas. A tu señal, que lo suelte sin lanzarlo; tú tiras ambos mandos."
+            : "Dejen libre el espacio. Nariz arriba; a tu señal, que lo suelte sin lanzarlo. Tú recoges hilo mientras sube."}
+        </small>
+      </div>
+      <small className="vivo__brujula-limite">
+        La brújula orienta el pronóstico; confirma el viento con pasto o una
+        cinta. Imanes y metal pueden mover la lectura.
+      </small>
     </section>
   );
 }
@@ -334,6 +408,7 @@ export function Vivo({
     if (!escucharBrujula) return;
 
     let recibioRumbo = false;
+    let necesitaCalibrar = false;
     const leerRumbo = (eventoBase: Event): void => {
       const ahoraEvento = performance.now();
       if (ahoraEvento - ultimoEventoBrujula.current < INTERVALO_BRUJULA_MS) {
@@ -341,19 +416,34 @@ export function Vivo({
       }
 
       const evento = eventoBase as EventoOrientacion;
+      const anguloPantalla =
+        window.screen.orientation?.angle ??
+        (window as Window & { readonly orientation?: number }).orientation ??
+        0;
+      if (
+        evento.webkitCompassHeading !== undefined &&
+        (evento.webkitCompassHeading < 0 ||
+          evento.webkitCompassAccuracy === -1)
+      ) {
+        necesitaCalibrar = true;
+        setEstadoBrujula("calibrando");
+        return;
+      }
       const rumbo = rumboDispositivo(
         {
           alpha: evento.alpha,
           absolute: evento.absolute,
           webkitCompassHeading: evento.webkitCompassHeading,
+          webkitCompassAccuracy: evento.webkitCompassAccuracy,
         },
         evento.type === "deviceorientationabsolute",
+        anguloPantalla,
       );
       if (rumbo === null) return;
 
       recibioRumbo = true;
       ultimoEventoBrujula.current = ahoraEvento;
-      setRumboTelefono(rumbo);
+      setRumboTelefono((anterior) => suavizarRumbo(anterior, rumbo));
       setEstadoBrujula("activa");
     };
 
@@ -361,8 +451,12 @@ export function Vivo({
     window.addEventListener("deviceorientation", leerRumbo);
     const espera = window.setTimeout(() => {
       if (!recibioRumbo) {
-        setEstadoBrujula("sin-sensor");
-        setEscucharBrujula(false);
+        if (necesitaCalibrar) {
+          setEstadoBrujula("calibrando");
+        } else {
+          setEstadoBrujula("sin-sensor");
+          setEscucharBrujula(false);
+        }
       }
     }, 3_500);
 
@@ -383,10 +477,11 @@ export function Vivo({
     const Orientacion = window.DeviceOrientationEvent as ConstructorOrientacion;
     try {
       if (Orientacion.requestPermission) {
-        const permiso = await Orientacion.requestPermission.call(
-          Orientacion,
-          true,
-        );
+        const usaRumboWebKit =
+          "webkitCompassHeading" in Orientacion.prototype;
+        const permiso = usaRumboWebKit
+          ? await Orientacion.requestPermission.call(Orientacion)
+          : await Orientacion.requestPermission.call(Orientacion, true);
         if (permiso !== "granted") {
           setEstadoBrujula("denegada");
           return;
@@ -518,6 +613,7 @@ export function Vivo({
         {hora.direccion !== null ? (
           <BrujulaViento
             direccion={hora.direccion}
+            perfil={perfilInicial}
             estado={estadoBrujula}
             rumboTelefono={rumboTelefono}
             activar={activarBrujula}

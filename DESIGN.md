@@ -104,12 +104,23 @@ La dirección usa una rosa compacta integrada en la lectura, no una tarjeta
 flotante. El punto amarillo marca el lugar del que viene el viento y la flecha
 central apunta hacia donde se mueve. Ambas relaciones también se escriben con
 palabras; el dibujo nunca es la única explicación. Por defecto el norte queda
-arriba. «Orientar con mi celular» pide permiso mediante una acción explícita y
+arriba. «Orientarme para despegar» pide permiso mediante una acción explícita y
 rota la rosa respecto del norte que entrega el dispositivo. Si el navegador
 no dispone de rumbo absoluto, se niega el permiso o no llega una lectura, la
 rosa sigue siendo útil con norte arriba y lo informa sin bloquear la pantalla.
 La lectura del sensor es aproximada, solo vive mientras `/volar` está abierta
 y no se persiste.
+
+Con la brújula activa, el teléfono se sostiene plano y con la pantalla hacia
+arriba. La parte superior funciona como mira: la UI indica girar a izquierda o
+derecha hasta que apunte hacia el ayudante y el volantín. La composición nombra
+las dos posiciones: quien tiene el hilo queda con la espalda al viento; quien
+sostiene el volantín queda delante, a favor del viento. La confirmación usa
+texto, color y una vibración compatible, nunca movimiento como única señal.
+También recuerda despejar el espacio, soltar sin lanzar y que la brújula orienta
+el pronóstico: no mide el viento real del parque. Si la pantalla está en
+horizontal, la mira sigue la parte superior visible y no el borde original del
+dispositivo.
 
 
 ## Favicon
