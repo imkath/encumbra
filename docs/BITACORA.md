@@ -415,6 +415,11 @@ El 20 de septiembre de 2026 se verificó que el cron remoto reemplazara la
 semilla de KV con un dato nuevo. El build desplegado después de calcular el sol
 localmente respondió 200 en `/app` y `/api/pronostico`.
 
+Ese mismo día se desplegó la brújula de `/volar` en la versión Cloudflare
+`acf2ef60-0f89-432f-b8a2-efa3c5876222`. El smoke productivo en Firefox visible
+recorrió ubicación sin parque, mapa, tema y orientación simulada del teléfono:
+sin errores de consola ni desborde horizontal. La suite quedó en 103 pruebas.
+
 Comandos de aceptación:
 
 ```bash
@@ -425,16 +430,16 @@ pnpm build
 ENCUMBRA_BASE=https://encumbra.nvrkth.com python3 scripts/smoke-firefox.py
 ```
 
-La última consolidación pasó 98 pruebas. Esa cifra es histórica: el criterio es
-que la suite vigente quede completa y verde, no conservar el número.
+La cifra de pruebas se registra como referencia, no como objetivo: el criterio
+es que la suite vigente quede completa y verde.
 
 ## 11. Deuda y decisiones bloqueadas
 
 ### Presupuesto de cliente
 
 El techo original es 120 KB gzip/transferidos en first load. La medición en
-Firefox productivo del despliegue `cc19e066-39eb-484f-ac81-4ed48a6d5e34` fue
-158.635 bytes aun con MapLibre diferido y exactamente dos fronteras cliente. No
+Firefox productivo del despliegue `acf2ef60-0f89-432f-b8a2-efa3c5876222` fue
+158.720 bytes aun con MapLibre diferido y exactamente dos fronteras cliente. No
 se subió el techo. Sigue siendo deuda explícita; no retirar información de
 seguridad solo para maquillar el número.
 
