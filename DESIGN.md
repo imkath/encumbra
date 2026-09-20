@@ -46,9 +46,13 @@ Los colores semánticos son independientes de los acentos de marca. Se comparten
 
 Los estados se explican con texto, nunca solo con color. Las superficies de pronóstico usan `superficie-mate`: variación tonal continua y grano fino, sin reflejos blancos ni manchas luminosas. De noche el veredicto de viento se conserva y la falta de luz aparece como una condición independiente; sin pronóstico muestra «SIN DATOS / por ahora.».
 
-La interfaz sigue `prefers-color-scheme` con una paleta nocturna propia. El tema
-oscuro mejora la consulta de noche, pero no cambia el significado ni los
-colores de las bandas meteorológicas.
+La interfaz parte de `prefers-color-scheme`, pero ofrece un control visible para
+elegir claro u oscuro y guarda esa elección localmente. El oscuro usa carbón
+cálido (`#121310` para el fondo y `#1b1c19` para superficies), no azul
+petróleo. Texto principal y secundario se componen de forma propia para noche;
+no se invierte el tema claro ni se cambian el significado o los colores de las
+bandas meteorológicas. Las tarjetas de estado siempre toman su tinta de
+`--state-ink`, para que los tokens globales del tema no degraden su contraste.
 
 `VolantinPapel` comparte el dibujo entre portada, exterior, selectores de perfil y marcador del gráfico. Su vela toma el color de la superficie por `--paper-base`, con mezclas hacia hueso (`--paper-light`, `--paper-mid`) y carbón (`--paper-shade`, `--paper-rib`). Sustituye el naranja con arcos de la versión anterior. En iconos pequeños sobre hueso usa una base neutra de mayor contraste para conservar la silueta.
 
@@ -138,6 +142,11 @@ Agregar al calendario despliega Google Calendar y exportación iCalendar. Se pri
 
 
 Mi salida ofrece Hoy / mañana con selector compacto carbón. El día elegido controla horas, ventana diurna, puesta de sol y calendario. Nunca etiquetar una hora futura como Ahora. La fecha se calcula en America/Santiago con aritmética de calendario, incluso en cambios de horario. Sin datos del día, mostrar ausencia en lugar de reutilizar el otro día. Prepararme reúne la explicación del pronóstico en un desplegable. Contacto y sugerencias se enlazan a https://nvrkth.com en el pie de la landing, con firma nvrkth y sin «Un proyecto de».
+
+Mi salida permite alternar entre «Donde estoy» y «Parque elegido». La
+ubicación usa la misma composición de pronóstico, pero reemplaza permiso y
+direcciones por una explicación de la celda más cercana y su límite. No mostrar
+«Cómo llegar» ni atribuir autorización a una coordenada personal.
 
 
 Prepararme presenta «Para pasarlo bien y volver bien» como bloque de cuidados: dónde encumbrar, qué llevar y cuándo parar. Checklist voluntario de tres revisiones con contador discreto; no bloquea la salida ni certifica seguridad. Los textos siguen legibles al marcar. Hueso y carbón, amarillo suave solo en el contador; sin superficies de alarma decorativas. Cables, hilo curado y explicación del pronóstico permanecen en desplegables. Revisión de interacción a 390, 768 y 1440 px, incluido teclado.

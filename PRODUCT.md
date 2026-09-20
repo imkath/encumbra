@@ -45,6 +45,11 @@ persistencia. La búsqueda manual funciona por nombre y comuna. Solo los lugares
 con evidencia de autorización entran en recomendaciones; el pronóstico no
 implica acceso ni seguridad.
 
+«Mi salida» acepta dos destinos equivalentes: un parque elegido o «donde
+estoy». El segundo usa la celda ICON más cercana, no hereda permiso ni nombre
+de un parque, no ofrece indicaciones para llegar y vuelve a pedir ubicación al
+recargar porque la coordenada no se guarda.
+
 ## Corrección explícita de experiencia
 El usuario rechazó el formato de página interminable. La superficie principal
 funciona como app: Parques, Mi salida y Prepararme, con selección persistente y
@@ -54,4 +59,6 @@ Sin evidencia suficiente se muestra ausencia, no un dato inventado.
 
 Identidad vigente: Sol de septiembre + atmósfera mate con grano fino, Archivo
 variable, hueso, carbón y amarillo solar. El usuario rechazó tanto la paleta
-retro inicial como la exploración azul/lima. `DESIGN.md` es la fuente visual.
+retro inicial como la exploración azul/lima. El tema oscuro usa carbón cálido,
+nunca azul petróleo; claro y oscuro se pueden elegir y la preferencia queda en
+el navegador. `DESIGN.md` es la fuente visual.

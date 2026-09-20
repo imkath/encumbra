@@ -21,6 +21,7 @@ export default async function Home({ searchParams }: Props) {
       perfilInicial={perfil}
       parqueInicial={texto("parque")}
       zonaInicial={texto("zona")}
+      destinoInicial={texto("destino") === "ubicacion" ? "ubicacion" : "parque"}
       vistaInicial={vista === "salida" || vista === "guia" ? vista : "parques"}
       servidoEn={new Date().toISOString()}
     />

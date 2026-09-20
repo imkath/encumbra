@@ -11,6 +11,7 @@ type VolarProps = {
     readonly perfil?: string | string[];
     readonly zona?: string | string[];
     readonly parque?: string | string[];
+    readonly destino?: string | string[];
   }>;
 };
 
@@ -34,6 +35,9 @@ export default async function Volar({ searchParams }: VolarProps) {
       : (pronostico.zonas.find(({ id }) => id === zonaPedida)?.id ??
         pronostico.zonas[0]?.id ??
         ZONAS[0].id);
+  const desdeUbicacion = parametros.destino === "ubicacion";
+  const parquePedido =
+    typeof parametros.parque === "string" ? parametros.parque : undefined;
 
   return (
     <Vivo
@@ -41,11 +45,11 @@ export default async function Volar({ searchParams }: VolarProps) {
       perfilInicial={perfilInicial}
       zonaInicial={zonaInicial}
       parqueInicial={
-        elegirParqueInicial(
-          typeof parametros.parque === "string" ? parametros.parque : undefined,
-          zonaInicial,
-        ).id
+        desdeUbicacion || !parquePedido
+          ? undefined
+          : elegirParqueInicial(parquePedido, zonaInicial).id
       }
+      desdeUbicacion={desdeUbicacion}
       servidoEn={new Date().toISOString()}
     />
   );

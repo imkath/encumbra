@@ -226,7 +226,8 @@ El primer rediseño seguía siendo una página larga. Se descartó después de
 feedback explícito. `/app` pasó a tres destinos persistentes:
 
 - Parques: lista, búsqueda, favoritos, ubicación y mapa.
-- Mi salida: parque, día, hora, viento, rachas, lluvia, luz y calendario.
+- Mi salida: parque o ubicación actual, día, hora, viento, rachas, lluvia, luz
+  y calendario.
 - Prepararme: tipo de volantín y cuidados.
 
 En móvil hay navegación inferior; en escritorio, rail lateral. El mapa es una
@@ -242,10 +243,27 @@ dos hilos, respectivamente.
 ### Noche
 
 La regla inicial «sin dark mode» fue sustituida el 20 de septiembre de 2026.
-La consulta nocturna es un caso real, por lo que la interfaz sigue el tema del
-sistema. La falta de luz es una condición separada del viento: no borra el
-veredicto, pero advierte usar solo lugares conocidos e iluminados, lejos de
-cables y calles. Esto no recomienda encumbrar de noche ni concede acceso.
+La consulta nocturna es un caso real. La interfaz parte del tema del sistema y
+permite elegir claro u oscuro; la elección se guarda como
+`encumbra:tema`. El oscuro azul de la primera implementación fue rechazado y se
+reemplazó por carbón cálido con superficies neutras. La falta de luz es una
+condición separada del viento: no borra el veredicto, pero advierte usar solo
+lugares conocidos e iluminados, lejos de cables y calles. Esto no recomienda
+encumbrar de noche ni concede acceso.
+
+### Ubicación como salida
+
+El 20 de septiembre de 2026 «Donde estoy» dejó de ser solo una consulta en
+Parques y pasó a ser un destino de Mi salida. `lib/salida.ts` calcula una
+lectura propia desde la celda ICON más cercana, con el mismo perfil, día, luz y
+ventanas que un parque, pero sin campos de permiso ni recinto. Por eso la UI:
+
+- no exige seleccionar parque;
+- no muestra «Cómo llegar»;
+- explica que el pronóstico es de la celda más cercana;
+- no afirma que la coordenada sea abierta, segura o autorizada;
+- no persiste la coordenada y vuelve a solicitarla tras recargar;
+- conserva la zona al entrar a `/volar`, sin inventar un parque de retorno.
 
 ### Dirección del viento
 
@@ -353,6 +371,14 @@ a discutir sin nueva evidencia:
    auditoría. Los huérfanos se eliminaron.
 5. **La noche ocultaba información útil.** El viento y la luz son ejes
    distintos; no reemplazar el veredicto por «por hoy».
+6. **El tema oscuro contaminaba tarjetas semánticas.** Un override global de
+   `--estado-ink` convertía la tinta de tarjetas claras en texto claro y creaba
+   contrastes ilegibles. Las tarjetas ahora usan `--state-ink`; el tema solo
+   aclara etiquetas de estado sobre superficies oscuras.
+7. **Cambiar atributos antes de hidratar.** El script temprano de tema modificó
+   inicialmente `aria-label` y React reportó un mismatch. El script puede fijar
+   `data-theme` en `<html suppressHydrationWarning>`, pero los atributos del
+   componente deben permanecer estables hasta la hidratación.
 
 ## 10. Despliegue y operación
 
@@ -431,7 +457,7 @@ Antes de cambiar dominio, datos o UX:
 7. Medir el first load; cortar funcionalidad no esencial antes de elevar el
    presupuesto.
 8. Probar móvil y escritorio en Firefox visible, incluida ubicación, mapa,
-   consola, overflow y tema del sistema.
+   consola, overflow, tema del sistema y elección manual persistida.
 9. Ejecutar tests, lint, build y build OpenNext antes de desplegar.
 10. Registrar aquí la decisión, su evidencia y cualquier bug nuevo que haya
     costado tiempo.

@@ -13,6 +13,7 @@ import { Marca } from "@/components/Marca.tsx";
 import { ReglaBandas } from "@/components/ReglaBandas.tsx";
 import { Cielo } from "@/components/Cielo.tsx";
 import { VolantinPapel } from "@/components/VolantinPapel.tsx";
+import { SelectorTema } from "@/components/SelectorTema.tsx";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +21,7 @@ type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-const DEEP_LINK = ["parque", "zona", "perfil", "vista"] as const;
+const DEEP_LINK = ["parque", "zona", "perfil", "vista", "destino"] as const;
 
 const DIA = new Intl.DateTimeFormat("es-CL", {
   timeZone: "America/Santiago",
@@ -71,7 +72,10 @@ export default async function Landing({ searchParams }: Props) {
         <a className="portada-logo" href="/app" aria-label="Encumbra">
           <Marca />
         </a>
-        <span className="portada-ciudad">Santiago, Chile</span>
+        <div className="portada-barra__acciones">
+          <span className="portada-ciudad">Santiago, Chile</span>
+          <SelectorTema />
+        </div>
       </header>
 
       {/* Say what this is before showing what it knows. */}

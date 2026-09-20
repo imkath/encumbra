@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#f8f7f2" },
-    { media: "(prefers-color-scheme: dark)", color: "#18222d" },
+    { media: "(prefers-color-scheme: dark)", color: "#181916" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -33,7 +33,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es-CL">
+    <html lang="es-CL" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(()=>{const clave="encumbra:tema";const media=matchMedia("(prefers-color-scheme: dark)");const guardado=()=>{try{const valor=localStorage.getItem(clave);return valor==="light"||valor==="dark"?valor:null}catch{return null}};const aplicar=(tema)=>{const raiz=document.documentElement;raiz.dataset.theme=tema;raiz.style.colorScheme=tema;const color=tema==="dark"?"#181916":"#f8f7f2";document.querySelectorAll('meta[name="theme-color"]').forEach((meta)=>meta.setAttribute("content",color))};const sistema=()=>media.matches?"dark":"light";aplicar(guardado()??sistema());addEventListener("DOMContentLoaded",()=>{aplicar(guardado()??sistema());document.addEventListener("click",(evento)=>{const boton=evento.target instanceof Element?evento.target.closest("[data-theme-toggle]"):null;if(!boton)return;const tema=document.documentElement.dataset.theme==="dark"?"light":"dark";try{localStorage.setItem(clave,tema)}catch{}aplicar(tema)})},{once:true});media.addEventListener("change",()=>{if(!guardado())aplicar(sistema())})})()`,
+          }}
+        />
+      </head>
       <body className={archivo.variable}>
         {children}
         <script
