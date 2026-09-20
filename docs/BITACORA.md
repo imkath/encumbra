@@ -186,6 +186,15 @@ El catálogo productivo tiene 24 puntos que representan 14 recintos autorizados
 y cinco parques buscables con autorización sin confirmar. Mapocho Río aparece
 en seis tramos para el mapa, pero comparte `recintoId` y cuenta como un recinto.
 
+La elección manual incluye los parques sin permiso confirmado, como Araucano.
+El usuario necesita consultar y preparar una salida a un lugar que ya eligió.
+«Explorar todos los parques», el mapa, «Cercanos» y «Guardados» consultan todo
+el catálogo, igual que la búsqueda. Solo las recomendaciones iniciales de
+«Para ti» se restringen a autorización respaldada. Antes, ese filtro también
+ocultaba parques guardados: se corrigió al separar exploración y recomendación.
+La observación del usuario de que hay gente encumbrando en Araucano no se
+registró como autorización; conserva `sin-confirmar` y el aviso en Mi salida.
+
 El modelo separa:
 
 - `tipoLugar`: qué clase de lugar es;

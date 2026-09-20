@@ -147,6 +147,10 @@ Parques muestra lista y mapa en columnas desde 700 px. En escritorio la lista cr
 
 Mi salida usa dos columnas desde 700 px, con un ancho máximo de 1360 px. Pronóstico y elección de hora comparten la composición; la barra de acciones se alinea con ese mismo ancho. La navegación lateral sigue apareciendo desde 900 px.
 
+«Explorar todos los parques» abre el catálogo completo, también disponible en
+el mapa, Cercanos, búsqueda y Guardados. Los lugares sin autorización verificada
+conservan la etiqueta «Permiso no confirmado» y se pueden elegir para Mi salida.
+
 Revisión de landing, Parques y Mi salida en 390, 768, 1024, 1440 y 2048 px: sin desbordamiento horizontal ni errores JavaScript; búsqueda de parques verificada.
 
 
