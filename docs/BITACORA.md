@@ -268,8 +268,19 @@ ventanas que un parque, pero sin campos de permiso ni recinto. Por eso la UI:
 ### Dirección del viento
 
 La dirección se expresa como procedencia en español chileno, por ejemplo «viene
-del poniente». La flecha apunta hacia donde se mueve el aire. Texto y flecha
-explican perspectivas distintas para evitar la ambigüedad habitual.
+del poniente». Desde el 20 de septiembre de 2026, `/volar` muestra también el
+destino («va hacia el oriente») y una rosa compacta: el punto amarillo es la
+procedencia y la flecha apunta hacia donde se mueve el aire. Texto y dibujo
+explican ambas perspectivas para evitar la ambigüedad habitual.
+
+La rosa funciona con norte arriba sin permisos. Solo al tocar «Orientar con mi
+celular» solicita orientación absoluta; no guarda ni envía el rumbo. Safari se
+lee mediante `webkitCompassHeading` y los navegadores que implementan el evento
+estándar mediante `360 - alpha`. Las lecturas relativas se descartan porque
+parecen plausibles pero no señalan el norte. Si falta sensor, permiso o lectura,
+se conserva el fallback y se dice por qué. La orientación es aproximada y puede
+verse afectada por imanes o estructuras metálicas; no se presenta como
+instrumento de navegación ni como medición del viento en terreno.
 
 ### Mapa y carga inicial
 
@@ -383,6 +394,11 @@ a discutir sin nueva evidencia:
    resultado apareciera dentro de Parques. Al convertirlo en destino de Mi
    salida, debe esperar el título «Donde estoy», comprobar que no existe
    «Cómo llegar» y volver a Parques antes de abrir el mapa.
+9. **Orientación relativa presentada como brújula.** `deviceorientation` puede
+   entregar `alpha` sin referencia magnética. Rotar la rosa con ese valor da
+   una interfaz convincente pero falsa. Solo se acepta `webkitCompassHeading`,
+   un evento `deviceorientationabsolute` o una lectura marcada `absolute`; si
+   no existe, norte permanece arriba.
 
 ## 10. Despliegue y operación
 

@@ -27,7 +27,7 @@ import {
 import { Marca } from "@/components/Marca.tsx";
 import { VolantinCampo } from "@/components/VolantinCampo.tsx";
 import { Icono } from "@/components/Icono.tsx";
-import { cardinal, fraseDireccion } from "@/lib/viento.ts";
+import { rumboDispositivo, trayectoriaViento } from "@/lib/viento.ts";
 import { SelectorTema } from "@/components/SelectorTema.tsx";
 
 const CLAVE_MODO = "encumbra:modo";
@@ -35,6 +35,30 @@ const CLAVE_PRONOSTICO = "encumbra:pronostico:v1";
 const CLAVE_ZONA = "encumbra:zona";
 const INTERVALO_RELOJ_MS = 60_000;
 const INTERVALO_REFRESCO_MS = 10 * 60_000;
+const INTERVALO_BRUJULA_MS = 160;
+
+type EstadoBrujula =
+  | "inactiva"
+  | "pidiendo"
+  | "buscando"
+  | "activa"
+  | "denegada"
+  | "sin-sensor";
+
+type EventoOrientacion = DeviceOrientationEvent & {
+  readonly webkitCompassHeading?: number;
+};
+
+type ConstructorOrientacion = typeof DeviceOrientationEvent & {
+  requestPermission?: (absolute?: boolean) => Promise<"granted" | "denied">;
+};
+
+const PUNTOS_CARDINALES = [
+  ["N", 0],
+  ["E", 90],
+  ["S", 180],
+  ["O", 270],
+] as const;
 
 type VivoProps = {
   readonly inicial: Pronostico;
@@ -83,6 +107,116 @@ function bandaVigente(
   return adaptada ? (horaVigente(adaptada.horas, ahora)?.banda ?? null) : null;
 }
 
+function BrujulaViento({
+  direccion,
+  estado,
+  rumboTelefono,
+  activar,
+  desactivar,
+}: {
+  readonly direccion: number;
+  readonly estado: EstadoBrujula;
+  readonly rumboTelefono: number | null;
+  readonly activar: () => void;
+  readonly desactivar: () => void;
+}) {
+  const orientada = estado === "activa" && rumboTelefono !== null;
+  const rumbo = orientada ? rumboTelefono : 0;
+  const trayectoria = trayectoriaViento(direccion, rumbo);
+  if (!trayectoria) return null;
+
+  const estadoTexto =
+    estado === "activa"
+      ? "La rosa sigue el norte de tu celular."
+      : estado === "pidiendo"
+        ? "Esperando tu permiso…"
+        : estado === "buscando"
+          ? "Buscando el norte… mueve el celular en forma de ocho."
+          : estado === "denegada"
+            ? "Sin permiso, dejamos el norte arriba."
+            : estado === "sin-sensor"
+              ? "Este navegador no entregó el norte; lo dejamos arriba."
+              : "Norte arriba. Puedes orientarlo con tu celular.";
+
+  return (
+    <section className="vivo__brujula" aria-labelledby="direccion-viento">
+      <div
+        className="brujula-viento"
+        data-orientada={orientada ? "si" : "no"}
+        role="img"
+        aria-label={`${trayectoria.vieneDe}. ${trayectoria.vaHacia}. ${orientada ? "Orientada con el norte del celular." : "Con el norte hacia arriba."}`}
+      >
+        <span className="brujula-viento__aro" aria-hidden="true" />
+        {PUNTOS_CARDINALES.map(([punto, grados]) => {
+          const angulo = ((grados - rumbo + 360) % 360);
+          return (
+            <span
+              className={`brujula-viento__punto brujula-viento__punto--${punto.toLowerCase()}`}
+              style={{
+                transform: `translate(-50%, -50%) rotate(${angulo}deg) translateY(-39px) rotate(${-angulo}deg)`,
+              }}
+              aria-hidden="true"
+              key={punto}
+            >
+              {punto}
+            </span>
+          );
+        })}
+        <span
+          className="brujula-viento__origen"
+          style={{
+            transform: `translate(-50%, -50%) rotate(${trayectoria.anguloOrigen}deg) translateY(-39px)`,
+          }}
+          aria-hidden="true"
+        />
+        <span
+          className="brujula-viento__flecha"
+          style={{
+            transform: `translate(-50%, -50%) rotate(${trayectoria.anguloDestino}deg)`,
+          }}
+          aria-hidden="true"
+        >
+          <Icono nombre="direccion" />
+        </span>
+        <span className="brujula-viento__centro" aria-hidden="true" />
+      </div>
+
+      <div className="vivo__brujula-lectura">
+        <p id="direccion-viento">
+          <strong>{trayectoria.vieneDe}</strong>
+          <span>{trayectoria.vaHacia}</span>
+        </p>
+        <p className="vivo__brujula-consejo">
+          Ponte de espaldas al lado de donde viene.
+        </p>
+        <p className="vivo__brujula-estado" aria-live="polite">
+          {estadoTexto}
+        </p>
+        {orientada ? (
+          <button type="button" onClick={desactivar}>
+            Dejar norte arriba
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={activar}
+            disabled={estado === "pidiendo" || estado === "buscando"}
+          >
+            {estado === "pidiendo" || estado === "buscando"
+              ? "Orientando…"
+              : estado === "denegada"
+                ? "Intentar de nuevo"
+                : "Orientar con mi celular"}
+          </button>
+        )}
+        {orientada ? (
+          <small>Orientación aproximada; imanes y metal pueden moverla.</small>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
 export function Vivo({
   inicial,
   perfilInicial,
@@ -95,7 +229,12 @@ export function Vivo({
   const [pronostico, setPronostico] = useState<Pronostico>(inicial);
   const [ahora, setAhora] = useState(() => new Date(servidoEn));
   const [sinSenal, setSinSenal] = useState(inicial.estado !== "actual");
+  const [estadoBrujula, setEstadoBrujula] =
+    useState<EstadoBrujula>("inactiva");
+  const [rumboTelefono, setRumboTelefono] = useState<number | null>(null);
+  const [escucharBrujula, setEscucharBrujula] = useState(false);
   const pronosticoRef = useRef(pronostico);
+  const ultimoEventoBrujula = useRef(Number.NEGATIVE_INFINITY);
 
   useEffect(() => {
     pronosticoRef.current = pronostico;
@@ -191,6 +330,83 @@ export function Vivo({
       window.removeEventListener("offline", quedarSinSenal);
     };
   }, [actualizar]);
+
+  useEffect(() => {
+    if (!escucharBrujula) return;
+
+    let recibioRumbo = false;
+    const leerRumbo = (eventoBase: Event): void => {
+      const ahoraEvento = performance.now();
+      if (ahoraEvento - ultimoEventoBrujula.current < INTERVALO_BRUJULA_MS) {
+        return;
+      }
+
+      const evento = eventoBase as EventoOrientacion;
+      const rumbo = rumboDispositivo(
+        {
+          alpha: evento.alpha,
+          absolute: evento.absolute,
+          webkitCompassHeading: evento.webkitCompassHeading,
+        },
+        evento.type === "deviceorientationabsolute",
+      );
+      if (rumbo === null) return;
+
+      recibioRumbo = true;
+      ultimoEventoBrujula.current = ahoraEvento;
+      setRumboTelefono(rumbo);
+      setEstadoBrujula("activa");
+    };
+
+    window.addEventListener("deviceorientationabsolute", leerRumbo);
+    window.addEventListener("deviceorientation", leerRumbo);
+    const espera = window.setTimeout(() => {
+      if (!recibioRumbo) {
+        setEstadoBrujula("sin-sensor");
+        setEscucharBrujula(false);
+      }
+    }, 3_500);
+
+    return () => {
+      window.clearTimeout(espera);
+      window.removeEventListener("deviceorientationabsolute", leerRumbo);
+      window.removeEventListener("deviceorientation", leerRumbo);
+    };
+  }, [escucharBrujula]);
+
+  const activarBrujula = useCallback(async (): Promise<void> => {
+    if (!("DeviceOrientationEvent" in window)) {
+      setEstadoBrujula("sin-sensor");
+      return;
+    }
+
+    setEstadoBrujula("pidiendo");
+    const Orientacion = window.DeviceOrientationEvent as ConstructorOrientacion;
+    try {
+      if (Orientacion.requestPermission) {
+        const permiso = await Orientacion.requestPermission.call(
+          Orientacion,
+          true,
+        );
+        if (permiso !== "granted") {
+          setEstadoBrujula("denegada");
+          return;
+        }
+      }
+
+      ultimoEventoBrujula.current = Number.NEGATIVE_INFINITY;
+      setEstadoBrujula("buscando");
+      setEscucharBrujula(true);
+    } catch {
+      setEstadoBrujula("denegada");
+    }
+  }, []);
+
+  const desactivarBrujula = useCallback((): void => {
+    setEscucharBrujula(false);
+    setRumboTelefono(null);
+    setEstadoBrujula("inactiva");
+  }, []);
 
   function volverAPlanear(): void {
     window.localStorage.setItem(CLAVE_MODO, "planear");
@@ -302,16 +518,13 @@ export function Vivo({
           </div>
         </dl>
         {hora.direccion !== null ? (
-          <p className="vivo__direccion">
-            <span
-              style={{ transform: `rotate(${hora.direccion + 180}deg)` }}
-              aria-hidden="true"
-            >
-              <Icono nombre="direccion" />
-            </span>
-            <strong>{cardinal(hora.direccion)}</strong>
-            {fraseDireccion(hora.direccion)} · ponte de espaldas al viento
-          </p>
+          <BrujulaViento
+            direccion={hora.direccion}
+            estado={estadoBrujula}
+            rumboTelefono={rumboTelefono}
+            activar={activarBrujula}
+            desactivar={desactivarBrujula}
+          />
         ) : null}
       </section>
 

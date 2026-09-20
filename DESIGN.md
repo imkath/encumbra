@@ -97,6 +97,17 @@ El foco visible usa tinta, 3px de grosor y 3px de separación. Los botones princ
 
 `VolantinCampo` mide el contenedor con ResizeObserver para que el hilo llegue al borde inferior real. En móvil sale por el costado derecho para dejar libre el titular; en escritorio, desde abajo del panel lateral. Hilo y vela comparten un grupo que rota alrededor de ese extremo fijo: balanceo de .75° cada 7 s en ideal, .45° con poco viento y 1.2° cada 3.6 s con rachas. Plancha, peligro, noche y sin datos quedan abajo y sin animación. `prefers-reduced-motion` conserva la postura estática. El movimiento es ilustrativo por banda; no representa una simulación física ni una medición instantánea.
 
+La dirección usa una rosa compacta integrada en la lectura, no una tarjeta
+flotante. El punto amarillo marca el lugar del que viene el viento y la flecha
+central apunta hacia donde se mueve. Ambas relaciones también se escriben con
+palabras; el dibujo nunca es la única explicación. Por defecto el norte queda
+arriba. «Orientar con mi celular» pide permiso mediante una acción explícita y
+rota la rosa respecto del norte que entrega el dispositivo. Si el navegador
+no dispone de rumbo absoluto, se niega el permiso o no llega una lectura, la
+rosa sigue siendo útil con norte arriba y lo informa sin bloquear la pantalla.
+La lectura del sensor es aproximada, solo vive mientras `/volar` está abierta
+y no se persiste.
+
 
 ## Favicon
 
