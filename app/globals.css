@@ -3353,6 +3353,52 @@ html { caret-color: var(--brand-ink); }
 .checklist-app .check-visual { margin-top: 2px; flex: none; }
 .cuidado-texto { display: grid; gap: 5px; }
 .cuidado-texto strong { font-size: 16px; line-height: 1.3; font-weight: 750; }
+
+/* Night use keeps the September palette as accents, but all reading surfaces
+   move to a low-glare sky. This block sits after the legacy brand overrides so
+   semantic theme tokens win the cascade. */
+@media (prefers-color-scheme: dark) {
+  .app-nav,
+  .explorar-lista,
+  .buscador-app,
+  .perfiles-app label,
+  .calendario-opciones > div {
+    background: var(--app-surface);
+    color: var(--app-ink);
+  }
+  .buscador-app {
+    border-color: var(--app-line);
+  }
+  .perfil-rapido {
+    background: #2b3740;
+    color: var(--app-ink);
+  }
+  .segmentos button[aria-pressed="true"],
+  .app-nav button[aria-current],
+  .dias-salida button[aria-pressed="true"] {
+    background: var(--app-ink);
+    color: var(--app-surface);
+  }
+  .app-nav button:not([aria-current]),
+  .segmentos button:not([aria-pressed="true"]) {
+    color: var(--app-muted);
+  }
+  .app-nav button:hover {
+    background: var(--app-action-soft);
+    color: var(--app-ink);
+  }
+  .parque-fila--sugerido .parque-identidad strong {
+    color: var(--app-ink);
+  }
+  [data-estado="ideal"] { --estado-ink: #8bd7a8; }
+  [data-estado="liviano"] { --estado-ink: #ffd45e; }
+  [data-estado="plancha"] { --estado-ink: #d0c7b5; }
+  [data-estado="bravo"] { --estado-ink: #ffb36d; }
+  [data-estado="peligro"] { --estado-ink: #ff9188; }
+  .mapa-lienzo .maplibregl-canvas {
+    filter: brightness(0.58) saturate(0.72) contrast(1.12);
+  }
+}
 .cuidado-texto small { font-size: 14px; line-height: 1.55; color: var(--app-muted); }
 .checklist-app label:has(input:checked) .cuidado-texto { text-decoration: none; opacity: 1; }
 

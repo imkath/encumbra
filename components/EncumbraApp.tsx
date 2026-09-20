@@ -103,7 +103,9 @@ export function EncumbraApp({
   const contenido = useRef<HTMLDivElement>(null);
   const cintaHoras = useRef<HTMLDivElement>(null);
   const titulo = useRef<HTMLHeadingElement>(null);
-  const [vistaMapa, setVistaMapa] = useState(true);
+  // MapLibre remains one tap away, but its large renderer does not enter the
+  // first-load path before the user asks for the map.
+  const [vistaMapa, setVistaMapa] = useState(false);
 
   useEffect(() => {
     const cargar = window.setTimeout(() => {
