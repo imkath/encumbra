@@ -20,9 +20,11 @@ import {
   type LecturaParque,
 } from "@/lib/salida.ts";
 import { formatearHora } from "@/lib/formato.ts";
+import { adaptarZonaAlPerfil, horaVigente } from "@/lib/planear.ts";
 import {
   leerPronosticoGuardado,
   serializarPronostico,
+  zonaMasCercana,
 } from "@/lib/vivo.ts";
 import { Icono, Volantin } from "./Icono.tsx";
 import { AgregarCalendario } from "./AgregarCalendario.tsx";
@@ -187,6 +189,20 @@ export function EncumbraApp({
     () => lecturasParques(pronostico, perfil, ahora, ubicacion),
     [pronostico, perfil, ahora, ubicacion],
   );
+  const zonaAquiBase = ubicacion
+    ? zonaMasCercana(
+        ubicacion,
+        pronostico.zonas.map((zona) => ({
+          ...zona,
+          lat: zona.celda.lat,
+          lon: zona.celda.lon,
+        })),
+      )
+    : null;
+  const zonaAqui = zonaAquiBase
+    ? adaptarZonaAlPerfil(zonaAquiBase, perfil)
+    : null;
+  const horaAqui = zonaAqui ? horaVigente(zonaAqui.horas, ahora) : null;
   const parque = parques.find((p) => p.id === seleccionado) ?? parques[0]!;
   const proponibles = parquesProponibles(parques);
   const ordenados = ordenarParques(
@@ -443,6 +459,52 @@ export function EncumbraApp({
                     <Icono nombre="ubicacion" />
                   </button>
                 </div>
+                <section className="donde-estoy" aria-label="Viento donde estoy">
+                  {ubicacion ? (
+                    <div className="donde-estoy__resultado" data-estado={horaAqui?.banda ?? "sin-datos"}>
+                      <span className="donde-estoy__icono">
+                        <Icono nombre="ubicacion" />
+                      </span>
+                      <div>
+                        <strong>Donde estoy</strong>
+                        <span>
+                          {horaAqui
+                            ? `${ETIQUETAS[horaAqui.banda]} · ${Math.round(horaAqui.viento)} km/h`
+                            : "Viento no disponible por ahora"}
+                        </span>
+                        <small>
+                          Pronóstico de la celda más cercana. No necesitas elegir un parque.
+                        </small>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={localizar}
+                        disabled={localizando}
+                      >
+                        Actualizar
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      className="donde-estoy__accion"
+                      onClick={localizar}
+                      disabled={localizando}
+                    >
+                      <span className="donde-estoy__icono">
+                        <Icono nombre="ubicacion" />
+                      </span>
+                      <span>
+                        <strong>{localizando ? "Buscando tu ubicación…" : "Ver si anda donde estoy"}</strong>
+                        <small>Sin elegir un parque</small>
+                      </span>
+                      <Icono nombre="flecha" />
+                    </button>
+                  )}
+                  {ubicacion ? (
+                    <p>El viento no confirma que el lugar sea abierto, seguro ni autorizado para encumbrar.</p>
+                  ) : null}
+                </section>
                 <div className="explorar-filtros">
                   <div className="segmentos" aria-label="Orden de parques">
                     <button
