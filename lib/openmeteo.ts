@@ -1,5 +1,6 @@
 import type { BandaId } from "./bandas.ts";
 import { banda } from "./score.ts";
+import { efemeridesSantiago } from "./solar.ts";
 import { ventanas, type Ventana } from "./ventanas.ts";
 import { ZONAS } from "./zonas.ts";
 
@@ -36,10 +37,6 @@ type OpenMeteoZona = {
     readonly cloud_cover?: readonly number[];
     readonly weather_code?: readonly number[];
     readonly precipitation_probability: readonly (number | null)[];
-  };
-  readonly daily: {
-    readonly sunset: readonly string[];
-    readonly sunrise: readonly string[];
   };
 };
 
@@ -116,8 +113,7 @@ function leerZona(valor: unknown): OpenMeteoZona {
   }
 
   const hourly = valor.hourly;
-  const daily = valor.daily;
-  if (!esRegistro(hourly) || !esRegistro(daily)) {
+  if (!esRegistro(hourly)) {
     throw new Error("Open-Meteo devolvió series incompletas");
   }
 
@@ -131,8 +127,6 @@ function leerZona(valor: unknown): OpenMeteoZona {
   const nubosidades = serieOpcional(hourly.cloud_cover);
   const codigos = serieOpcional(hourly.weather_code);
   const precipitacion = hourly.precipitation_probability;
-  const puestasSol = daily.sunset;
-  const salidasSol = daily.sunrise ?? [];
 
   if (
     !esNumero(valor.latitude) ||
@@ -143,8 +137,6 @@ function leerZona(valor: unknown): OpenMeteoZona {
     !esArregloDeNumeros(vientos) ||
     !esArregloDeNumeros(rachas) ||
     !esArregloDePrecipitacion(precipitacion) ||
-    !esArregloDeTextos(puestasSol) ||
-    !esArregloDeTextos(salidasSol) ||
     tiempos.length === 0 ||
     tiempos.length !== vientos.length ||
     tiempos.length !== rachas.length ||
@@ -179,7 +171,6 @@ function leerZona(valor: unknown): OpenMeteoZona {
       ...(codigos ? { weather_code: codigos } : {}),
       precipitation_probability: precipitacion,
     },
-    daily: { sunset: puestasSol, sunrise: salidasSol },
   };
 }
 
@@ -209,7 +200,6 @@ export function crearUrlOpenMeteo(): string {
     longitude: ZONAS.map(({ lon }) => lon).join(","),
     hourly:
       "wind_speed_10m,wind_gusts_10m,wind_direction_10m,cloud_cover,weather_code,precipitation_probability",
-    daily: "sunrise,sunset",
     forecast_days: "2",
     timezone: TIMEZONE,
     models: MODELO,
@@ -262,17 +252,17 @@ export function crearPronostico(
         banda: banda(viento, racha, "estandar"),
       } satisfies HoraPronostico;
     });
+    const dias = [...new Set(origen.hourly.time.map((fecha) => fecha.slice(0, 10)))];
+    const luz = dias.map((fecha) =>
+      efemeridesSantiago(fecha, origen.latitude, origen.longitude),
+    );
 
     return {
       id: zona.id,
       nombre: zona.nombre,
       celda: { lat: origen.latitude, lon: origen.longitude },
-      salidaSol: origen.daily.sunrise.map((fecha) =>
-        conOffset(fecha, origen.utc_offset_seconds),
-      ),
-      puestaSol: origen.daily.sunset.map((fecha) =>
-        conOffset(fecha, origen.utc_offset_seconds),
-      ),
+      salidaSol: luz.map(({ salida }) => salida),
+      puestaSol: luz.map(({ puesta }) => puesta),
       horas,
       ventanas: ventanas(horas, "estandar"),
     };

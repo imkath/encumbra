@@ -18,6 +18,8 @@ limitaciones externas en afirmaciones falsas.
   consulta directa exclusivamente para desarrollo local.
 - «Donde estoy» usa y declara la celda ICON precargada más cercana. No promete
   una medición exacta ni abre un proxy meteorológico por coordenada.
+- Amanecer y puesta de sol se calculan en `lib/solar.ts` con la fecha y
+  coordenadas de cada celda; ya no dependen de una respuesta `daily` externa.
 
 ## Resolución de los reparos R01–R14
 

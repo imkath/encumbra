@@ -29,7 +29,7 @@ describe("Open-Meteo", () => {
       url.searchParams.get("hourly"),
       "wind_speed_10m,wind_gusts_10m,wind_direction_10m,cloud_cover,weather_code,precipitation_probability",
     );
-    assert.equal(url.searchParams.get("daily"), "sunrise,sunset");
+    assert.equal(url.searchParams.has("daily"), false);
     assert.equal(url.searchParams.get("forecast_days"), "2");
     assert.equal(url.searchParams.get("timezone"), "America/Santiago");
     assert.equal(url.searchParams.get("models"), "icon_seamless");
@@ -57,7 +57,8 @@ describe("Open-Meteo", () => {
       });
       assert.equal(zona.horas.length, 48);
       assert.equal(zona.horas[0]?.fecha, "2026-08-31T00:00:00-04:00");
-      assert.equal(zona.puestaSol[0], `${origen.daily.sunset[0]}:00-04:00`);
+      assert.match(zona.salidaSol?.[0] ?? "", /^2026-08-31T07:\d{2}:00-04:00$/);
+      assert.match(zona.puestaSol[0] ?? "", /^2026-08-31T18:\d{2}:00-04:00$/);
       assert.ok(
         zona.horas.every(({ banda }) =>
           ["plancha", "liviano", "ideal", "bravo", "peligro"].includes(banda),
@@ -150,18 +151,15 @@ describe("Open-Meteo", () => {
   });
 });
 
-test("normaliza amanecer conservando compatibilidad con pronósticos antiguos", () => {
-  const payload = fixture.map((zona) => ({
-    ...zona,
-    daily: {
-      ...zona.daily,
-      sunrise: zona.daily.sunset.map((fecha) => fecha.slice(0, 10) + "T07:15"),
-    },
-  }));
-  const nuevo = crearPronostico(payload, "2026-08-31T12:00:00.000Z");
-  assert.equal(nuevo.zonas[0]?.salidaSol?.[0], "2026-08-31T07:15:00-04:00");
-  const antiguo = crearPronostico(fixture, "2026-08-31T12:00:00.000Z");
-  assert.deepEqual(antiguo.zonas[0]?.salidaSol, []);
+test("calcula amanecer y puesta aunque el proveedor omita daily", () => {
+  const payload = fixture.map((zona) => {
+    const copia: Record<string, unknown> = { ...zona };
+    delete copia.daily;
+    return copia;
+  });
+  const resultado = crearPronostico(payload, "2026-08-31T12:00:00.000Z");
+  assert.equal(resultado.zonas[0]?.salidaSol?.length, 2);
+  assert.equal(resultado.zonas[0]?.puestaSol.length, 2);
 });
 
  test("acepta rachas de la hora anterior inferiores al viento puntual sin perder zonas", async () => {
