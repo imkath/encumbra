@@ -481,7 +481,9 @@ La primera corrección explicó de más: repetía que la dirección no cambia,
 añadía técnica de despegue y desplegaba el límite del sensor como párrafo. En
 terreno eso competía con la acción. La regla vigente es mostrar `Tú → Volantín`
 y una sola comprobación corta; la evidencia extensa queda en esta bitácora, no
-en la pantalla de vuelo.
+en la pantalla de vuelo. El recorte quedó desplegado desde `7672de4` en la
+versión Cloudflare `f0e61fe0-9098-4ee7-ad97-e53e8b4cbbf3`; el smoke productivo
+completo terminó sin errores ni desbordes.
 
 Comandos de aceptación:
 
