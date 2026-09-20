@@ -226,7 +226,9 @@ with sync_playwright() as p:
     assert pagina.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
     assert pagina.get_by_text("Tú", exact=True).is_visible()
     assert pagina.get_by_text("Volantín", exact=True).is_visible()
-    assert pagina.get_by_text("Sola/o o con ayuda", exact=False).is_visible()
+    assert pagina.get_by_text("Confirma la dirección con pasto.", exact=True).is_visible()
+    assert pagina.get_by_text("Sola/o o con ayuda", exact=False).count() == 0
+    assert pagina.get_by_text("Desde tu mano", exact=False).count() == 0
     assert pagina.get_by_text("Ayudante + volantín", exact=True).count() == 0
     compacto.close()
 
@@ -249,7 +251,8 @@ with sync_playwright() as p:
         )
         assert resultado_tablet["ancho_documento"] <= resultado_tablet["ancho_ventana"]
         assert pagina.get_by_text("Encuentra dónde debe ir el volantín", exact=True).is_visible()
-        assert pagina.get_by_text("Sola/o o con ayuda", exact=False).is_visible()
+        assert pagina.get_by_text("Confirma la dirección con pasto.", exact=True).is_visible()
+        assert pagina.get_by_text("Sola/o o con ayuda", exact=False).count() == 0
         resultados.append({**resultado_tablet, "dispositivo": f"tablet {ancho}x{alto}"})
         tablet.close()
     browser.close()

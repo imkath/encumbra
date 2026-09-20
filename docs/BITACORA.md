@@ -477,6 +477,12 @@ productivo confirmó el flujo WebKit y absoluto, además de 320×700, 390×844,
 768×1024, 1024×768 y 1440×1000, sin errores de consola ni desbordes. Tests: 108;
 lint, detector visual y build: verdes.
 
+La primera corrección explicó de más: repetía que la dirección no cambia,
+añadía técnica de despegue y desplegaba el límite del sensor como párrafo. En
+terreno eso competía con la acción. La regla vigente es mostrar `Tú → Volantín`
+y una sola comprobación corta; la evidencia extensa queda en esta bitácora, no
+en la pantalla de vuelo.
+
 Comandos de aceptación:
 
 ```bash

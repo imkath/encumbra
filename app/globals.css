@@ -3012,17 +3012,9 @@ h2,
   font-size: 13px;
   font-weight: 780;
 }
-.vivo__brujula-consejo,
-.vivo__brujula-estado,
-.vivo__brujula-lectura small {
+.vivo__brujula-estado {
   font-size: 12px;
   line-height: 1.4;
-}
-.vivo__brujula-consejo {
-  font-weight: 720;
-}
-.vivo__brujula-estado,
-.vivo__brujula-lectura small {
   opacity: 0.76;
 }
 .vivo__brujula-lectura button {
@@ -3087,25 +3079,11 @@ h2,
   border-right: 1.5px solid;
   transform: translateY(-50%) rotate(45deg);
 }
-.vivo__posiciones-aclaracion,
-.vivo__despegue-paso,
-.vivo__brujula-limite {
+.vivo__posiciones > small {
   grid-column: 1 / -1;
   font-size: 11.5px;
   line-height: 1.4;
-}
-.vivo__posiciones-aclaracion {
   margin-top: 2px;
-  font-weight: 780;
-}
-.vivo__posiciones .vivo__despegue-paso {
-  display: block;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--vivo-tinta) 9%, transparent);
-  font-weight: 670;
-}
-.vivo__brujula-limite {
   opacity: 0.78;
 }
 .vivo__noche {
@@ -3545,12 +3523,9 @@ html { caret-color: var(--brand-ink); }
   .brujula-viento { width: 116px; height: 116px; }
   .vivo__brujula-giro strong { font-size: 19px; }
   .vivo__brujula-giro small,
-  .vivo__brujula-consejo,
   .vivo__brujula-estado,
   .vivo__posiciones p,
-  .vivo__posiciones-aclaracion,
-  .vivo__despegue-paso,
-  .vivo__brujula-limite { font-size: 13px; }
+  .vivo__posiciones > small { font-size: 13px; }
   .vivo__limites { grid-column: 1; grid-row: 3; padding: 22px 0 0; gap: 24px; }
   .vivo__limite-valor { font-size: clamp(30px,3vw,44px); }
   .vivo__limite-que, .vivo__limite-glosa { font-size: 12px; }

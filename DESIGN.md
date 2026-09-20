@@ -123,10 +123,12 @@ en horizontal, la mira sigue la parte superior visible y no el borde original
 del dispositivo.
 
 En `/volar` la orientación para despegar domina después del veredicto: instrucción
-grande, rosa y relación `Tú → Volantín`. Procedencia, destino, técnica y límite
-del sensor permanecen visibles pero un nivel abajo. El volantín ilustrado baja
-de intensidad detrás de la lectura en móvil y recupera presencia cuando tiene
-su propia columna. No usar una tarjeta flotante ni un selector de acompañantes.
+grande, rosa y relación `Tú → Volantín`. Procedencia y destino permanecen un
+nivel abajo; no convertir la pantalla de terreno en un manual. Después del
+diagrama solo cabe la comprobación corta «Confirma la dirección con pasto».
+El volantín ilustrado baja de intensidad detrás de la lectura en móvil y
+recupera presencia cuando tiene su propia columna. No usar una tarjeta flotante,
+un selector de acompañantes ni párrafos de técnica de despegue.
 
 
 ## Favicon
