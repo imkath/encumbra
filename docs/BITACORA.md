@@ -470,6 +470,13 @@ Araucano, mapa, tema y `/volar` a 320, 390 y 1440 px. Las simulaciones de la
 ruta WebKit de iPhone y del evento absoluto de Android terminaron alineadas,
 sin errores de consola ni desborde horizontal. Tests: 108; lint y build: verdes.
 
+La corrección para despegar a solas o con ayuda quedó desplegada en Cloudflare
+como `8fe25eeb-ace8-4de7-9ae4-c467fd6025b6`, desde el commit `fc6bc99`. La
+relación visible pasó de roles obligatorios a `Tú → Volantín`; el smoke
+productivo confirmó el flujo WebKit y absoluto, además de 320×700, 390×844,
+768×1024, 1024×768 y 1440×1000, sin errores de consola ni desbordes. Tests: 108;
+lint, detector visual y build: verdes.
+
 Comandos de aceptación:
 
 ```bash
@@ -489,7 +496,7 @@ es que la suite vigente quede completa y verde.
 
 El techo original es 120 KB gzip/transferidos en first load. La medición más
 reciente en Firefox productivo, sobre el despliegue
-`e0741ad6-44e0-4126-afa4-b4f3855365b8`, fue 159.031 bytes aun con MapLibre
+`8fe25eeb-ace8-4de7-9ae4-c467fd6025b6`, fue 158.954 bytes aun con MapLibre
 diferido y exactamente dos fronteras cliente. No se subió el techo. Sigue
 siendo deuda explícita; no retirar información de seguridad solo para maquillar
 el número.
