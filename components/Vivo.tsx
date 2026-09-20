@@ -115,14 +115,12 @@ function bandaVigente(
 
 function BrujulaViento({
   direccion,
-  perfil,
   estado,
   rumboTelefono,
   activar,
   desactivar,
 }: {
   readonly direccion: number;
-  readonly perfil: Perfil;
   readonly estado: EstadoBrujula;
   readonly rumboTelefono: number | null;
   readonly activar: () => void;
@@ -149,19 +147,17 @@ function BrujulaViento({
   if (!trayectoria) return null;
 
   const estadoTexto =
-    estado === "activa"
-      ? "Déjalo plano, con la pantalla hacia arriba."
-      : estado === "pidiendo"
-        ? "Esperando tu permiso…"
-        : estado === "buscando"
-          ? "Buscando el norte… deja el celular plano."
-          : estado === "calibrando"
-            ? "La brújula pide calibración: mueve el celular en forma de ocho."
-          : estado === "denegada"
-            ? "Sin permiso, dejamos el norte arriba."
-            : estado === "sin-sensor"
-              ? "Este navegador no entregó el norte; lo dejamos arriba."
-              : "Pon el celular plano para usarlo como brújula.";
+    estado === "pidiendo"
+      ? "Esperando tu permiso…"
+      : estado === "buscando"
+        ? "Buscando el norte… deja el celular plano."
+        : estado === "calibrando"
+          ? "La brújula pide calibración: mueve el celular en forma de ocho."
+        : estado === "denegada"
+          ? "Sin permiso, dejamos el norte arriba."
+          : estado === "sin-sensor"
+            ? "Este navegador no entregó el norte; lo dejamos arriba."
+            : null;
 
   const giroIcono =
     guia?.estado === "gira-derecha"
@@ -191,7 +187,7 @@ function BrujulaViento({
           </strong>
           <small>
             {orientada
-              ? "La parte superior del celular marca el frente."
+              ? "Celular plano: la parte superior marca el frente."
               : "Activa la brújula y sostén el celular plano."}
           </small>
         </span>
@@ -245,12 +241,11 @@ function BrujulaViento({
           <strong>{trayectoria.vieneDe}</strong>
           <span>{trayectoria.vaHacia}</span>
         </p>
-        <p className="vivo__brujula-consejo">
-          Apunta la parte superior del celular hacia donde quedará el volantín.
-        </p>
-        <p className="vivo__brujula-estado" aria-live="polite">
-          {estadoTexto}
-        </p>
+        {estadoTexto ? (
+          <p className="vivo__brujula-estado" aria-live="polite">
+            {estadoTexto}
+          </p>
+        ) : null}
         {orientada || estado === "calibrando" ? (
           <button type="button" onClick={desactivar}>
             Seguir sin brújula
@@ -280,19 +275,8 @@ function BrujulaViento({
           <strong>Volantín</strong>
           <span>Delante de ti.</span>
         </p>
-        <small className="vivo__posiciones-aclaracion">
-          Sola/o o con ayuda, esta dirección no cambia.
-        </small>
-        <p className="vivo__despegue-paso">
-          {perfil === "acrobatico"
-            ? "Déjalo delante, al centro del viento, con las líneas rectas y parejas. Da un paso atrás y tira ambos mandos."
-            : "Desde tu mano: nariz arriba y deja que el viento lo tome. Más lejos: sostenido o apoyado, suéltalo sin lanzarlo y recoge hilo."}
-        </p>
+        <small>Confirma la dirección con pasto.</small>
       </div>
-      <small className="vivo__brujula-limite">
-        La brújula orienta el pronóstico, no mide el viento aquí. Confirma con
-        pasto o una cinta y aléjate de objetos metálicos.
-      </small>
     </section>
   );
 }
@@ -620,7 +604,6 @@ export function Vivo({
         {hora.direccion !== null ? (
           <BrujulaViento
             direccion={hora.direccion}
-            perfil={perfilInicial}
             estado={estadoBrujula}
             rumboTelefono={rumboTelefono}
             activar={activarBrujula}
