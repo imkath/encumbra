@@ -143,11 +143,11 @@ describe("dirección del viento", () => {
     });
   });
 
-  test("confirma cuando el teléfono apunta hacia quien sostiene el volantín", () => {
+  test("confirma cuando el teléfono apunta hacia el lugar del volantín", () => {
     assert.deepEqual(guiaDespegue(270, 82), {
       estado: "alineado",
       diferencia: 8,
-      instruccion: "Así está bien: el viento queda a tu espalda",
+      instruccion: "Listo: el volantín va frente a ti",
     });
     assert.equal(guiaDespegue(null, 82), null);
   });

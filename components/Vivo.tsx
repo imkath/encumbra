@@ -185,11 +185,15 @@ function BrujulaViento({
           <Icono nombre="direccion" />
         </span>
         <span>
-          <small>PARA DESPEGAR</small>
           <strong>
             {guia?.instruccion ??
-              "Activa la brújula para saber hacia dónde ponerte"}
+              "Encuentra dónde debe ir el volantín"}
           </strong>
+          <small>
+            {orientada
+              ? "La parte superior del celular marca el frente."
+              : "Activa la brújula y sostén el celular plano."}
+          </small>
         </span>
       </p>
 
@@ -242,7 +246,7 @@ function BrujulaViento({
           <span>{trayectoria.vaHacia}</span>
         </p>
         <p className="vivo__brujula-consejo">
-          La parte superior del celular apunta hacia quien sostiene el volantín.
+          Apunta la parte superior del celular hacia donde quedará el volantín.
         </p>
         <p className="vivo__brujula-estado" aria-live="polite">
           {estadoTexto}
@@ -268,23 +272,26 @@ function BrujulaViento({
 
       <div className="vivo__posiciones">
         <p>
-          <strong>Tú + hilo</strong>
+          <strong>Tú</strong>
           <span>Espalda al viento.</span>
         </p>
         <span className="vivo__posiciones-linea" aria-hidden="true" />
         <p>
-          <strong>Ayudante + volantín</strong>
-          <span>Delante de ti, hacia donde apunta el celular.</span>
+          <strong>Volantín</strong>
+          <span>Delante de ti.</span>
         </p>
-        <small>
-          {perfil === "acrobatico"
-            ? "Dejen libre el espacio y despejen las dos líneas. A tu señal, que lo suelte sin lanzarlo; tú tiras ambos mandos."
-            : "Dejen libre el espacio. Nariz arriba; a tu señal, que lo suelte sin lanzarlo. Tú recoges hilo mientras sube."}
+        <small className="vivo__posiciones-aclaracion">
+          Sola/o o con ayuda, esta dirección no cambia.
         </small>
+        <p className="vivo__despegue-paso">
+          {perfil === "acrobatico"
+            ? "Déjalo delante, al centro del viento, con las líneas rectas y parejas. Da un paso atrás y tira ambos mandos."
+            : "Desde tu mano: nariz arriba y deja que el viento lo tome. Más lejos: sostenido o apoyado, suéltalo sin lanzarlo y recoge hilo."}
+        </p>
       </div>
       <small className="vivo__brujula-limite">
-        La brújula orienta el pronóstico; confirma el viento con pasto o una
-        cinta. Imanes y metal pueden mover la lectura.
+        La brújula orienta el pronóstico, no mide el viento aquí. Confirma con
+        pasto o una cinta y aléjate de objetos metálicos.
       </small>
     </section>
   );

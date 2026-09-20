@@ -184,7 +184,7 @@ with sync_playwright() as p:
         ))""",
         rumbo_objetivo,
     )
-    pagina.get_by_text("Así está bien: el viento queda a tu espalda", exact=True).wait_for()
+    pagina.get_by_text("Listo: el volantín va frente a ti", exact=True).wait_for()
     assert pagina.get_by_role("button", name="Seguir sin brújula").is_visible()
     resultado_ios = pagina.locator(".vivo__brujula-giro").inner_text()
 
@@ -198,7 +198,7 @@ with sync_playwright() as p:
         ))""",
         alpha_objetivo,
     )
-    pagina.get_by_text("Así está bien: el viento queda a tu espalda", exact=True).wait_for()
+    pagina.get_by_text("Listo: el volantín va frente a ti", exact=True).wait_for()
     assert pagina.get_by_role("button", name="Seguir sin brújula").is_visible()
     pagina.screenshot(path=str(SALIDAS / "volar-mobile-brujula-activa.png"), full_page=True)
     resultados.append({
@@ -224,9 +224,34 @@ with sync_playwright() as p:
         )
     )
     assert pagina.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
-    assert pagina.get_by_text("Tú + hilo", exact=True).is_visible()
-    assert pagina.get_by_text("Ayudante + volantín", exact=True).is_visible()
+    assert pagina.get_by_text("Tú", exact=True).is_visible()
+    assert pagina.get_by_text("Volantín", exact=True).is_visible()
+    assert pagina.get_by_text("Sola/o o con ayuda", exact=False).is_visible()
+    assert pagina.get_by_text("Ayudante + volantín", exact=True).count() == 0
     compacto.close()
+
+    for ancho, alto, captura in (
+        (768, 1024, "volar-tablet-vertical.png"),
+        (1024, 768, "volar-tablet-horizontal.png"),
+    ):
+        tablet = browser.new_context(
+            viewport={"width": ancho, "height": alto},
+            color_scheme="light",
+            locale="es-CL",
+        )
+        pagina = tablet.new_page()
+        pagina.on("console", lambda mensaje: errores.append(mensaje.text) if mensaje.type == "error" else None)
+        pagina.on("pageerror", lambda error: errores.append(str(error)))
+        resultado_tablet = revisar_pagina(
+            pagina,
+            "/volar?zona=penalolen&perfil=estandar&parque=parque-penalolen",
+            captura,
+        )
+        assert resultado_tablet["ancho_documento"] <= resultado_tablet["ancho_ventana"]
+        assert pagina.get_by_text("Encuentra dónde debe ir el volantín", exact=True).is_visible()
+        assert pagina.get_by_text("Sola/o o con ayuda", exact=False).is_visible()
+        resultados.append({**resultado_tablet, "dispositivo": f"tablet {ancho}x{alto}"})
+        tablet.close()
     browser.close()
 
     print(json.dumps({"resultados": resultados, "errores_consola": errores}, ensure_ascii=False, indent=2))
