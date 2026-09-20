@@ -21,6 +21,7 @@ import {
 } from "@/lib/salida.ts";
 import { formatearHora } from "@/lib/formato.ts";
 import { adaptarZonaAlPerfil, horaVigente } from "@/lib/planear.ts";
+import { cardinal, fraseDireccion } from "@/lib/viento.ts";
 import {
   leerPronosticoGuardado,
   serializarPronostico,
@@ -469,7 +470,7 @@ export function EncumbraApp({
                         <strong>Donde estoy</strong>
                         <span>
                           {horaAqui
-                            ? `${ETIQUETAS[horaAqui.banda]} · ${Math.round(horaAqui.viento)} km/h`
+                            ? `${ETIQUETAS[horaAqui.banda]} · ${Math.round(horaAqui.viento)} km/h${cardinal(horaAqui.direccion) ? ` · ${cardinal(horaAqui.direccion)}` : ""}`
                             : "Viento no disponible por ahora"}
                         </span>
                         <small>
@@ -668,6 +669,20 @@ export function EncumbraApp({
                       ? ` · ${distancia(parque.distancia)}`
                       : ""}
                   </p>
+                  {hora?.direccion !== null && hora?.direccion !== undefined ? (
+                    <p className="viento-direccion">
+                      <span
+                        className="viento-direccion__flecha"
+                        style={{ transform: `rotate(${hora.direccion + 180}deg)` }}
+                      >
+                        <Icono nombre="direccion" />
+                      </span>
+                      <span>
+                        <strong>{cardinal(hora.direccion)}</strong>
+                        {fraseDireccion(hora.direccion)}. La flecha muestra hacia dónde va.
+                      </span>
+                    </p>
+                  ) : null}
                   <p className="permiso-detalle" data-permiso={parque.permiso}>
                     <Icono nombre="arbol" />
                     {parque.permiso === "autorizado" ? (
@@ -794,7 +809,10 @@ export function EncumbraApp({
                             <Icono nombre={luzDeHora(h.fecha) === false ? "luna" : "viento"} />
                             <strong>{Math.round(h.viento)}<small> km/h</small></strong>
                             <span className="hora-racha">Racha {Math.round(h.racha)}</span>
-                            <small>{luzDeHora(h.fecha) === false ? "Noche" : luzDeHora(h.fecha) ? "Con luz" : "Luz sin dato"}</small>
+                            <small>
+                              {luzDeHora(h.fecha) === false ? "Noche" : luzDeHora(h.fecha) ? "Con luz" : "Luz sin dato"}
+                              {cardinal(h.direccion) ? ` · ${cardinal(h.direccion)}` : ""}
+                            </small>
                           </button>
                         ))}
                       </div>

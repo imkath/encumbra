@@ -39,6 +39,7 @@ const trazos = {
     </>
   ),
   flecha: <path d="M5 12h14m-6-6 6 6-6 6" />,
+  direccion: <path d="M12 21V3m-6 6 6-6 6 6" />,
   atras: <path d="M19 12H5m6-6-6 6 6 6" />,
   chevron: <path d="m8 5 7 7-7 7" />,
   abajo: <path d="m6 9 6 6 6-6" />,

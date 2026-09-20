@@ -26,6 +26,8 @@ import {
 } from "@/lib/vivo.ts";
 import { Marca } from "@/components/Marca.tsx";
 import { VolantinCampo } from "@/components/VolantinCampo.tsx";
+import { Icono } from "@/components/Icono.tsx";
+import { cardinal, fraseDireccion } from "@/lib/viento.ts";
 
 const CLAVE_MODO = "encumbra:modo";
 const CLAVE_PRONOSTICO = "encumbra:pronostico:v1";
@@ -287,6 +289,18 @@ export function Vivo({
             <dd>{tendencia}</dd>
           </div>
         </dl>
+        {hora.direccion !== null ? (
+          <p className="vivo__direccion">
+            <span
+              style={{ transform: `rotate(${hora.direccion + 180}deg)` }}
+              aria-hidden="true"
+            >
+              <Icono nombre="direccion" />
+            </span>
+            <strong>{cardinal(hora.direccion)}</strong>
+            {fraseDireccion(hora.direccion)} · ponte de espaldas al viento
+          </p>
+        ) : null}
       </section>
 
       {/* Two different clocks run against you. The one that ends first is your limit. */}
