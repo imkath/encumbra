@@ -54,6 +54,9 @@ no se invierte el tema claro ni se cambian el significado o los colores de las
 bandas meteorológicas. Las tarjetas de estado siempre toman su tinta de
 `--state-ink`, para que los tokens globales del tema no degraden su contraste.
 
+`/volar` no muestra selector de tema: su fondo comunica el estado del viento y
+la luz. La elección de claro u oscuro queda disponible en las otras vistas.
+
 `VolantinPapel` comparte el dibujo entre portada, exterior, selectores de perfil y marcador del gráfico. Su vela toma el color de la superficie por `--paper-base`, con mezclas hacia hueso (`--paper-light`, `--paper-mid`) y carbón (`--paper-shade`, `--paper-rib`). Sustituye el naranja con arcos de la versión anterior. En iconos pequeños sobre hueso usa una base neutra de mayor contraste para conservar la silueta.
 
 La silueta tiene laterales cóncavos y punta inferior larga. El perfil estándar lleva cola con lazos unidos a las curvas, el liviano no lleva cola y el acrobático tiene vela delta y dos hilos. Cada SVG tiene un recorte y gradiente con identificadores únicos. Las posturas son ilustrativas por banda, no una simulación física: falta de viento, peligro, noche y ausencia de datos muestran reposo.
