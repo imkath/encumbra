@@ -30,7 +30,7 @@ limitaciones externas en afirmaciones falsas.
 | R05 | Bloqueado con seguridad | Ningún fallback alternativo emite bandas hasta validarse y recalibrarse contra ICON. |
 | R06 | Cerrado | Permiso conserva autoridad, fuente, verificación, alcance y vigencia pendiente; ausencia no significa prohibición. |
 | R07 | Cerrado | `docs/17-DECISIONES-2026-09-20.md` registra la sustitución nocturna. |
-| R08 | Parcial | La aplicación conserva exactamente dos fronteras `use client`; MapLibre carga bajo demanda. El first load medido sigue sobre 120 KB por el runtime compartido de Next/React. |
+| R08 | Parcial | La aplicación conserva exactamente dos fronteras `use client`; MapLibre carga bajo demanda. El first load medido es 157.635 bytes transferidos y sigue sobre 120 KB por el runtime compartido de Next/React. |
 | R09 | Cerrado | `tipoLugar` y `permiso` son ejes distintos. |
 | R10 | Cerrado | Los seis tramos comparten `recintoId`; el contador muestra 14 recintos, no 19 parques. |
 | R11 | Cerrado para el catálogo publicado | Todos los lugares publicados son recintos y declaran `precision: recinto`; no se publicaron referencias comunitarias imprecisas. |
@@ -58,7 +58,8 @@ rompería la regla del producto de no inventar datos.
 - `next build` y build OpenNext exitosos.
 - Evento `scheduled` ejecutado en el runtime local de Workers y clave KV leída
   de vuelta con un pronóstico válido.
-- Worker productivo con binding KV y cron desplegados.
+- Worker productivo con binding KV y cron desplegados. El ciclo remoto de las
+  17:10 UTC reemplazó la semilla con un dato nuevo a las 17:10:18 UTC.
 - Smoke test en Firefox visible, 390 × 844 y 1440 × 1000, tema claro/oscuro,
   geolocalización, mapa y modo volar: sin errores de consola ni overflow.
 
