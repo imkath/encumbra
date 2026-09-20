@@ -2,8 +2,10 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { contextoSalida, luzEnHorario } from "../lib/salida.ts";
 const buena = { banda: "ideal", probabilidadPrecipitacion: 0 };
-test("no invita a salir de noche aunque el viento sea ideal", () => {
+test("la noche se informa como condición sin borrar el dato de viento", () => {
   assert.equal(contextoSalida(buena, false, true)?.estado, "noche");
+  assert.equal(contextoSalida(buena, false, true)?.titulo, "Es de noche");
+  assert.match(contextoSalida(buena, false, true)?.detalle ?? "", /espacio conocido/i);
   assert.equal(contextoSalida(buena, true, true), null);
   assert.equal(contextoSalida(buena, null, true)?.estado, "sin-datos");
 });

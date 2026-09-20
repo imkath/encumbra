@@ -5,6 +5,7 @@
 @source "../components";
 
 :root {
+  color-scheme: light;
   --app-bg: #ebe7dc;
   --app-surface: var(--brand-bone);
   --app-ink: var(--brand-ink);
@@ -27,6 +28,34 @@
   --radius-control: 0.8rem;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --dur-tap: 160ms;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --app-bg: #121a23;
+    --app-surface: #1a2530;
+    --app-ink: #faf3df;
+    --app-muted: #c3bba9;
+    --app-line: #3b4650;
+    --app-action: #ffdc5c;
+    --app-action-soft: #35382e;
+    --app-good: #8bd7a8;
+    --app-good-soft: #21382e;
+    --app-warning: #ffd17a;
+    --app-danger: #ff9188;
+    --color-verdict-bg: #26323c;
+    --color-verdict-ink: #faf3df;
+  }
+  .app-nav button[aria-current] {
+    background: var(--app-ink);
+    color: var(--app-surface);
+  }
+  .mapa-espera,
+  .mapa-cargando,
+  .mapa-error,
+  .mapa-leyenda {
+    color: var(--app-ink);
+  }
 }
 * {
   box-sizing: border-box;
@@ -2730,6 +2759,29 @@ h2,
   height: 17px;
   margin-top: 1px;
 }
+.contexto-aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 14px;
+  padding: 11px 12px;
+  border-radius: 13px;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  font-size: 12px;
+  line-height: 1.4;
+}
+.contexto-aviso svg {
+  width: 19px;
+  height: 19px;
+  margin-top: 1px;
+}
+.contexto-aviso span {
+  display: grid;
+  gap: 2px;
+}
+.contexto-aviso strong {
+  font-weight: 800;
+}
 .viento-direccion,
 .vivo__direccion {
   display: flex;
@@ -2759,6 +2811,34 @@ h2,
 .vivo__direccion strong {
   margin-right: 3px;
   color: var(--app-ink);
+}
+.vivo__direccion {
+  margin-top: 12px;
+  color: inherit;
+}
+.vivo__direccion > span {
+  background: color-mix(in srgb, var(--vivo-tinta) 10%, transparent);
+  color: inherit;
+}
+.vivo__direccion strong {
+  color: inherit;
+}
+.vivo__noche {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  max-width: 48ch;
+  margin-top: 16px;
+  padding: 11px 13px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--vivo-tinta) 11%, transparent);
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.45;
+}
+.vivo__noche svg {
+  width: 19px;
+  height: 19px;
 }
 .parque-condicion {
   display: grid;

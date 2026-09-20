@@ -16,11 +16,14 @@ const archivo = Archivo({
 export const metadata: Metadata = {
   title: "Encumbra",
   description: "Pronóstico para encumbrar volantines en Santiago.",
-  appleWebApp: { capable: true, title: "Encumbra", statusBarStyle: "default" },
+  appleWebApp: { capable: true, title: "Encumbra", statusBarStyle: "black-translucent" },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f8f7f2",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f8f7f2" },
+    { media: "(prefers-color-scheme: dark)", color: "#18222d" },
+  ],
   width: "device-width",
   initialScale: 1,
 };

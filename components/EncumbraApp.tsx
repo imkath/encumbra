@@ -713,7 +713,7 @@ export function EncumbraApp({
               <div className="salida-layout">
                 <section
                   className="parte-viento superficie-mate"
-                  data-estado={contexto?.estado ?? hora?.banda ?? "sin-datos"}
+                  data-estado={hora?.banda ?? "sin-datos"}
                   aria-label="Condiciones de viento"
                 >
                   <div className="parte-viento__hora">
@@ -722,20 +722,17 @@ export function EncumbraApp({
                     </span>
                     <span>{actualizado ? "Pronóstico" : "Último dato"}</span>
                   </div>
-                  <h2>{contexto?.titulo ?? (hora ? ETIQUETAS[hora.banda] : "Todavía sin dato de viento")}</h2>
+                  <h2>{hora ? ETIQUETAS[hora.banda] : "Todavía sin dato de viento"}</h2>
                   <p>
-                    {contexto?.detalle ?? (hora
+                    {hora
                       ? `Por viento: ${CONSEJOS[hora.banda]}`
-                      : "No hay datos para este día. Prueba el otro día o actualiza el pronóstico.")}
+                      : "No hay datos para este día. Prueba el otro día o actualiza el pronóstico."}
                   </p>
-                  {hora?.probabilidadPrecipitacion !== null &&
-                  hora?.probabilidadPrecipitacion !== undefined &&
-                  hora.probabilidadPrecipitacion >= 50 ? (
-                    <p className="lluvia-aviso">
-                      <Icono nombre="lluvia" />
-                      {hora.probabilidadPrecipitacion}% de probabilidad de
-                      lluvia. Revisa antes de salir.
-                    </p>
+                  {contexto ? (
+                    <aside className="contexto-aviso" data-estado={contexto.estado}>
+                      <Icono nombre={contexto.estado === "noche" ? "luna" : contexto.estado === "liviano" ? "lluvia" : "refrescar"} />
+                      <span><strong>{contexto.titulo}</strong>{contexto.detalle}</span>
+                    </aside>
                   ) : null}
                   <dl className="parte-viento__datos">
                     <div>

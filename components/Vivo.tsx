@@ -271,9 +271,17 @@ export function Vivo({
 
       <section className="vivo__datos" aria-labelledby="estado-viento">
         <h1 id="estado-viento" className="vivo__frase">
-          <span className="vivo__grito">{luz.tipo === "terminada" ? "POR HOY" : VEREDICTOS[hora.banda]}</span>
-          <span className="vivo__hueco">{luz.tipo === "terminada" ? "hasta aquí." : COLETILLAS[hora.banda]}</span>
+          <span className="vivo__grito">{VEREDICTOS[hora.banda]}</span>
+          <span className="vivo__hueco">{COLETILLAS[hora.banda]}</span>
         </h1>
+
+        {luz.tipo === "terminada" ? (
+          <p className="vivo__noche">
+            <Icono nombre="luna" />
+            Es de noche. Si vas a encumbrar, quédate en un lugar conocido,
+            iluminado y lejos de cables y calles.
+          </p>
+        ) : null}
 
         <dl className="vivo__pastillas">
           <div className="vivo__pastilla vivo__pastilla--llena">
