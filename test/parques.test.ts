@@ -6,11 +6,12 @@ import {
   buscarParques,
   PARQUES,
   parquesProponibles,
+  contarRecintos,
 } from "../lib/parques.ts";
 
 test("catálogo completo con coordenadas para cada parque", () => {
-  assert.equal(PARQUES.length, 17);
-  assert.equal(new Set(PARQUES.map((p) => p.id)).size, 17);
+  assert.equal(PARQUES.length, 24);
+  assert.equal(new Set(PARQUES.map((p) => p.id)).size, 24);
   assert.ok(
     PARQUES.every((p) => Number.isFinite(p.lat) && Number.isFinite(p.lon)),
   );
@@ -18,10 +19,17 @@ test("catálogo completo con coordenadas para cada parque", () => {
 test("solo propone parques con autorización respaldada", () => {
   const proponibles = parquesProponibles(PARQUES);
 
-  assert.equal(proponibles.length, 12);
+  assert.equal(proponibles.length, 19);
+  assert.equal(contarRecintos(proponibles), 14);
   assert.ok(proponibles.every((parque) => parque.permiso === "autorizado"));
   assert.ok(proponibles.every((parque) => parque.fuentePermiso));
   assert.ok(!proponibles.some((parque) => parque.nombre === "San Cristóbal"));
+  assert.ok(proponibles.some((parque) => parque.nombre === "Pierre Dubois"));
+  assert.equal(
+    proponibles.filter((parque) => parque.recintoId === "parque-mapocho-rio")
+      .length,
+    6,
+  );
   assert.ok(
     buscarParques(PARQUES, "san cristobal").some(
       (parque) => parque.permiso === "sin-confirmar",

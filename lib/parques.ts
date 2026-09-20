@@ -163,6 +163,75 @@ const UBICACIONES = [
     permiso: "autorizado",
     fuentePermiso: FUENTE_PARQUEMET_2026,
   },
+  {
+    id: "parque-pierre-dubois",
+    comuna: "Pedro Aguirre Cerda",
+    lat: -33.487853,
+    lon: -70.671374,
+    nombre: "Pierre Dubois",
+    permiso: "autorizado",
+    fuentePermiso: FUENTE_PARQUEMET_2026,
+  },
+  {
+    id: "parque-mapocho-rio-tramo-1",
+    recintoId: "parque-mapocho-rio",
+    comuna: "Quinta Normal",
+    lat: -33.411263,
+    lon: -70.699573,
+    nombre: "Mapocho Río · tramo 1",
+    permiso: "autorizado",
+    fuentePermiso: FUENTE_PARQUEMET_2026,
+  },
+  {
+    id: "parque-mapocho-rio-tramo-2",
+    recintoId: "parque-mapocho-rio",
+    comuna: "Quinta Normal",
+    lat: -33.40998,
+    lon: -70.715551,
+    nombre: "Mapocho Río · tramo 2",
+    permiso: "autorizado",
+    fuentePermiso: FUENTE_PARQUEMET_2026,
+  },
+  {
+    id: "parque-mapocho-rio-tramo-3",
+    recintoId: "parque-mapocho-rio",
+    comuna: "Cerro Navia",
+    lat: -33.412235,
+    lon: -70.722799,
+    nombre: "Mapocho Río · tramo 3",
+    permiso: "autorizado",
+    fuentePermiso: FUENTE_PARQUEMET_2026,
+  },
+  {
+    id: "parque-mapocho-rio-tramo-4",
+    recintoId: "parque-mapocho-rio",
+    comuna: "Cerro Navia",
+    lat: -33.412915,
+    lon: -70.739898,
+    nombre: "Mapocho Río · tramo 4",
+    permiso: "autorizado",
+    fuentePermiso: FUENTE_PARQUEMET_2026,
+  },
+  {
+    id: "parque-mapocho-rio-tramo-5",
+    recintoId: "parque-mapocho-rio",
+    comuna: "Cerro Navia",
+    lat: -33.413042,
+    lon: -70.751196,
+    nombre: "Mapocho Río · tramo 5",
+    permiso: "autorizado",
+    fuentePermiso: FUENTE_PARQUEMET_2026,
+  },
+  {
+    id: "parque-mapocho-rio-tramo-6",
+    recintoId: "parque-mapocho-rio",
+    comuna: "Cerro Navia",
+    lat: -33.413696,
+    lon: -70.761354,
+    nombre: "Mapocho Río · tramo 6",
+    permiso: "autorizado",
+    fuentePermiso: FUENTE_PARQUEMET_2026,
+  },
 ] as const;
 export const PARQUES = ZONAS.flatMap((zona) =>
   zona.parques.map((parque) => {
@@ -174,6 +243,8 @@ export const PARQUES = ZONAS.flatMap((zona) =>
     if (!ubicacion) throw new Error(`Falta ubicación de ${parque.nombre}`);
     return {
       ...ubicacion,
+      recintoId:
+        "recintoId" in ubicacion ? ubicacion.recintoId : ubicacion.id,
       nombre: parque.nombre,
       zonaId: zona.id,
       zonaNombre: zona.nombre,
@@ -185,6 +256,12 @@ export function parquesProponibles<T extends { permiso: PermisoParque }>(
   parques: readonly T[],
 ): T[] {
   return parques.filter(({ permiso }) => permiso === "autorizado");
+}
+
+export function contarRecintos<T extends { recintoId: string }>(
+  parques: readonly T[],
+): number {
+  return new Set(parques.map(({ recintoId }) => recintoId)).size;
 }
 
 export type Coordenadas = { readonly lat: number; readonly lon: number };

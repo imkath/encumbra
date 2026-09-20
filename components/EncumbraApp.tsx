@@ -7,6 +7,7 @@ import { CONSEJOS, ETIQUETAS } from "@/lib/bandas.ts";
 import type { Pronostico } from "@/lib/openmeteo.ts";
 import {
   buscarParques,
+  contarRecintos,
   ordenarParques,
   parquesProponibles,
   type Coordenadas,
@@ -206,6 +207,7 @@ export function EncumbraApp({
   const horaAqui = zonaAqui ? horaVigente(zonaAqui.horas, ahora) : null;
   const parque = parques.find((p) => p.id === seleccionado) ?? parques[0]!;
   const proponibles = parquesProponibles(parques);
+  const recintosAutorizados = contarRecintos(proponibles);
   const ordenados = ordenarParques(
     proponibles,
     orden === "cerca" ? "cerca" : "adecuado",
@@ -581,7 +583,7 @@ export function EncumbraApp({
                     <span>
                       {busqueda || orden === "guardados"
                         ? resultados.length
-                        : `${visibles.length} de ${proponibles.length}`}
+                        : `${visibles.length} de ${proponibles.length} puntos · ${recintosAutorizados} parques`}
                     </span>
                   </div>
                   {pronostico.estado !== "actual" ? (
@@ -631,7 +633,7 @@ export function EncumbraApp({
                       className="ver-todos-app"
                       onClick={() => setListaCompleta(true)}
                     >
-                      Explorar los {proponibles.length} parques autorizados
+                      Explorar los {recintosAutorizados} parques autorizados
                       <Icono nombre="flecha" />
                     </button>
                   ) : null}

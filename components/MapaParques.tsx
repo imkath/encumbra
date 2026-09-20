@@ -88,8 +88,8 @@ export default function MapaParques({ parques, seleccionado, ubicacion, elegir }
             const boton = document.createElement("button");
             boton.type = "button";
             boton.className = `mapa-punto${agrupado ? " mapa-punto--grupo" : ""}${p.elegido ? " mapa-punto--elegido" : ""}`;
-            boton.textContent = agrupado ? `${p.point_count} parques` : `${p.numero}`;
-            const nombre = agrupado ? `Acercar ${p.point_count} parques` : `Ver ${p.nombre}`;
+            boton.textContent = agrupado ? `${p.point_count} puntos` : `${p.numero}`;
+            const nombre = agrupado ? `Acercar ${p.point_count} puntos` : `Ver ${p.nombre}`;
             boton.setAttribute("aria-label", nombre);
             boton.title = nombre;
             boton.addEventListener("click", async () => {
@@ -158,7 +158,7 @@ export default function MapaParques({ parques, seleccionado, ubicacion, elegir }
         <span>El mapa no cargó completo. La lista sigue disponible.</span>
         <button onClick={() => { setListo(false); setError(false); setIntento((n) => n + 1); }}>Reintentar mapa</button>
       </div> : null}
-      <span className="mapa-leyenda"><i />{parques.length} {parques.length === 1 ? "parque" : "parques"} · toca para explorar</span>
+      <span className="mapa-leyenda"><i />{parques.length} {parques.length === 1 ? "punto" : "puntos"} · toca para explorar</span>
     </div>
   );
 }

@@ -33,7 +33,7 @@ test("parques sin datos siguen disponibles sin inventar clima", () => {
     ahora,
     null,
   );
-  assert.equal(items.length, 17);
+  assert.equal(items.length, 24);
   assert.ok(items.every((p) => p.hora === null && p.distancia === null));
 });
 test("lectura comparte zona, adapta perfil y calcula distancia al parque", () => {

@@ -21,9 +21,20 @@ test("las seis zonas reproducen las celdas verificadas de icon_seamless", () => 
           "Bicentenario",
           "Parque de la Familia",
           "Mahuidahue",
+          "Mapocho Río · tramo 1",
         ],
       },
-      { lat: -33.4261, lon: -70.7545, parques: ["La Hondonada"] },
+      {
+        lat: -33.4261,
+        lon: -70.7545,
+        parques: [
+          "La Hondonada",
+          "Mapocho Río · tramo 3",
+          "Mapocho Río · tramo 4",
+          "Mapocho Río · tramo 5",
+          "Mapocho Río · tramo 6",
+        ],
+      },
       {
         lat: -33.4937,
         lon: -70.6502,
@@ -34,12 +45,17 @@ test("las seis zonas reproducen las celdas verificadas de icon_seamless", () => 
           "La Castrina",
           "André Jarlán",
           "La Bandera",
+          "Pierre Dubois",
         ],
       },
       {
         lat: -33.4809,
         lon: -70.6981,
-        parques: ["Bernardo Leighton", "Parque Bicentenario Cerrillos"],
+        parques: [
+          "Bernardo Leighton",
+          "Parque Bicentenario Cerrillos",
+          "Mapocho Río · tramo 2",
+        ],
       },
       { lat: -33.4648, lon: -70.5472, parques: ["Peñalolén"] },
       {

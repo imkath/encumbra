@@ -27,6 +27,7 @@ export const ZONAS = [
       { nombre: "Bicentenario", comuna: null, tamano: null },
       { nombre: "Parque de la Familia", comuna: null, tamano: null },
       { nombre: "Mahuidahue", comuna: null, tamano: null },
+      { nombre: "Mapocho Río · tramo 1", comuna: null, tamano: null },
     ],
   },
   {
@@ -34,7 +35,13 @@ export const ZONAS = [
     nombre: "La Hondonada",
     lat: -33.4261,
     lon: -70.7545,
-    parques: [{ nombre: "La Hondonada", comuna: null, tamano: null }],
+    parques: [
+      { nombre: "La Hondonada", comuna: null, tamano: null },
+      { nombre: "Mapocho Río · tramo 3", comuna: null, tamano: null },
+      { nombre: "Mapocho Río · tramo 4", comuna: null, tamano: null },
+      { nombre: "Mapocho Río · tramo 5", comuna: null, tamano: null },
+      { nombre: "Mapocho Río · tramo 6", comuna: null, tamano: null },
+    ],
   },
   {
     id: "ohiggins-quinta-normal",
@@ -48,6 +55,7 @@ export const ZONAS = [
       { nombre: "La Castrina", comuna: null, tamano: null },
       { nombre: "André Jarlán", comuna: null, tamano: null },
       { nombre: "La Bandera", comuna: null, tamano: null },
+      { nombre: "Pierre Dubois", comuna: null, tamano: null },
     ],
   },
   {
@@ -58,6 +66,7 @@ export const ZONAS = [
     parques: [
       { nombre: "Bernardo Leighton", comuna: null, tamano: null },
       { nombre: "Parque Bicentenario Cerrillos", comuna: null, tamano: null },
+      { nombre: "Mapocho Río · tramo 2", comuna: null, tamano: null },
     ],
   },
   {
