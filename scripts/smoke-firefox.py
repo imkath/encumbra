@@ -1,10 +1,11 @@
 import json
+import os
 from pathlib import Path
 
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError, sync_playwright
 
 
-BASE = "http://127.0.0.1:3000"
+BASE = os.environ.get("ENCUMBRA_BASE", "http://127.0.0.1:3000").rstrip("/")
 SALIDAS = Path("/tmp/encumbra-smoke")
 SALIDAS.mkdir(exist_ok=True)
 
