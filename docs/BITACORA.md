@@ -379,6 +379,10 @@ a discutir sin nueva evidencia:
    inicialmente `aria-label` y React reportó un mismatch. El script puede fijar
    `data-theme` en `<html suppressHydrationWarning>`, pero los atributos del
    componente deben permanecer estables hasta la hidratación.
+8. **Smoke de ubicación atado a la UI anterior.** La prueba esperaba que el
+   resultado apareciera dentro de Parques. Al convertirlo en destino de Mi
+   salida, debe esperar el título «Donde estoy», comprobar que no existe
+   «Cómo llegar» y volver a Parques antes de abrir el mapa.
 
 ## 10. Despliegue y operación
 
@@ -405,7 +409,7 @@ pnpm build
 ENCUMBRA_BASE=https://encumbra.nvrkth.com python3 scripts/smoke-firefox.py
 ```
 
-La última consolidación pasó 95 pruebas. Esa cifra es histórica: el criterio es
+La última consolidación pasó 98 pruebas. Esa cifra es histórica: el criterio es
 que la suite vigente quede completa y verde, no conservar el número.
 
 ## 11. Deuda y decisiones bloqueadas
@@ -413,9 +417,10 @@ que la suite vigente quede completa y verde, no conservar el número.
 ### Presupuesto de cliente
 
 El techo original es 120 KB gzip/transferidos en first load. La medición en
-Firefox productivo fue 157.635 bytes aun con MapLibre diferido y exactamente dos
-fronteras cliente. No se subió el techo. Sigue siendo deuda explícita; no retirar
-información de seguridad solo para maquillar el número.
+Firefox productivo del despliegue `cc19e066-39eb-484f-ac81-4ed48a6d5e34` fue
+158.635 bytes aun con MapLibre diferido y exactamente dos fronteras cliente. No
+se subió el techo. Sigue siendo deuda explícita; no retirar información de
+seguridad solo para maquillar el número.
 
 ### Validación física
 
