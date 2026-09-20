@@ -49,20 +49,21 @@ with sync_playwright() as p:
     })
     pagina.get_by_role("button", name="Ver si anda donde estoy").click()
     try:
-        pagina.locator(".donde-estoy__resultado").wait_for(timeout=12_000)
+        pagina.get_by_role("heading", name="Donde estoy").wait_for(timeout=12_000)
     except PlaywrightTimeoutError:
         pagina.screenshot(path=str(SALIDAS / "app-mobile-ubicacion-error.png"), full_page=True)
         raise AssertionError(
-            "La ubicación no respondió. "
+            "La ubicación no abrió Mi salida. "
             f"Aviso visible: {pagina.locator('.app-feedback').inner_text()}; "
-            f"errores: {errores}; "
-            f"botón: {pagina.get_by_role('button', name='Ver si anda donde estoy').inner_text()}"
+            f"errores: {errores}"
         )
     pagina.screenshot(path=str(SALIDAS / "app-mobile-ubicacion.png"), full_page=True)
+    assert pagina.get_by_text("Cómo llegar", exact=True).count() == 0
     resultados.append({
-        "ubicacion": pagina.locator(".donde-estoy__resultado").inner_text(),
-        "parques_autorizados": pagina.get_by_text("14 parques", exact=False).first.inner_text(),
+        "ubicacion": pagina.locator(".salida-screen .app-heading").inner_text(),
+        "accion_terreno": pagina.get_by_text("Ya estoy afuera", exact=True).inner_text(),
     })
+    pagina.get_by_role("button", name="Parques", exact=True).click()
     pagina.get_by_role("button", name="Mostrar mapa").click()
     pagina.locator(".mapa-punto").first.wait_for(timeout=15_000)
     pagina.screenshot(path=str(SALIDAS / "app-mobile-mapa.png"), full_page=True)
@@ -77,6 +78,11 @@ with sync_playwright() as p:
     pagina.on("console", lambda mensaje: errores.append(mensaje.text) if mensaje.type == "error" else None)
     pagina.on("pageerror", lambda error: errores.append(str(error)))
     resultados.append(revisar_pagina(pagina, "/app", "app-desktop-dark.png"))
+    assert pagina.locator("html").get_attribute("data-theme") == "dark"
+    pagina.get_by_role("button", name="Cambiar entre tema claro y oscuro").click()
+    assert pagina.locator("html").get_attribute("data-theme") == "light"
+    pagina.reload(wait_until="networkidle")
+    assert pagina.locator("html").get_attribute("data-theme") == "light"
     pagina.get_by_role("button", name="Mostrar mapa").click()
     pagina.locator(".mapa-punto").first.wait_for(timeout=15_000)
     pagina.screenshot(path=str(SALIDAS / "app-desktop-dark-mapa.png"), full_page=True)
