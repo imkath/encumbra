@@ -461,6 +461,13 @@ Ese mismo día se desplegó la brújula de `/volar` en la versión Cloudflare
 recorrió ubicación sin parque, mapa, tema y orientación simulada del teléfono:
 sin errores de consola ni desborde horizontal. La suite quedó en 103 pruebas.
 
+La guía de despegue asistido quedó desplegada en la versión Cloudflare
+`e0741ad6-44e0-4126-afa4-b4f3855365b8`, desde el commit `199659e`. El smoke
+productivo volvió a recorrer ubicación sin parque, elección persistente de
+Araucano, mapa, tema y `/volar` a 320, 390 y 1440 px. Las simulaciones de la
+ruta WebKit de iPhone y del evento absoluto de Android terminaron alineadas,
+sin errores de consola ni desborde horizontal. Tests: 108; lint y build: verdes.
+
 Comandos de aceptación:
 
 ```bash
@@ -478,17 +485,20 @@ es que la suite vigente quede completa y verde.
 
 ### Presupuesto de cliente
 
-El techo original es 120 KB gzip/transferidos en first load. La medición en
-Firefox productivo del despliegue `acf2ef60-0f89-432f-b8a2-efa3c5876222` fue
-158.720 bytes aun con MapLibre diferido y exactamente dos fronteras cliente. No
-se subió el techo. Sigue siendo deuda explícita; no retirar información de
-seguridad solo para maquillar el número.
+El techo original es 120 KB gzip/transferidos en first load. La medición más
+reciente en Firefox productivo, sobre el despliegue
+`e0741ad6-44e0-4126-afa4-b4f3855365b8`, fue 159.031 bytes aun con MapLibre
+diferido y exactamente dos fronteras cliente. No se subió el techo. Sigue
+siendo deuda explícita; no retirar información de seguridad solo para maquillar
+el número.
 
 ### Validación física
 
 Falta una serie de salidas con un mismo volantín y una comparación horaria
 contra DMC Quinta Normal. Sin eso no afirmar que ICON es preciso ni que los
-umbrales son definitivos.
+umbrales son definitivos. Las rutas de orientación se probaron con eventos
+simulados en Firefox; falta confirmar precisión, permisos y calibración en un
+iPhone y un Android físicos al aire libre, lejos de metal.
 
 ### Proveedores y medición observada
 
