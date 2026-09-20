@@ -44,7 +44,11 @@ Los colores semánticos son independientes de los acentos de marca. Se comparten
 | Noche | `#29271f` | `#faf7ee` |
 | Sin datos | `#faf5e4` | `#27291f` |
 
-Los estados se explican con texto, nunca solo con color. Las superficies de pronóstico usan `superficie-mate`: variación tonal continua y grano fino, sin reflejos blancos ni manchas luminosas. De noche muestra «POR HOY / hasta aquí.»; sin pronóstico muestra «SIN DATOS / por ahora.».
+Los estados se explican con texto, nunca solo con color. Las superficies de pronóstico usan `superficie-mate`: variación tonal continua y grano fino, sin reflejos blancos ni manchas luminosas. De noche el veredicto de viento se conserva y la falta de luz aparece como una condición independiente; sin pronóstico muestra «SIN DATOS / por ahora.».
+
+La interfaz sigue `prefers-color-scheme` con una paleta nocturna propia. El tema
+oscuro mejora la consulta de noche, pero no cambia el significado ni los
+colores de las bandas meteorológicas.
 
 `VolantinPapel` comparte el dibujo entre portada, exterior, selectores de perfil y marcador del gráfico. Su vela toma el color de la superficie por `--paper-base`, con mezclas hacia hueso (`--paper-light`, `--paper-mid`) y carbón (`--paper-shade`, `--paper-rib`). Sustituye el naranja con arcos de la versión anterior. En iconos pequeños sobre hueso usa una base neutra de mayor contraste para conservar la silueta.
 

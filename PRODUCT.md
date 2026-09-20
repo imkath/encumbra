@@ -6,31 +6,52 @@
 web
 
 ## Users
-Personas que encumbran volantines en Santiago. El foco en familias y uso al aire libre se deriva de docs/02-PRODUCTO.md; es una hipótesis de público, pendiente de entrevistas reales.
+Personas que encumbran volantines en Santiago, desde quien prepara una salida
+familiar hasta quien ya está en terreno. No se asume conocimiento meteorológico.
+El público sigue siendo una hipótesis de producto pendiente de entrevistas.
 
 ## Product Purpose
-Decidir si salir, a qué hora y en qué zona, y consultar las condiciones durante el vuelo.
+Decidir si salir, a qué hora, con qué tipo de volantín y en qué lugar; consultar
+las condiciones durante el vuelo.
 
 ## Capabilities and Constraints
-Next.js y React. Pronóstico Open-Meteo para seis zonas; tres perfiles de volantín; viento, rachas, probabilidad de lluvia, ventanas y puesta de sol. El modo de vuelo conserva datos locales y ofrece calendario. Las diferencias entre parques de una misma zona no están resueltas por el modelo.
+Next.js y React. Pronóstico ICON mediante Open-Meteo para seis celdas; tres
+perfiles de volantín; viento, rachas, dirección, probabilidad de lluvia,
+ventanas y luz calculada localmente. Cloudflare Cron escribe una clave KV y las
+visitas solo leen. El modo de vuelo conserva el último dato local. El mapa es
+MapLibre y se carga bajo demanda. El modelo no resuelve diferencias entre
+parques de una misma celda.
 
 ## Brand Commitments
-Encumbra. Voz chilena cercana, instrucciones concretas y experiencia que refleja el tiempo y el disfrute de elevar un volantín, según el pedido del usuario.
+Voz chilena cercana, instrucciones concretas y una experiencia que se siente
+como cielo, papel y septiembre, sin sacrificar legibilidad exterior.
 
 ## Product Principles
 - La decisión antes que la explicación técnica.
 - No confundir un pronóstico con una medición en terreno.
 - Conservar perfil y zona entre preparación y vuelo.
 - Legibilidad y controles cómodos al aire libre.
+- No afirmar permisos, seguridad ni precisión espacial sin evidencia.
+- La noche y el viento son condiciones independientes.
 
 ## Evidence on Hand
-lib/score.ts, lib/bandas.ts, lib/zonas.ts, docs/02-PRODUCTO.md y docs/06-CALIBRACION.md. No hay entrevistas nuevas ni validación de demanda en esta intervención.
+`lib/score.ts`, `lib/bandas.ts`, `lib/zonas.ts`, los tests y
+`docs/BITACORA.md`. No hay entrevistas ni validación de demanda.
 
 ## Parque primero — instrucción del usuario
-Mobile first. Encontrar un parque cercano, entender cuál resulta adecuado y explorar cualquier otro son tareas principales. Consultar v1 como evidencia histórica sin heredar su UI. Ubicación solo por acción explícita en el buscador. Sin permisos, búsqueda manual por nombre y comuna. El catálogo de coordenadas/comunas procede de lib/parks-data.ts de imkath/encumbra; no implica accesos o seguridad verificados.
+Mobile first. Encontrar un parque cercano, saber si el viento sirve y explorar
+otros lugares son tareas principales. Ubicación solo por acción explícita y sin
+persistencia. La búsqueda manual funciona por nombre y comuna. Solo los lugares
+con evidencia de autorización entran en recomendaciones; el pronóstico no
+implica acceso ni seguridad.
 
 ## Corrección explícita de experiencia
-El usuario rechazó el formato de página interminable. La superficie principal debe funcionar como app de celular: destinos separados, selección persistente y controles accesibles al pulgar. Se reemplaza la landing por Parques/Mi salida/Prepararme. El calendario de salida requiere luz confirmada además de viento: sunrise y sunset reales; sin esos datos no hay recomendación diurna.
+El usuario rechazó el formato de página interminable. La superficie principal
+funciona como app: Parques, Mi salida y Prepararme, con selección persistente y
+controles accesibles al pulgar. Una ventana recomendada requiere viento y luz.
+Sin evidencia suficiente se muestra ausencia, no un dato inventado.
 
 
-Identidad revisada: el usuario rechazó la paleta retro de crema, terracota y verde. La dirección actual busca una experiencia contemporánea intergeneracional, con azul eléctrico, tinta azul y lima funcional; conservar claridad de mapas y controles sin recurrir a nostalgia. No se ha validado preferencia generacional con usuarios.
+Identidad vigente: Sol de septiembre + atmósfera mate con grano fino, Archivo
+variable, hueso, carbón y amarillo solar. El usuario rechazó tanto la paleta
+retro inicial como la exploración azul/lima. `DESIGN.md` es la fuente visual.
