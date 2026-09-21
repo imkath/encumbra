@@ -27,9 +27,19 @@ export function combinarPronosticoObservado(
 
   const anteriores =
     anterior.estado === "sin-datos" ? [] : (anterior.observaciones ?? []);
+  const porEstacion = new Map(
+    anteriores.map((observacion) => [
+      observacion.codigoEstacion,
+      observacion,
+    ]),
+  );
+  for (const observacion of observaciones ?? []) {
+    porEstacion.set(observacion.codigoEstacion, observacion);
+  }
   return {
     ...pronostico,
-    observaciones: observaciones ?? anteriores,
+    observaciones:
+      observaciones === null ? anteriores : [...porEstacion.values()],
   };
 }
 

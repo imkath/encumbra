@@ -128,4 +128,18 @@ test("renueva la observación al llegar y conserva la anterior ante un fallo DMC
   if (conservado.estado !== "sin-datos") {
     assert.deepEqual(conservado.observaciones, [observacion]);
   }
+
+  const nueva = {
+    ...observacion,
+    codigoEstacion: "330019",
+    nombreEstacion: "Eulogio Sánchez, Tobalaba Ad.",
+  };
+  const parcial = combinarPronosticoObservado(actual, [nueva], anterior);
+  assert.notEqual(parcial.estado, "sin-datos");
+  if (parcial.estado !== "sin-datos") {
+    assert.deepEqual(
+      parcial.observaciones?.map(({ codigoEstacion }) => codigoEstacion).sort(),
+      ["330019", "330020"],
+    );
+  }
 });

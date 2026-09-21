@@ -9,12 +9,15 @@ import {
 describe("cliente DMC del servidor", () => {
   test("codifica las credenciales solo en la URL del servidor", () => {
     const url = new URL(
-      crearUrlDmc({ usuario: "correo+encumbra@example.com", token: "a&b" }),
+      crearUrlDmc("330020", {
+        usuario: "correo+encumbra@example.com",
+        token: "a&b",
+      }),
     );
 
     assert.equal(
       url.origin + url.pathname,
-      "https://climatologia.meteochile.gob.cl/application/servicios/getDatosRecientesRedEma",
+      "https://climatologia.meteochile.gob.cl/application/servicios/getDatosRecientesEma/330020",
     );
     assert.equal(url.searchParams.get("usuario"), "correo+encumbra@example.com");
     assert.equal(url.searchParams.get("token"), "a&b");
@@ -44,6 +47,48 @@ describe("cliente DMC del servidor", () => {
     );
 
     assert.equal(resultado, null);
-    assert.equal(errores.length, 1);
+    assert.equal(errores.length, 3);
+  });
+
+  test("consulta solo las tres estaciones de Santiago y conserva éxitos parciales", async () => {
+    const solicitadas: string[] = [];
+    const resultado = await cargarObservacionesDmc(
+      async (entrada) => {
+        const codigo = new URL(entrada).pathname.split("/").at(-1) ?? "";
+        solicitadas.push(codigo);
+        if (codigo === "330021") {
+          return new Response("no disponible", { status: 503 });
+        }
+        return new Response(
+          JSON.stringify({
+            timezone: "UTC",
+            datosEstaciones: {
+              estacion: {
+                codigoNacional: codigo,
+                nombreEstacion: `Estación ${codigo}`,
+                latitud: "-33.45",
+                longitud: "-70.60",
+              },
+              datos: [
+                {
+                  momento: "2026-09-20 19:00:00",
+                  direccionDelVientoPromedio10Minutos: "270 °",
+                  fuerzaDelVientoPromedio10Minutos: "10.0 kt",
+                  fuerzaDelViento10MinutosMax: "15.0 kt",
+                },
+              ],
+            },
+          }),
+        );
+      },
+      { usuario: "correo@example.com", token: "secreto" },
+      () => undefined,
+    );
+
+    assert.deepEqual(solicitadas.sort(), ["330019", "330020", "330021"]);
+    assert.deepEqual(
+      resultado?.map(({ codigoEstacion }) => codigoEstacion).sort(),
+      ["330019", "330020"],
+    );
   });
 });
