@@ -239,6 +239,7 @@ h1:focus {
 .donde-estoy {
   display: grid;
   gap: 7px;
+  margin-block-start: .5rem;
 }
 .donde-estoy__accion,
 .donde-estoy__resultado {
@@ -2105,6 +2106,7 @@ h2,
     margin: 0;
     width: min(100%, 440px);
   }
+  .donde-estoy { margin-block-start: 0; }
   .explorar-filtros {
     grid-column: 1;
   }
