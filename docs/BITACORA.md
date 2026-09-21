@@ -203,6 +203,14 @@ registra autoridad, fecha y canal directo, pero `fuente` queda `null` porque no
 existe un enlace público aportado; la interfaz no lo atribuye a Parquemet y
 mantiene el recordatorio de revisar reglas y horarios antes de ir.
 
+El cambio quedó en `3cd5f8e` y se desplegó como
+`38af371c-6370-4cd9-81ee-635fd08f62c6`. El smoke productivo encontró
+Bicentenario como autorizado en el catálogo y verificó su ficha a 390, 768 y
+1024 px sin desborde, errores de consola ni errores de página. La suite quedó
+en 120 pruebas; lint, build Next y build OpenNext terminaron verdes. El first
+load medido fue 159.348 bytes: 85 bytes más que la referencia DMC anterior y
+todavía sobre el techo original de 120 KB, que no se elevó.
+
 El modelo separa:
 
 - `tipoLugar`: qué clase de lugar es;
@@ -535,10 +543,10 @@ es que la suite vigente quede completa y verde.
 
 El techo original es 120 KB gzip/transferidos en first load. La medición más
 reciente en Firefox productivo, sobre el despliegue
-`8fe25eeb-ace8-4de7-9ae4-c467fd6025b6`, fue 158.954 bytes aun con MapLibre
+`38af371c-6370-4cd9-81ee-635fd08f62c6`, fue 159.348 bytes aun con MapLibre
 diferido y exactamente dos fronteras cliente. No se subió el techo. Sigue
-siendo deuda explícita; no retirar información de seguridad solo para maquillar
-el número.
+siendo deuda explícita; no retirar información de seguridad solo para
+maquillar el número.
 
 ### Validación física
 
