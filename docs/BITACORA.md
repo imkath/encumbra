@@ -539,19 +539,22 @@ como fuente equivalente.
 
 #### Integración DMC preparada el 20 de septiembre de 2026
 
-La DMC documenta `getDatosRecientesRedEma`: datos minutarios de las doce horas
-más recientes, en UTC, para las estaciones automáticas que publican. El
-servicio necesita el correo y token personal que el portal entrega al confirmar
-una cuenta. El endpoint bloquea consultas anónimas; por eso no se usa scraping,
-un proxy del navegador ni datos de demostración en producción.
+La DMC documenta `getDatosRecientesEma/{codigo}`: datos minutarios de las doce
+horas más recientes, en UTC, para una estación automática. El servicio necesita
+el correo y token personal que el portal entrega al confirmar una cuenta. El
+endpoint bloquea consultas anónimas; por eso no se usa scraping, un proxy del
+navegador ni datos de demostración en producción.
 
 El cron consulta DMC solo si existen `DMC_USUARIO` y `DMC_TOKEN` como secretos
-de Cloudflare. Normaliza únicamente Tobalaba `330019`, Quinta Normal `330020` y
-Pudahuel `330021`, conserva promedio y máximo de diez minutos y cae a los
-equivalentes de dos minutos cuando la estación no publica el primero. Los nudos
-se convierten a km/h con el factor exacto 1,852. La respuesta reducida se guarda
-en la misma clave KV que ICON; la visita mantiene una sola petición para pintar
-el veredicto y nunca recibe las credenciales.
+de Cloudflare. Hace tres consultas pequeñas y concurrentes: Tobalaba `330019`,
+Quinta Normal `330020` y Pudahuel `330021`; se descartó descargar la red
+completa porque multiplica memoria y transferencia sin aportar cobertura a la
+app. Conserva promedio y máximo de diez minutos y cae a los equivalentes de dos
+minutos cuando la estación no publica el primero. Los nudos se convierten a
+km/h con el factor exacto 1,852. La respuesta reducida se guarda en la misma
+clave KV que ICON; la visita mantiene una sola petición para pintar el
+veredicto y nunca recibe las credenciales. Si falla una estación, las otras
+siguen entrando y el dato anterior de esa estación se conserva hasta caducar.
 
 `/volar` elige la estación fresca más cercana al parque o a la celda cuando el
 destino es «Donde estoy». Muestra velocidad, racha, estación, distancia o
