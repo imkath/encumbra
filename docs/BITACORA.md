@@ -542,6 +542,17 @@ a 320, 390, 768 y 1024 px terminó sin desborde horizontal, errores de consola
 ni errores de página. La versión creada por el cambio de secretos es
 `2a090a4b-15b4-42fa-8ed0-91bfba087b7d`; ningún valor secreto se registra aquí.
 
+El selector de tema con abertura de cielo quedó desplegado desde `222d416` en
+la versión Cloudflare `ee0dd89b-a767-4f0b-8c3a-48a637ea8fd2`. El smoke
+productivo en Firefox visible confirmó el switch con teclado, persistencia,
+portada y `/app` en 390 y 1440 px, además de volver a recorrer ubicación, mapa
+y `/volar` en los tamaños de aceptación. No hubo errores de consola, errores de
+página ni desborde horizontal. Tests: 121; lint, detector visual, build Next y
+build OpenNext: verdes. Se conservaron exactamente dos fronteras cliente y los
+secretos DMC siguieron activos. El first load productivo medido fue 159.735
+bytes: el control no añadió una dependencia, pero la deuda original de 120 KB
+continúa abierta.
+
 Comandos de aceptación:
 
 ```bash
@@ -561,7 +572,7 @@ es que la suite vigente quede completa y verde.
 
 El techo original es 120 KB gzip/transferidos en first load. La medición más
 reciente en Firefox productivo, sobre el despliegue
-`ec5fa233-c865-4ca0-8f27-2b45991ba118`, fue 159.488 bytes aun con MapLibre
+`ee0dd89b-a767-4f0b-8c3a-48a637ea8fd2`, fue 159.735 bytes aun con MapLibre
 diferido y exactamente dos fronteras cliente. No se subió el techo. Sigue
 siendo deuda explícita; no retirar información de seguridad solo para
 maquillar el número.
