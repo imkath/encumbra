@@ -243,8 +243,9 @@ export default async function Landing({ searchParams }: Props) {
           <Icono nombre="flecha" />
         </a>
         <p>
-          Datos de Open-Meteo. Cartografía de OpenFreeMap, OpenMapTiles y
-          OpenStreetMap.
+          Pronóstico de Open-Meteo. Observaciones de la Dirección Meteorológica
+          de Chile cuando están disponibles. Cartografía de OpenFreeMap,
+          OpenMapTiles y OpenStreetMap.
         </p>
         <a className="portada-contacto" href="https://nvrkth.com" target="_blank" rel="noopener noreferrer">
           Contacto y sugerencias · nvrkth ↗

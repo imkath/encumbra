@@ -1,4 +1,5 @@
 import type { BandaId } from "./bandas.ts";
+import type { ObservacionDmc } from "./dmc.ts";
 import { banda } from "./score.ts";
 import { efemeridesSantiago } from "./solar.ts";
 import { ventanas, type Ventana } from "./ventanas.ts";
@@ -70,6 +71,7 @@ export type ZonaPronostico = {
 type PronosticoConDatos = {
   readonly actualizadoEn: string;
   readonly zonas: readonly ZonaPronostico[];
+  readonly observaciones?: readonly ObservacionDmc[];
 };
 
 export type Pronostico =

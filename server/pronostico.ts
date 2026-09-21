@@ -3,12 +3,14 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 import {
   CLAVE_PRONOSTICO,
+  combinarPronosticoObservado,
   leerPronosticoCache,
 } from "@/lib/cache-pronostico.ts";
 import {
   crearCargadorPronostico,
   type Pronostico,
 } from "@/lib/openmeteo.ts";
+import { cargarObservacionesDmc } from "@/server/dmc.ts";
 
 type AlmacenPronostico = {
   get(clave: string): Promise<string | null>;
@@ -26,6 +28,25 @@ const cargarDirecto = crearCargadorPronostico(
   console.error,
 );
 
+async function cargarDirectoConObservacion(): Promise<Pronostico> {
+  const credenciales =
+    process.env.DMC_USUARIO && process.env.DMC_TOKEN
+      ? {
+          usuario: process.env.DMC_USUARIO,
+          token: process.env.DMC_TOKEN,
+        }
+      : null;
+  const [pronostico, observaciones] = await Promise.all([
+    cargarDirecto(),
+    cargarObservacionesDmc(fetch, credenciales, console.error),
+  ]);
+  return combinarPronosticoObservado(
+    pronostico,
+    observaciones,
+    SIN_DATOS,
+  );
+}
+
 async function cargar(): Promise<Pronostico> {
   try {
     const { env } = await getCloudflareContext({ async: true });
@@ -42,7 +63,7 @@ async function cargar(): Promise<Pronostico> {
   } catch {
     // `next dev` y `next start` no tienen bindings de Workers. La consulta
     // directa mantiene el entorno local útil; producción siempre toma KV.
-    return cargarDirecto();
+    return cargarDirectoConObservacion();
   }
 }
 
