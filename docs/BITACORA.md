@@ -476,6 +476,11 @@ dependencia.
    una interfaz convincente pero falsa. Solo se acepta `webkitCompassHeading`,
    un evento `deviceorientationabsolute` o una lectura marcada `absolute`; si
    no existe, norte permanece arriba.
+10. **Buscador y ubicación sin separación en móvil.** Los dos controles
+    apilados terminaban con una distancia real de 0 px aunque sus radios
+    sugirieran piezas distintas. En menos de 900 px se conservan 8 px; el smoke
+    mide sus cajas y falla si vuelven a tocarse. En escritorio la grilla ya
+    define el ritmo y no recibe margen duplicado.
 
 ## 10. Despliegue y operación
 
@@ -552,6 +557,11 @@ build OpenNext: verdes. Se conservaron exactamente dos fronteras cliente y los
 secretos DMC siguieron activos. El first load productivo medido fue 159.735
 bytes: el control no añadió una dependencia, pero la deuda original de 120 KB
 continúa abierta.
+
+El ajuste de separación entre búsqueda y ubicación quedó desplegado desde
+`db73342` en la versión Cloudflare `892ed541-53af-4e69-be36-317c4596aad7`.
+El smoke productivo confirmó los 8 px en 390 px y volvió a completar todas las
+rutas de aceptación sin errores ni desbordes.
 
 Comandos de aceptación:
 
