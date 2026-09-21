@@ -3717,31 +3717,137 @@ html { caret-color: var(--brand-ink); }
 
 .portada-contacto { display: inline-flex; align-items: center; min-height: 44px; color: var(--app-muted); font-size: 12px; text-decoration: underline; text-underline-offset: 3px; }
 
-/* Theme control: server-rendered and handled before hydration by the layout. */
+/* Theme control: a small sky aperture, not a generic split-track switch. */
 .selector-tema {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
-  min-height: 44px;
-  padding: 0 12px;
+  gap: .625rem;
+  min-height: 3rem;
+  padding: .25rem .75rem .25rem .25rem;
   border: 1px solid var(--app-line);
-  border-radius: 14px;
-  background: var(--app-control);
+  border-radius: 1rem 1rem 1.45rem 1rem;
+  background: var(--app-surface);
   color: var(--app-ink);
-  font-size: 12px;
-  font-weight: 700;
+  font-size: .75rem;
+  font-weight: 750;
   flex: none;
+  isolation: isolate;
+  transition:
+    background-color var(--dur-tap) ease,
+    border-color var(--dur-tap) ease,
+    color var(--dur-tap) ease,
+    transform var(--dur-tap) var(--ease-out);
 }
-.selector-tema:hover { background: var(--app-action-soft); }
-.selector-tema > span { display: inline-grid; place-items: center; }
-.selector-tema svg { width: 18px; height: 18px; }
-.selector-tema__luna { display: none !important; }
-:root[data-theme="dark"] .selector-tema__sol { display: none !important; }
-:root[data-theme="dark"] .selector-tema__luna { display: inline-grid !important; }
-.selector-tema--compacto { width: 42px; min-width: 42px; padding: 0; }
+.selector-tema:hover {
+  background: var(--app-action-soft);
+  border-color: color-mix(in srgb, var(--app-action) 45%, var(--app-line));
+  transform: translateY(-1px);
+}
+.selector-tema:active { transform: scale(.97); }
+.selector-tema__cielo {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  overflow: hidden;
+  flex: none;
+  border-radius: .75rem .75rem 1.15rem .75rem;
+  background: var(--brand-yellow);
+  color: var(--brand-ink);
+  transition:
+    background-color 360ms var(--ease-out),
+    color 360ms var(--ease-out),
+    transform var(--dur-tap) var(--ease-out);
+}
+.selector-tema:hover .selector-tema__cielo { transform: scale(1.04); }
+.selector-tema svg { width: 2.25rem; height: 2.25rem; overflow: visible; }
+.selector-tema__sol {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  transform-origin: 18px 16px;
+  transition: opacity 260ms ease, transform 420ms var(--ease-out);
+}
+.selector-tema__luna {
+  fill: currentColor;
+  transform: rotate(-70deg) scale(.45);
+  transform-origin: 18px 16px;
+  opacity: 0;
+  transition: opacity 260ms ease, transform 420ms var(--ease-out);
+}
+.selector-tema__estrella { transform-box: fill-box; transform-origin: center; }
+.selector-tema__estrella--uno { opacity: .95; }
+.selector-tema__estrella--dos { opacity: .55; }
+.selector-tema__brisa {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  opacity: .55;
+  transition: transform 420ms var(--ease-out), opacity 260ms ease;
+}
+.selector-tema__texto {
+  display: grid;
+  min-width: 3.15rem;
+  overflow: hidden;
+  line-height: 1;
+}
+.selector-tema__estado {
+  grid-area: 1 / 1;
+  align-self: center;
+  transition: opacity 200ms ease, transform 360ms var(--ease-out);
+}
+.selector-tema__estado--oscuro {
+  opacity: 0;
+  transform: translateY(.65rem);
+}
+:root[data-theme="dark"] .selector-tema__cielo {
+  background: #30312c;
+  color: #f8e9a8;
+}
+:root[data-theme="dark"] .selector-tema__sol {
+  opacity: 0;
+  transform: rotate(70deg) scale(.35);
+}
+:root[data-theme="dark"] .selector-tema__luna {
+  opacity: 1;
+  transform: rotate(0) scale(1);
+}
+:root[data-theme="dark"] .selector-tema__brisa {
+  opacity: .3;
+  transform: translateX(-2px);
+}
+:root[data-theme="dark"] .selector-tema__estado--claro {
+  opacity: 0;
+  transform: translateY(-.65rem);
+}
+:root[data-theme="dark"] .selector-tema__estado--oscuro {
+  opacity: 1;
+  transform: translateY(0);
+}
+.selector-tema--compacto {
+  width: 3rem;
+  min-width: 3rem;
+  padding: .25rem;
+}
 .selector-tema--compacto .selector-tema__texto { display: none; }
 .portada-barra__acciones { display: flex; align-items: center; gap: 10px; }
+
+::view-transition-old(root) {
+  z-index: 1;
+  animation: none;
+}
+::view-transition-new(root) {
+  z-index: 2;
+  animation: tema-revela 460ms var(--ease-out);
+  mix-blend-mode: normal;
+}
+@keyframes tema-revela {
+  from { clip-path: circle(0 at var(--theme-x) var(--theme-y)); }
+  to { clip-path: circle(var(--theme-radius) at var(--theme-x) var(--theme-y)); }
+}
 
 /* Mi salida can be anchored to a selected park or to the current coordinates. */
 .destino-salida {
@@ -3848,8 +3954,22 @@ html { caret-color: var(--brand-ink); }
 
 @media (max-width: 359px) {
   .app-topbar { gap: 8px; }
-  .selector-tema--compacto { width: 38px; min-width: 38px; }
+  .selector-tema--compacto { width: 2.75rem; min-width: 2.75rem; }
+  .selector-tema--compacto .selector-tema__cielo { width: 2.25rem; height: 2.25rem; }
   .destino-salida { width: 100%; }
   .destino-salida button { flex: 1; padding-inline: 8px; font-size: 11px; }
   .donde-estoy__resultado { align-items: flex-start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .selector-tema,
+  .selector-tema__cielo,
+  .selector-tema__sol,
+  .selector-tema__luna,
+  .selector-tema__brisa,
+  .selector-tema__estado {
+    transition-duration: .01ms;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation: none; }
 }
