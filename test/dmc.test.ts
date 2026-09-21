@@ -112,6 +112,18 @@ describe("observaciones DMC", () => {
     );
   });
 
+  test("acepta la respuesta liviana de una sola estación", () => {
+    const individual = {
+      ...payload,
+      datosEstaciones: payload.datosEstaciones[0],
+    };
+
+    assert.deepEqual(
+      normalizarObservacionesDmc(individual),
+      normalizarObservacionesDmc(payload).slice(0, 1),
+    );
+  });
+
   test("elige solo una estación cercana con medición fresca", () => {
     const observaciones = normalizarObservacionesDmc(payload);
     const cercana = observacionMasCercana(

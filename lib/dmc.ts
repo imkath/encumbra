@@ -143,12 +143,17 @@ export function normalizarObservacionesDmc(payload: unknown): ObservacionDmc[] {
   if (
     !esRegistro(payload) ||
     payload.timezone !== "UTC" ||
-    !Array.isArray(payload.datosEstaciones)
+    (!Array.isArray(payload.datosEstaciones) &&
+      !esRegistro(payload.datosEstaciones))
   ) {
     throw new Error("DMC devolvió una respuesta inválida o bloqueada");
   }
 
-  return payload.datosEstaciones.flatMap((item): ObservacionDmc[] => {
+  const estaciones = Array.isArray(payload.datosEstaciones)
+    ? payload.datosEstaciones
+    : [payload.datosEstaciones];
+
+  return estaciones.flatMap((item): ObservacionDmc[] => {
     if (!esRegistro(item) || !esRegistro(item.estacion)) return [];
     const estacion = item.estacion;
     const codigo = estacion.codigoNacional;
