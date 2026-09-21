@@ -1532,6 +1532,57 @@ h1:focus {
   font-variant-numeric: tabular-nums;
 }
 
+.vivo__observacion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px solid color-mix(in srgb, var(--vivo-tinta) 22%, transparent);
+}
+.vivo__observacion-dato {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.vivo__observacion dt {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.58;
+}
+.vivo__observacion dd {
+  font-size: 13px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.vivo__observacion-dato dd span {
+  margin-inline-start: 6px;
+  font-size: 11px;
+  font-weight: 650;
+  opacity: 0.62;
+}
+.vivo__observacion-meta {
+  display: flex;
+  gap: 5px;
+  min-width: 0;
+}
+.vivo__observacion-meta dt {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.vivo__observacion-meta dd {
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.62;
+}
+
 /* Dos relojes distintos corren en tu contra. El que se acaba primero queda al
    frente; el otro baja un paso. Sin marcas ni símbolos que haya que aprender. */
 .vivo__limites {

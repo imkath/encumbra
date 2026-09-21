@@ -38,16 +38,21 @@ export default async function Volar({ searchParams }: VolarProps) {
   const desdeUbicacion = parametros.destino === "ubicacion";
   const parquePedido =
     typeof parametros.parque === "string" ? parametros.parque : undefined;
+  const parqueInicial =
+    desdeUbicacion || !parquePedido
+      ? undefined
+      : elegirParqueInicial(parquePedido, zonaInicial);
 
   return (
     <Vivo
       inicial={pronostico}
       perfilInicial={perfilInicial}
       zonaInicial={zonaInicial}
-      parqueInicial={
-        desdeUbicacion || !parquePedido
-          ? undefined
-          : elegirParqueInicial(parquePedido, zonaInicial).id
+      parqueInicial={parqueInicial?.id}
+      coordenadasParqueInicial={
+        parqueInicial
+          ? { lat: parqueInicial.lat, lon: parqueInicial.lon }
+          : undefined
       }
       desdeUbicacion={desdeUbicacion}
       servidoEn={new Date().toISOString()}

@@ -1,4 +1,5 @@
 import type { Pronostico } from "./openmeteo.ts";
+import type { ObservacionDmc } from "./dmc.ts";
 import {
   leerPronosticoGuardado,
   serializarPronostico,
@@ -15,6 +16,21 @@ const SIN_DATOS = {
 
 export function empaquetarPronostico(pronostico: Pronostico): string {
   return serializarPronostico(pronostico);
+}
+
+export function combinarPronosticoObservado(
+  pronostico: Pronostico,
+  observaciones: readonly ObservacionDmc[] | null,
+  anterior: Pronostico,
+): Pronostico {
+  if (pronostico.estado === "sin-datos") return pronostico;
+
+  const anteriores =
+    anterior.estado === "sin-datos" ? [] : (anterior.observaciones ?? []);
+  return {
+    ...pronostico,
+    observaciones: observaciones ?? anteriores,
+  };
 }
 
 export function leerPronosticoCache(

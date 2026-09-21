@@ -15,6 +15,10 @@ import {
   formatearHora,
   formatearVelocidad,
 } from "@/lib/formato.ts";
+import {
+  nombreCortoEstacionDmc,
+  observacionMasCercana,
+} from "@/lib/dmc.ts";
 import type { Pronostico, ZonaPronostico } from "@/lib/openmeteo.ts";
 import { adaptarZonaAlPerfil, horaVigente } from "@/lib/planear.ts";
 import {
@@ -40,6 +44,9 @@ const CLAVE_ZONA = "encumbra:zona";
 const INTERVALO_RELOJ_MS = 60_000;
 const INTERVALO_REFRESCO_MS = 10 * 60_000;
 const INTERVALO_BRUJULA_MS = 160;
+const DISTANCIA = new Intl.NumberFormat("es-CL", {
+  maximumFractionDigits: 1,
+});
 
 type EstadoBrujula =
   | "inactiva"
@@ -71,6 +78,10 @@ type VivoProps = {
   readonly perfilInicial: Perfil;
   readonly zonaInicial: string;
   readonly parqueInicial?: string;
+  readonly coordenadasParqueInicial?: {
+    readonly lat: number;
+    readonly lon: number;
+  };
   readonly desdeUbicacion?: boolean;
   readonly servidoEn: string;
 };
@@ -286,6 +297,7 @@ export function Vivo({
   perfilInicial,
   zonaInicial,
   parqueInicial,
+  coordenadasParqueInicial,
   desdeUbicacion = false,
   servidoEn,
 }: VivoProps) {
@@ -533,6 +545,11 @@ export function Vivo({
   const ventana = estadoVentana(zona.ventanas, ahora);
   const luz = estadoLuz(zona.puestaSol, ahora);
   const tendencia = tendencia60(zona.horas, ahora);
+  const medicionCercana = observacionMasCercana(
+    pronostico.observaciones ?? [],
+    coordenadasParqueInicial ?? zona.celda,
+    ahora,
+  );
   const estadoDesactualizado =
     sinSenal || pronostico.estado === "desactualizado";
   // With no window running, or with the sun already down, the wind is the limit
@@ -601,6 +618,37 @@ export function Vivo({
             <dd>{tendencia}</dd>
           </div>
         </dl>
+        {medicionCercana ? (
+          <dl
+            className="vivo__observacion"
+            aria-label="Viento medido por una estación cercana de la Dirección Meteorológica de Chile"
+          >
+            <div className="vivo__observacion-dato">
+              <dt>Medido cerca · DMC</dt>
+              <dd>
+                {formatearVelocidad(medicionCercana.observacion.viento)}
+                <span>
+                  racha {Math.round(medicionCercana.observacion.racha)}
+                </span>
+              </dd>
+            </div>
+            <div className="vivo__observacion-meta">
+              <dt>Estación</dt>
+              <dd>
+                {nombreCortoEstacionDmc(
+                  medicionCercana.observacion.codigoEstacion,
+                )}
+                {desdeUbicacion
+                  ? " · referencia de la zona"
+                  : ` · a ${DISTANCIA.format(medicionCercana.distanciaKm)} km`}
+                {` · ${formatearDesdeAhora(
+                  medicionCercana.observacion.observadoEn,
+                  ahora,
+                )}`}
+              </dd>
+            </div>
+          </dl>
+        ) : null}
         {hora.direccion !== null ? (
           <BrujulaViento
             direccion={hora.direccion}

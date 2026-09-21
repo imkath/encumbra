@@ -1,4 +1,5 @@
 import { minutosLegibles } from "./formato.ts";
+import { esObservacionDmc } from "./dmc.ts";
 import type { Pronostico } from "./openmeteo.ts";
 import { horaVigente } from "./planear.ts";
 import { proximaVentana, ventanaActiva, type Ventana } from "./ventanas.ts";
@@ -246,7 +247,10 @@ function esPronosticoConDatos(valor: unknown): valor is PronosticoConDatos {
     Number.isFinite(Date.parse(valor.actualizadoEn)) &&
     Array.isArray(valor.zonas) &&
     valor.zonas.length > 0 &&
-    valor.zonas.every(esZona)
+    valor.zonas.every(esZona) &&
+    (valor.observaciones === undefined ||
+      (Array.isArray(valor.observaciones) &&
+        valor.observaciones.every(esObservacionDmc)))
   );
 }
 

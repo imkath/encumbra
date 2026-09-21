@@ -1,5 +1,7 @@
 import { ZONAS } from "./zonas.ts";
 import type { BandaId } from "./bandas.ts";
+export { distanciaKm } from "./coordenadas.ts";
+export type { Coordenadas } from "./coordenadas.ts";
 
 export type PermisoParque = "autorizado" | "sin-confirmar";
 
@@ -290,16 +292,6 @@ export function contarRecintos<T extends { recintoId: string }>(
   return new Set(parques.map(({ recintoId }) => recintoId)).size;
 }
 
-export type Coordenadas = { readonly lat: number; readonly lon: number };
-export function distanciaKm(a: Coordenadas, b: Coordenadas): number {
-  const rad = Math.PI / 180;
-  const h =
-    Math.sin(((b.lat - a.lat) * rad) / 2) ** 2 +
-    Math.cos(a.lat * rad) *
-      Math.cos(b.lat * rad) *
-      Math.sin(((b.lon - a.lon) * rad) / 2) ** 2;
-  return 6371 * 2 * Math.asin(Math.sqrt(Math.min(1, h)));
-}
 const normalizar = (texto: string) =>
   texto
     .normalize("NFD")
