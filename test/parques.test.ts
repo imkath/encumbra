@@ -63,6 +63,21 @@ test("solo propone parques con autorización respaldada", () => {
   );
 });
 
+test("la etiqueta visible atribuye Parquemet solo a su propio listado", () => {
+  const etiqueta = (id: string) => {
+    const parque = PARQUES.find((item) => item.id === id);
+    assert.ok(parque);
+    return "etiquetaPermiso" in parque ? parque.etiquetaPermiso : null;
+  };
+
+  assert.equal(etiqueta("parque-penalolen"), "Listado de Parquemet");
+  assert.equal(
+    etiqueta("parque-bicentenario"),
+    "Confirmado por su administración",
+  );
+  assert.equal(etiqueta("parque-araucano"), "Permiso no confirmado");
+});
+
 test("el riesgo vial conserva fuente, fecha y alcance", () => {
   const bandera = PARQUES.find((parque) => parque.id === "parque-la-bandera");
   assert.ok(bandera && "riesgoVial" in bandera);

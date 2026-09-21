@@ -280,9 +280,18 @@ export const PARQUES = ZONAS.flatMap((zona) =>
         : ubicacion.fuentePermiso
           ? EVIDENCIA_PARQUEMET
           : null;
+    const etiquetaPermiso =
+      ubicacion.permiso === "sin-confirmar"
+        ? "Permiso no confirmado"
+        : evidenciaPermiso?.autoridad === "Parquemet"
+          ? "Listado de Parquemet"
+          : evidenciaPermiso?.vigencia === "confirmado-directamente"
+            ? "Confirmado por su administración"
+            : "Autorización confirmada";
     return {
       ...ubicacion,
       evidenciaPermiso,
+      etiquetaPermiso,
       tipoLugar: "parque" as const,
       precision: "recinto" as const,
       recintoId:
