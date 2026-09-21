@@ -486,6 +486,18 @@ en la pantalla de vuelo. El recorte quedó desplegado desde `7672de4` en la
 versión Cloudflare `f0e61fe0-9098-4ee7-ad97-e53e8b4cbbf3`; el smoke productivo
 completo terminó sin errores ni desbordes.
 
+La capa observada DMC quedó desplegada desde `867291b` y documentada en
+`0b78075`, versión Cloudflare `ab58e8bd-ad4d-4287-b6ea-186979321b9d`. El smoke
+productivo recorrió `/app`, ubicación sin parque y `/volar` a 320, 390, 768,
+1024 y 1440 px, además de las rutas de orientación WebKit y absoluta: sin
+errores de consola ni desborde. La composición con una observación controlada
+se revisó localmente en Firefox visible; no se sembraron datos falsos en KV.
+Tests: 118; lint, calibración, build Next y build OpenNext: verdes. El first
+load medido fue 159.263 bytes, 309 bytes más que la referencia anterior y aún
+sobre el techo original. Cloudflare no tiene todavía `DMC_USUARIO` ni
+`DMC_TOKEN`, por lo que producción omite la consulta y no muestra la línea
+observada hasta confirmar una cuenta oficial.
+
 Comandos de aceptación:
 
 ```bash
