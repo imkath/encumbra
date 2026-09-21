@@ -202,6 +202,10 @@ volantín. Volvió al grupo `autorizado` y a las recomendaciones. La evidencia
 registra autoridad, fecha y canal directo, pero `fuente` queda `null` porque no
 existe un enlace público aportado; la interfaz no lo atribuye a Parquemet y
 mantiene el recordatorio de revisar reglas y horarios antes de ir.
+Las etiquetas del catálogo también exponen la procedencia: `Listado de
+Parquemet` se reserva estrictamente a esa evidencia, Bicentenario usa
+`Confirmado por su administración` y la ausencia de respaldo conserva
+`Permiso no confirmado`.
 
 El cambio quedó en `3cd5f8e` y se desplegó como
 `38af371c-6370-4cd9-81ee-635fd08f62c6`. El smoke productivo encontró

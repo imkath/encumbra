@@ -372,9 +372,7 @@ export function EncumbraApp({
             ) : null}
             <small className="parque-permiso" data-permiso={p.permiso}>
               <Icono nombre="arbol" />
-              {p.permiso === "autorizado"
-                ? "Autorizado para encumbrar"
-                : "Permiso no confirmado"}
+              {p.etiquetaPermiso}
             </small>
           </span>
           <span
