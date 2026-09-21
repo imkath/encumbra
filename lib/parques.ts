@@ -18,6 +18,16 @@ const EVIDENCIA_PARQUEMET = {
     "Listado consultado de recintos habilitados; confirmar vigencia antes de cada temporada.",
 } as const;
 
+const EVIDENCIA_BICENTENARIO = {
+  autoridad: "Administración Parque Bicentenario de Vitacura",
+  fuente: null,
+  publicadoEn: null,
+  verificadoEn: "2026-09-21",
+  vigencia: "confirmado-directamente",
+  alcance:
+    "Autorización confirmada directamente por la administración del Parque Bicentenario de Vitacura; confirma reglas y horarios antes de ir.",
+} as const;
+
 const RIESGO_LA_BANDERA = {
   autoridad: "Gobierno de Chile / MOP",
   fuente:
@@ -73,8 +83,9 @@ const UBICACIONES = [
     lat: -33.400556,
     lon: -70.602222,
     nombre: "Bicentenario",
-    permiso: "sin-confirmar",
+    permiso: "autorizado",
     fuentePermiso: null,
+    evidenciaPermiso: EVIDENCIA_BICENTENARIO,
   },
   {
     id: "parque-la-hondonada",
@@ -263,9 +274,12 @@ export const PARQUES = ZONAS.flatMap((zona) =>
         parque.nombre.toLocaleLowerCase("es-CL"),
     );
     if (!ubicacion) throw new Error(`Falta ubicación de ${parque.nombre}`);
-    const evidenciaPermiso = ubicacion.fuentePermiso
-      ? EVIDENCIA_PARQUEMET
-      : null;
+    const evidenciaPermiso =
+      "evidenciaPermiso" in ubicacion
+        ? ubicacion.evidenciaPermiso
+        : ubicacion.fuentePermiso
+          ? EVIDENCIA_PARQUEMET
+          : null;
     return {
       ...ubicacion,
       evidenciaPermiso,
