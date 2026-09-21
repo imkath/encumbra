@@ -207,6 +207,11 @@ Parquemet` se reserva estrictamente a esa evidencia, Bicentenario usa
 `Confirmado por su administración` y la ausencia de respaldo conserva
 `Permiso no confirmado`.
 
+La separación de etiquetas quedó en `3b65bae` y se desplegó como
+`ec5fa233-c865-4ca0-8f27-2b45991ba118`. Firefox confirmó las tres variantes en
+producción, sin desborde ni errores de navegador. La suite quedó en 121 pruebas;
+lint, build Next y build OpenNext terminaron verdes.
+
 El cambio quedó en `3cd5f8e` y se desplegó como
 `38af371c-6370-4cd9-81ee-635fd08f62c6`. El smoke productivo encontró
 Bicentenario como autorizado en el catálogo y verificó su ficha a 390, 768 y
@@ -547,7 +552,7 @@ es que la suite vigente quede completa y verde.
 
 El techo original es 120 KB gzip/transferidos en first load. La medición más
 reciente en Firefox productivo, sobre el despliegue
-`38af371c-6370-4cd9-81ee-635fd08f62c6`, fue 159.348 bytes aun con MapLibre
+`ec5fa233-c865-4ca0-8f27-2b45991ba118`, fue 159.488 bytes aun con MapLibre
 diferido y exactamente dos fronteras cliente. No se subió el techo. Sigue
 siendo deuda explícita; no retirar información de seguridad solo para
 maquillar el número.
