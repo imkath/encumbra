@@ -21,17 +21,33 @@ test("catálogo completo con coordenadas para cada parque", () => {
 test("solo propone parques con autorización respaldada", () => {
   const proponibles = parquesProponibles(PARQUES);
 
-  assert.equal(proponibles.length, 19);
-  assert.equal(contarRecintos(proponibles), 14);
+  assert.equal(proponibles.length, 20);
+  assert.equal(contarRecintos(proponibles), 15);
   assert.ok(proponibles.every((parque) => parque.permiso === "autorizado"));
   assert.ok(
-    proponibles.every(
-      (parque) =>
-        parque.evidenciaPermiso?.autoridad === "Parquemet" &&
-        parque.evidenciaPermiso.fuente.startsWith("https://") &&
-        parque.evidenciaPermiso.verificadoEn === "2026-09-20" &&
-        parque.evidenciaPermiso.vigencia === "pendiente-de-confirmar",
-    ),
+    proponibles
+      .filter(({ id }) => id !== "parque-bicentenario")
+      .every(
+        (parque) =>
+          parque.evidenciaPermiso?.autoridad === "Parquemet" &&
+          parque.evidenciaPermiso.fuente?.startsWith("https://") === true &&
+          parque.evidenciaPermiso.verificadoEn === "2026-09-20" &&
+          parque.evidenciaPermiso.vigencia === "pendiente-de-confirmar",
+      ),
+  );
+  const bicentenario = proponibles.find(
+    ({ id }) => id === "parque-bicentenario",
+  );
+  assert.ok(bicentenario?.evidenciaPermiso);
+  assert.equal(
+    bicentenario.evidenciaPermiso.autoridad,
+    "Administración Parque Bicentenario de Vitacura",
+  );
+  assert.equal(bicentenario.evidenciaPermiso.fuente, null);
+  assert.equal(bicentenario.evidenciaPermiso.verificadoEn, "2026-09-21");
+  assert.equal(
+    bicentenario.evidenciaPermiso.vigencia,
+    "confirmado-directamente",
   );
   assert.ok(!proponibles.some((parque) => parque.nombre === "San Cristóbal"));
   assert.ok(proponibles.some((parque) => parque.nombre === "Pierre Dubois"));

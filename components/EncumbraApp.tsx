@@ -774,15 +774,12 @@ export function EncumbraApp({
                     <p className="permiso-detalle" data-permiso={parque.permiso}>
                       <Icono nombre="arbol" />
                       {parque.permiso === "autorizado" ? (
-                      <>
-                        Incluido en el listado consultado de Parquemet. Confirma
-                        reglas, vigencia y horarios del recinto antes de ir.
-                      </>
-                    ) : (
-                      <>
-                        No tenemos una autorización vigente confirmada para
-                        este parque. Revisa con su administración antes de ir.
-                      </>
+                        <>{parque.evidenciaPermiso?.alcance}</>
+                      ) : (
+                        <>
+                          No tenemos una autorización vigente confirmada para
+                          este parque. Revisa con su administración antes de ir.
+                        </>
                       )}
                     </p>
                   )}

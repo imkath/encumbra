@@ -183,8 +183,8 @@ coherencia temporal y comparación solapada contra ICON.
 
 ## 5. Parques, permisos y seguridad
 
-El catálogo productivo tiene 24 puntos que representan 14 recintos autorizados
-y cinco parques buscables con autorización sin confirmar. Mapocho Río aparece
+El catálogo productivo tiene 24 puntos que representan 15 recintos autorizados
+y cuatro parques buscables con autorización sin confirmar. Mapocho Río aparece
 en seis tramos para el mapa, pero comparte `recintoId` y cuenta como un recinto.
 
 La elección manual incluye los parques sin permiso confirmado, como Araucano.
@@ -195,6 +195,13 @@ el catálogo, igual que la búsqueda. Solo las recomendaciones iniciales de
 ocultaba parques guardados: se corrigió al separar exploración y recomendación.
 La observación del usuario de que hay gente encumbrando en Araucano no se
 registró como autorización; conserva `sin-confirmar` y el aviso en Mi salida.
+
+El 21 de septiembre de 2026 la usuaria informó que la administración del Parque
+Bicentenario de Vitacura confirmó directamente por correo que se puede elevar
+volantín. Volvió al grupo `autorizado` y a las recomendaciones. La evidencia
+registra autoridad, fecha y canal directo, pero `fuente` queda `null` porque no
+existe un enlace público aportado; la interfaz no lo atribuye a Parquemet y
+mantiene el recordatorio de revisar reglas y horarios antes de ir.
 
 El modelo separa:
 
