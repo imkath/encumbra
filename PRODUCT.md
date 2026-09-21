@@ -18,17 +18,20 @@ las condiciones durante el vuelo.
 Next.js y React. Pronóstico ICON mediante Open-Meteo para seis celdas; tres
 perfiles de volantín; viento, rachas, dirección, probabilidad de lluvia,
 ventanas y luz calculada localmente. Cloudflare Cron escribe una clave KV y las
-visitas solo leen. El modo de vuelo conserva el último dato local. El mapa es
-MapLibre y se carga bajo demanda. El modelo no resuelve diferencias entre
-parques de una misma celda. En terreno, la dirección distingue explícitamente
-de dónde viene el viento y hacia dónde va. La rosa mantiene norte arriba como
-base y, tras una acción de la persona, puede orientarse con el sensor del
-teléfono sin guardar la lectura. La guía de despegue ubica al piloto con el
-hilo a barlovento y el volantín delante, a sotavento; indica en vivo hacia qué
-lado girar y confirma la alineación sin mostrar grados. Funciona igual para
-quien despega por su cuenta o recibe ayuda: la asistencia no es un modo ni un
-requisito. La guía toma como mira la parte superior visible de la pantalla tanto
-en vertical como en horizontal.
+visitas solo leen. Cuando existen credenciales oficiales, el mismo cron añade
+la última observación válida de estaciones DMC de Santiago al mismo objeto;
+esa medición se muestra como referencia cercana, con estación y antigüedad, y
+no modifica el veredicto. El modo de vuelo conserva el último dato local. El
+mapa es MapLibre y se carga bajo demanda. El modelo no resuelve diferencias
+entre parques de una misma celda. En terreno, la dirección distingue
+explícitamente de dónde viene el viento y hacia dónde va. La rosa mantiene
+norte arriba como base y, tras una acción de la persona, puede orientarse con
+el sensor del teléfono sin guardar la lectura. La guía de despegue ubica al
+piloto con el hilo a barlovento y el volantín delante, a sotavento; indica en
+vivo hacia qué lado girar y confirma la alineación sin mostrar grados. Funciona
+igual para quien despega por su cuenta o recibe ayuda: la asistencia no es un
+modo ni un requisito. La guía toma como mira la parte superior visible de la
+pantalla tanto en vertical como en horizontal.
 
 ## Brand Commitments
 Voz chilena cercana, instrucciones concretas y una experiencia que se siente

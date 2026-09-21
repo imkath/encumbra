@@ -130,8 +130,8 @@ horas UTC y calculando sesgo y error absoluto por separado para viento y racha.
 ### Flujo productivo
 
 ```text
-Cron */10 -> Open-Meteo icon_seamless -> valida y normaliza -> una clave KV
-Visita     -> Workers KV               -> Server Component -> interfaz
+Cron */10 -> Open-Meteo ICON + DMC opcional -> valida y normaliza -> una clave KV
+Visita     -> Workers KV                              -> Server Component -> interfaz
 ```
 
 - `custom-worker.ts` reutiliza el handler generado por OpenNext y agrega
@@ -164,9 +164,10 @@ acotado a fingir un pronóstico exacto.
 
 ### Fuentes y fallback
 
-La única fuente activa es Open-Meteo con `icon_seamless`. Su oferta gratuita es
-para uso no comercial; si Encumbra se monetiza, hay que revisar el plan antes,
-no después.
+La única fuente de pronóstico es Open-Meteo con `icon_seamless`. DMC puede
+sumarse como observación cercana si sus secretos están configurados, sin emitir
+bandas. La oferta gratuita de Open-Meteo es para uso no comercial; si Encumbra
+se monetiza, hay que revisar el plan antes, no después.
 
 No hay fallback activo porque un campo llamado «racha» no demuestra equivalencia
 de altura, intervalo, resolución o sesgo con ICON. Antes de dejar que otra
@@ -176,8 +177,8 @@ coherencia temporal y comparación solapada contra ICON.
 - WeatherAPI es el candidato de respaldo, pero requiere clave y recalibración.
 - Bright Sky no publica cuota y en Chile tiene resolución espacial demasiado
   gruesa para una banda indistinguible de la normal.
-- DMC requiere usuario y token; sería una capa observada, no un pronóstico de
-  reemplazo.
+- DMC requiere usuario y token; su adaptador es una capa observada opcional, no
+  un pronóstico de reemplazo.
 - Pirate Weather no se usa.
 
 ## 5. Parques, permisos y seguridad
@@ -519,9 +520,39 @@ iPhone y un Android físicos al aire libre, lejos de metal.
 
 ### Proveedores y medición observada
 
-WeatherAPI y DMC requieren credenciales del propietario. Bright Sky necesita
-claridad de cuota y resolución. Ninguno debe entrar silenciosamente como fuente
-equivalente.
+WeatherAPI requiere credenciales del propietario. DMC también, pero ya existe
+una integración observada opcional y separada del pronóstico. Bright Sky
+necesita claridad de cuota y resolución. Ninguno debe entrar silenciosamente
+como fuente equivalente.
+
+#### Integración DMC preparada el 20 de septiembre de 2026
+
+La DMC documenta `getDatosRecientesRedEma`: datos minutarios de las doce horas
+más recientes, en UTC, para las estaciones automáticas que publican. El
+servicio necesita el correo y token personal que el portal entrega al confirmar
+una cuenta. El endpoint bloquea consultas anónimas; por eso no se usa scraping,
+un proxy del navegador ni datos de demostración en producción.
+
+El cron consulta DMC solo si existen `DMC_USUARIO` y `DMC_TOKEN` como secretos
+de Cloudflare. Normaliza únicamente Tobalaba `330019`, Quinta Normal `330020` y
+Pudahuel `330021`, conserva promedio y máximo de diez minutos y cae a los
+equivalentes de dos minutos cuando la estación no publica el primero. Los nudos
+se convierten a km/h con el factor exacto 1,852. La respuesta reducida se guarda
+en la misma clave KV que ICON; la visita mantiene una sola petición para pintar
+el veredicto y nunca recibe las credenciales.
+
+`/volar` elige la estación fresca más cercana al parque o a la celda cuando el
+destino es «Donde estoy». Muestra velocidad, racha, estación, distancia o
+alcance de zona y antigüedad. La observación no cambia banda, score, ventanas ni
+brújula: todavía falta comparar una serie DMC con ICON antes de darle autoridad
+sobre la decisión. Veinte minutos es el límite provisional de frescura,
+alineado con la caché actual; queda pendiente verificarlo con la cadencia real
+de cada estación.
+
+Si DMC falla, el cron conserva la última observación almacenada; la interfaz la
+oculta automáticamente al superar ese límite. Si ICON falla, el cron sigue sin
+pisar el último pronóstico bueno. La fuente se acredita como Dirección
+Meteorológica de Chile en la interfaz y el pie de la portada.
 
 ### Lugares comunitarios
 

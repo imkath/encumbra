@@ -21,6 +21,8 @@ Producción: **[encumbra.nvrkth.com/app](https://encumbra.nvrkth.com/app)**
   de dónde viene el viento y hacia dónde va. Su brújula guía la posición del
   piloto y del volantín para despegar, a solas o con ayuda, cuando el navegador
   entrega norte real, en vertical u horizontal.
+- Observación cercana de viento DMC en el modo de terreno, con estación y
+  antigüedad visibles, cuando el Worker dispone de credenciales oficiales.
 - Tema claro u oscuro elegible y persistido en el navegador; antes de elegir
   se respeta el sistema. La noche se informa por separado del viento.
 
@@ -29,9 +31,11 @@ Producción: **[encumbra.nvrkth.com/app](https://encumbra.nvrkth.com/app)**
 - Next.js 16, React 19 y TypeScript.
 - Server Components por defecto y exactamente dos fronteras `use client`.
 - Lógica de dominio pura en `lib/`.
-- Open-Meteo `icon_seamless` como única fuente meteorológica activa.
+- Open-Meteo `icon_seamless` como fuente de pronóstico y DMC como capa
+  observada opcional; la estación no reemplaza ni recalibra el veredicto.
 - Cloudflare Cron cada 10 minutos: valida el pronóstico y lo guarda en una sola
-  clave de Workers KV. Las visitas productivas solo leen KV.
+  clave de Workers KV junto con las observaciones normalizadas. Las visitas
+  productivas solo leen KV.
 - Amanecer y puesta de sol calculados localmente.
 - Pruebas nativas de Node, sin framework adicional.
 - Sin librería de componentes, estado, fechas, gráficos, iconos ni fetch.
@@ -101,11 +105,24 @@ Debe usarse `pnpm run deploy`; `pnpm deploy` es otro comando de pnpm. La
 configuración de Worker, binding KV y cron vive en `wrangler.jsonc`; el handler
 programado vive en `custom-worker.ts`.
 
+La DMC entrega las credenciales de web services al confirmar una cuenta del
+[Portal de Servicios Climáticos](https://climatologia.meteochile.gob.cl/application/usuario/registroUsuario).
+Se configuran como secretos, nunca como variables públicas ni archivos del repo:
+
+```bash
+pnpm exec wrangler secret put DMC_USUARIO
+pnpm exec wrangler secret put DMC_TOKEN
+```
+
+Sin ambos secretos, el cron omite DMC y mantiene íntegro el pronóstico ICON.
+
 ## Límites conocidos
 
 - El first load productivo medido sigue sobre el presupuesto original de
   120 KB. MapLibre ya está fuera de la carga inicial y no se elevó el techo.
 - ICON aún no se ha validado contra una serie observada de la DMC.
+- La integración DMC queda inactiva hasta configurar las credenciales del
+  propietario; no se usa scraping ni una medición de prueba en producción.
 - No hay fallback meteorológico activo: otro proveedor requiere credenciales y
   recalibración antes de poder emitir las mismas bandas.
 - Los encuentros comunitarios no se publican como lugares autorizados ni como

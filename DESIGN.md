@@ -130,6 +130,11 @@ El volantín ilustrado baja de intensidad detrás de la lectura en móvil y
 recupera presencia cuando tiene su propia columna. No usar una tarjeta flotante,
 un selector de acompañantes ni párrafos de técnica de despegue.
 
+Cuando hay una observación DMC fresca, aparece como una línea secundaria bajo
+las pastillas: velocidad, racha, estación, distancia o alcance de zona y
+antigüedad. No recibe tarjeta propia, no domina la brújula y no se confunde con
+la medición del parque ni con el pronóstico que emite el veredicto.
+
 
 ## Favicon
 
