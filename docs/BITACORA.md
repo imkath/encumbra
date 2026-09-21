@@ -495,9 +495,19 @@ errores de consola ni desborde. La composición con una observación controlada
 se revisó localmente en Firefox visible; no se sembraron datos falsos en KV.
 Tests: 120; lint, calibración, build Next y build OpenNext: verdes. El first
 load medido fue 159.263 bytes, 309 bytes más que la referencia anterior y aún
-sobre el techo original. Cloudflare no tiene todavía `DMC_USUARIO` ni
-`DMC_TOKEN`, por lo que producción omite la consulta y no muestra la línea
-observada hasta confirmar una cuenta oficial.
+sobre el techo original. En ese despliegue Cloudflare todavía no tenía
+`DMC_USUARIO` ni `DMC_TOKEN`, por lo que la consulta quedó correctamente
+inactiva hasta recibir credenciales oficiales.
+
+El 21 de septiembre de 2026 se activaron ambos secretos en Cloudflare sin
+guardarlos en archivos ni commits. El primer cron posterior, a las 09:30 de
+Santiago, publicó observaciones válidas de Tobalaba `330019` y Pudahuel
+`330021`; Quinta Normal no entregó una medición utilizable y el éxito parcial
+se conservó como corresponde. `/volar` para Araucano eligió Tobalaba a 6,4 km
+y mostró la lectura antes de la brújula. El smoke productivo en Firefox visible
+a 320, 390, 768 y 1024 px terminó sin desborde horizontal, errores de consola
+ni errores de página. La versión creada por el cambio de secretos es
+`2a090a4b-15b4-42fa-8ed0-91bfba087b7d`; ningún valor secreto se registra aquí.
 
 Comandos de aceptación:
 
@@ -538,7 +548,7 @@ una integración observada opcional y separada del pronóstico. Bright Sky
 necesita claridad de cuota y resolución. Ninguno debe entrar silenciosamente
 como fuente equivalente.
 
-#### Integración DMC preparada el 20 de septiembre de 2026
+#### Integración DMC preparada el 20 y activada el 21 de septiembre de 2026
 
 La DMC documenta `getDatosRecientesEma/{codigo}`: datos minutarios de las doce
 horas más recientes, en UTC, para una estación automática. El servicio necesita

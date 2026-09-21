@@ -115,14 +115,16 @@ pnpm exec wrangler secret put DMC_TOKEN
 ```
 
 Sin ambos secretos, el cron omite DMC y mantiene íntegro el pronóstico ICON.
+En producción están configurados desde el 21 de septiembre de 2026; sus valores
+no se guardan en el repositorio ni llegan al navegador.
 
 ## Límites conocidos
 
 - El first load productivo medido sigue sobre el presupuesto original de
   120 KB. MapLibre ya está fuera de la carga inicial y no se elevó el techo.
 - ICON aún no se ha validado contra una serie observada de la DMC.
-- La integración DMC queda inactiva hasta configurar las credenciales del
-  propietario; no se usa scraping ni una medición de prueba en producción.
+- DMC aporta una referencia observada cercana, no una medición dentro del
+  parque; una estación ausente o con más de veinte minutos no se muestra.
 - No hay fallback meteorológico activo: otro proveedor requiere credenciales y
   recalibración antes de poder emitir las mismas bandas.
 - Los encuentros comunitarios no se publican como lugares autorizados ni como
