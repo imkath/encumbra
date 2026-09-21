@@ -87,6 +87,20 @@ with sync_playwright() as p:
     pagina.get_by_role("button", name="Mostrar mapa").click()
     pagina.locator(".mapa-punto").first.wait_for(timeout=15_000)
     pagina.screenshot(path=str(SALIDAS / "app-mobile-mapa.png"), full_page=True)
+    resultados.append(revisar_pagina(pagina, "/", "portada-mobile.png"))
+    selector_portada_movil = pagina.get_by_role("switch", name="Tema oscuro")
+    assert selector_portada_movil.get_attribute("aria-checked") == "false"
+    selector_portada_movil.focus()
+    pagina.keyboard.press("Space")
+    pagina.wait_for_function("document.documentElement.dataset.theme === 'dark'")
+    assert selector_portada_movil.get_attribute("aria-checked") == "true"
+    pagina.wait_for_function(
+        "getComputedStyle(document.querySelector('.selector-tema__luna')).opacity === '1'"
+    )
+    pagina.wait_for_timeout(500)
+    pagina.screenshot(path=str(SALIDAS / "portada-mobile-dark.png"), full_page=True)
+    pagina.keyboard.press("Space")
+    pagina.wait_for_function("document.documentElement.dataset.theme === 'light'")
     movil.close()
 
     escritorio = browser.new_context(
@@ -97,10 +111,26 @@ with sync_playwright() as p:
     pagina = escritorio.new_page()
     pagina.on("console", lambda mensaje: errores.append(mensaje.text) if mensaje.type == "error" else None)
     pagina.on("pageerror", lambda error: errores.append(str(error)))
+    resultados.append(revisar_pagina(pagina, "/", "portada-desktop-dark.png"))
+    selector_portada = pagina.get_by_role("switch", name="Tema oscuro")
+    assert selector_portada.get_attribute("aria-checked") == "true"
+    assert selector_portada.get_by_text("Oscuro", exact=True).is_visible()
     resultados.append(revisar_pagina(pagina, "/app", "app-desktop-dark.png"))
     assert pagina.locator("html").get_attribute("data-theme") == "dark"
-    pagina.get_by_role("button", name="Cambiar entre tema claro y oscuro").click()
+    selector_tema = pagina.get_by_role("switch", name="Tema oscuro")
+    assert selector_tema.get_attribute("aria-checked") == "true"
+    assert pagina.locator(".selector-tema__luna").evaluate(
+        "elemento => getComputedStyle(elemento).opacity"
+    ) == "1"
+    selector_tema.click()
     assert pagina.locator("html").get_attribute("data-theme") == "light"
+    assert selector_tema.get_attribute("aria-checked") == "false"
+    pagina.wait_for_function(
+        "getComputedStyle(document.querySelector('.selector-tema__sol')).opacity === '1'"
+    )
+    assert pagina.locator(".selector-tema__sol").evaluate(
+        "elemento => getComputedStyle(elemento).opacity"
+    ) == "1"
     pagina.reload(wait_until="networkidle")
     assert pagina.locator("html").get_attribute("data-theme") == "light"
     pagina.get_by_role("button", name="Mostrar mapa").click()

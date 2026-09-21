@@ -57,6 +57,15 @@ bandas meteorológicas. Las tarjetas de estado siempre toman su tinta de
 `/volar` no muestra selector de tema: su fondo comunica el estado del viento y
 la luz. La elección de claro u oscuro queda disponible en las otras vistas.
 
+El selector se representa como una abertura pequeña al cielo y no como el riel
+partido genérico de sol y luna. En portada escribe el estado actual, `Claro` u
+`Oscuro`; en la cabecera operativa conserva solo la abertura para no competir
+con el perfil del volantín. El sol y la luna ocupan el mismo lugar y se
+transforman entre sí. En navegadores compatibles, el tema nuevo se revela
+radialmente desde el control; sin View Transitions o con movimiento reducido,
+el cambio es inmediato. Su nombre accesible permanece `Tema oscuro` y el estado
+se comunica con semántica de switch mediante `aria-checked`.
+
 `VolantinPapel` comparte el dibujo entre portada, exterior, selectores de perfil y marcador del gráfico. Su vela toma el color de la superficie por `--paper-base`, con mezclas hacia hueso (`--paper-light`, `--paper-mid`) y carbón (`--paper-shade`, `--paper-rib`). Sustituye el naranja con arcos de la versión anterior. En iconos pequeños sobre hueso usa una base neutra de mayor contraste para conservar la silueta.
 
 La silueta tiene laterales cóncavos y punta inferior larga. El perfil estándar lleva cola con lazos unidos a las curvas, el liviano no lleva cola y el acrobático tiene vela delta y dos hilos. Cada SVG tiene un recorte y gradiente con identificadores únicos. Las posturas son ilustrativas por banda, no una simulación física: falta de viento, peligro, noche y ausencia de datos muestran reposo.

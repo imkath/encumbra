@@ -396,6 +396,15 @@ a discutir sin nueva evidencia:
   azul/lima. No resucitar ninguna de las dos como si fuera una exploración
   pendiente.
 
+El 21 de septiembre se reemplazó el botón genérico de tema por una abertura de
+cielo propia de la identidad. La portada muestra `Claro` u `Oscuro`; `/app`
+usa la misma pieza compacta para proteger el espacio de la cabecera. Continúa
+siendo un Server Component: el script temprano del layout mantiene la elección,
+actualiza `aria-checked` y usa View Transitions como mejora progresiva para
+revelar el tema desde el control. Sin soporte o con `prefers-reduced-motion`,
+no se interpone una animación. Se evitó una tercera isla y no se añadió ninguna
+dependencia.
+
 ## 9. Bugs y trampas que ya costaron tiempo
 
 ### Datos y dominio
