@@ -40,6 +40,13 @@ with sync_playwright() as p:
     pagina.on("console", lambda mensaje: errores.append(mensaje.text) if mensaje.type == "error" else None)
     pagina.on("pageerror", lambda error: errores.append(str(error)))
     resultados.append(revisar_pagina(pagina, "/app", "app-mobile.png"))
+    caja_busqueda = pagina.locator(".buscar-ubicacion").bounding_box()
+    caja_ubicacion = pagina.locator(".donde-estoy__accion").bounding_box()
+    assert caja_busqueda and caja_ubicacion
+    separacion_ubicacion = caja_ubicacion["y"] - (
+        caja_busqueda["y"] + caja_busqueda["height"]
+    )
+    assert separacion_ubicacion >= 8, separacion_ubicacion
     recursos_js = pagina.evaluate(
         """performance.getEntriesByType('resource')
           .filter((recurso) => recurso.name.includes('/_next/static/chunks/') && recurso.name.endsWith('.js'))
