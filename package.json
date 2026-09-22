@@ -29,9 +29,9 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.3.4",
-    "typescript": "^5",
-    "wrangler": "^4.130.0"
+    "eslint-config-next": "16.3.5",
+    "typescript": "^7",
+    "wrangler": "^4.135.0"
   },
   "pnpm": {
     "overrides": {
