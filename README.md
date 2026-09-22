@@ -1,143 +1,167 @@
 # Encumbra
 
-Webapp mobile-first para saber si anda el volantín, cuándo y en qué lugar de
-Santiago. Traduce viento, rachas, lluvia, luz y tipo de volantín en una decisión
-simple, sin mostrar el score interno ni inventar diferencias entre parques que
-comparten la misma celda meteorológica.
+Encumbra convierte el pronóstico de Santiago en una decisión concreta: si el
+viento sirve para tu volantín, a qué hora y en qué lugar. Está diseñada para
+consultarse desde el teléfono antes de salir y mientras se vuela.
 
-Producción: **[encumbra.nvrkth.com/app](https://encumbra.nvrkth.com/app)**
+**[Ver aplicación](https://encumbra.nvrkth.com)** ·
+**[Decisiones técnicas](docs/ARCHITECTURE.md)**
 
-## Qué incluye
+![Encumbra, pronóstico de viento para volantines en Santiago](https://encumbra.nvrkth.com/opengraph-image)
 
-- 15 recintos con autorización respaldada y parques adicionales elegibles,
-  como Araucano, con permiso sin confirmar visible en su ficha. Bicentenario de
-  Vitacura consta como confirmado directamente por su administración.
-- Pronóstico horario para seis celdas de ICON en Santiago y, bajo una acción
-  explícita, para el punto de modelo más cercano a la ubicación actual.
-- Perfiles de volantín liviano, tradicional con cola y acrobático.
-- Ubicación explícita como destino propio de «Mi salida», con GPS de alta
-  precisión, comuna visible y coordenada reducida a tres decimales antes de
-  consultar el servidor; no se asocia a un parque ni se persiste.
-- Best Match de Open-Meteo como pronóstico puntual, contrastado hora a hora con
-  ICON y ECMWF. Si ambos modelos cambian la decisión para el volantín elegido,
-  se informa `Pronóstico incierto` en vez de promediarlos.
-- Lista, búsqueda, favoritos y mapa MapLibre diferido.
-- Planificación para hoy o mañana, luz, lluvia y calendario.
-- Modo de terreno que conserva el último dato disponible sin señal y muestra
-  de dónde viene el viento y hacia dónde va. Su brújula guía la posición del
-  piloto y del volantín para despegar, a solas o con ayuda, cuando el navegador
-  entrega norte real, en vertical u horizontal.
-- Observación cercana de viento DMC en el modo de terreno, con estación y
-  antigüedad visibles, cuando el Worker dispone de credenciales oficiales.
-- Tema claro u oscuro elegible y persistido en el navegador; antes de elegir
-  se respeta el sistema. La noche se informa por separado del viento.
+## Por qué existe
+
+Una velocidad aislada no basta para decidir si encumbrar. Encumbra combina
+viento medio, rachas, lluvia, luz disponible y el tipo de volantín, sin ocultar
+la incertidumbre espacial de los modelos ni presentar un pronóstico como una
+medición en terreno.
+
+La experiencia incluye:
+
+- pronóstico horario para parques de Santiago y para la ubicación solicitada;
+- perfiles para volantín liviano, tradicional con cola y acrobático;
+- contraste de Best Match, ICON y ECMWF, sin promedios arbitrarios;
+- observaciones recientes de estaciones DMC como referencia independiente;
+- catálogo y mapa de parques, con autorización y evidencia diferenciadas;
+- planificación para hoy o mañana, calendario y modo de consulta en terreno;
+- PWA responsive, tema claro/oscuro y funcionamiento degradado sin conexión.
+
+## Ingeniería destacada
+
+- **Dominio verificable.** La clasificación meteorológica vive en funciones
+  puras, tiene una única fuente de umbrales y se cubre con pruebas de contrato.
+- **Honestidad geográfica.** El GPS se solicita solo por acción explícita, se
+  reduce a tres decimales antes de enviarlo y nunca se persiste. La interfaz
+  muestra la comuna y la distancia al punto efectivo del modelo.
+- **Datos resilientes.** Un cron de Cloudflare actualiza una instantánea en KV
+  cada diez minutos. Un fallo del proveedor no reemplaza el último dato válido.
+- **Frontend con carga progresiva.** Next.js usa Server Components por defecto;
+  MapLibre y su CSS se descargan únicamente al abrir el mapa.
+- **Defensa en profundidad.** CSP con nonce, headers de seguridad, secretos en
+  Cloudflare, rate limit del endpoint de ubicación, timeouts de red, logs
+  saneados y actualización automática de dependencias.
+- **Accesibilidad y descubrimiento.** Navegación por teclado, foco visible,
+  movimiento reducido, metadatos sociales, canonical, sitemap, robots,
+  manifest y JSON-LD sin reseñas ni atributos inventados.
+
+## Calidad verificada
+
+Auditoría del 22 de septiembre de 2026 sobre producción, con Lighthouse 13.5
+en perfil móvil:
+
+| Categoría | Puntaje |
+| --- | ---: |
+| Performance | 99 |
+| Accessibility | 100 |
+| Best Practices | 100 |
+| SEO | 100 |
+
+La suite actual contiene **145 pruebas**. `pnpm check` ejecuta pruebas, ESLint,
+TypeScript y el build optimizado. CI repite esa cadena y rechaza dependencias
+con vulnerabilidades altas conocidas.
 
 ## Arquitectura
 
-- Next.js 16, React 19 y TypeScript.
-- Server Components por defecto y exactamente dos fronteras `use client`.
-- Lógica de dominio pura en `lib/`.
-- Open-Meteo `icon_seamless` como fuente de las zonas y Best Match como fuente
-  del punto solicitado. ICON y ECMWF se comparan, no se promedian. DMC sigue
-  siendo una capa observada; la estación no reemplaza ni recalibra el veredicto.
-- Cloudflare Cron cada 10 minutos: valida el pronóstico y lo guarda en una sola
-  clave de Workers KV junto con las observaciones normalizadas. Las visitas
-  productivas solo leen KV.
-- Amanecer y puesta de sol calculados localmente.
-- Una muestra horaria de ICON, ECMWF y DMC por estación se conserva en KV por
-  35 días para validar sesgo y error antes de ponderar modelos. Nunca contiene
-  ubicaciones de usuarios.
-- Pruebas nativas de Node, sin framework adicional.
-- Sin librería de componentes, estado, fechas, gráficos, iconos ni fetch.
+```mermaid
+flowchart LR
+    Cron[Cloudflare Cron] --> OM[Open-Meteo / ICON]
+    Cron --> DMC[Estaciones DMC]
+    OM --> KV[(Workers KV)]
+    DMC --> KV
+    KV --> Next[Next.js en Cloudflare Workers]
+    GPS[GPS solicitado] --> API[/api/ubicacion]
+    API --> Point[Best Match + ICON + ECMWF]
+    API --> Next
+    Next --> UI[Server Components + 2 fronteras cliente]
+    UI -. bajo demanda .-> Map[MapLibre]
+```
 
-## Documentación vigente
+El flujo periódico alimenta los parques. La consulta puntual de ubicación es
+deliberadamente independiente: tiene límite de tasa, tiempo máximo de espera y
+no escribe coordenadas de usuarios en KV. El detalle de datos, privacidad,
+amenazas y decisiones está en [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-- [PRODUCT.md](PRODUCT.md): contrato funcional y límites del producto.
-- [DESIGN.md](DESIGN.md): contrato visual aplicado.
-- [docs/BITACORA.md](docs/BITACORA.md): decisiones, calibración, arquitectura,
-  bugs conocidos, descartes, deuda y procedimiento de cambios.
-- [AGENTS.md](AGENTS.md): instrucciones operativas para agentes.
-- `public/maps/LICENSE*.md`: licencias y atribuciones del estilo de mapa.
+## Stack
 
-Los planes, prompts y reportes intermedios se consolidaron en la bitácora para
-que no existan varias fuentes contradictorias.
+- Next.js 16, React 19 y TypeScript estricto
+- Cloudflare Workers, Workers KV y Rate Limiting
+- OpenNext para el despliegue
+- Open-Meteo, DMC, OpenStreetMap y OpenFreeMap
+- MapLibre GL cargado bajo demanda
+- Node Test Runner, ESLint y Playwright con Firefox
 
-## Requisitos
-
-- Node 22, definido en `.nvmrc`.
-- pnpm.
-- Python 3 solo para reproducir la calibración y el smoke test de navegador.
+No se usa una librería de componentes, estado, fechas, gráficos, iconos o
+`fetch`; se prefirió mantener pequeño y auditable el núcleo del producto.
 
 ## Desarrollo local
 
+Requisitos: Node 22 y pnpm 10.
+
 ```bash
 nvm use
-pnpm install
+pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Abrir <http://localhost:3000>. El script de desarrollo copia primero el worker
-de MapLibre que Next necesita servir desde `public/vendor/`.
-
-## Verificación
+Abrir <http://localhost:3000>. Para ejecutar toda la validación:
 
 ```bash
-node --test test/*.test.ts
-pnpm lint
-pnpm build
-python3 calibracion/calibrar.py
+pnpm check
+pnpm audit --prod --audit-level high
 ```
 
-Smoke en Firefox visible contra producción:
+El smoke test usa Firefox visible y requiere Playwright para Python:
 
 ```bash
-ENCUMBRA_BASE=https://encumbra.nvrkth.com python3 scripts/smoke-firefox.py
+ENCUMBRA_BASE=http://localhost:3000 python3 scripts/smoke-firefox.py
 ```
 
-No usar `node --test test/`: Node no descubre aquí los archivos TypeScript del
-directorio sin el glob.
+## Configuración de Cloudflare
 
-## Cloudflare
-
-Vista previa:
-
-```bash
-pnpm preview
-```
-
-Despliegue manual:
-
-```bash
-pnpm run deploy
-```
-
-Debe usarse `pnpm run deploy`; `pnpm deploy` es otro comando de pnpm. La
-configuración de Worker, binding KV y cron vive en `wrangler.jsonc`; el handler
-programado vive en `custom-worker.ts`.
-
-La DMC entrega las credenciales de web services al confirmar una cuenta del
-[Portal de Servicios Climáticos](https://climatologia.meteochile.gob.cl/application/usuario/registroUsuario).
-Se configuran como secretos, nunca como variables públicas ni archivos del repo:
+`wrangler.jsonc` declara el Worker, KV, cron, observabilidad y límite de tasa.
+Las credenciales de DMC son opcionales y se guardan como secretos, nunca en el
+repositorio ni en variables públicas:
 
 ```bash
 pnpm exec wrangler secret put DMC_USUARIO
 pnpm exec wrangler secret put DMC_TOKEN
 ```
 
-Sin ambos secretos, el cron omite DMC y mantiene íntegro el pronóstico ICON.
-En producción están configurados desde el 21 de septiembre de 2026; sus valores
-no se guardan en el repositorio ni llegan al navegador.
+Sin ellas, el pronóstico funciona y omite la capa observada. Para validar el
+artefacto Cloudflare o desplegarlo:
+
+```bash
+pnpm preview
+pnpm run deploy
+```
+
+## Estructura
+
+```text
+app/          rutas, metadatos y handlers HTTP
+components/   interfaz y dos fronteras cliente principales
+lib/          dominio puro, validación y adaptadores meteorológicos
+server/       acceso a KV y DMC, solo del lado servidor
+test/         contratos y regresiones con Node Test Runner
+calibracion/  análisis reproducible de los umbrales
+docs/         arquitectura, decisiones, seguridad y operación
+```
 
 ## Límites conocidos
 
-- El first load productivo medido sigue sobre el presupuesto original de
-  120 KB. MapLibre ya está fuera de la carga inicial y no se elevó el techo.
-- ICON aún no se ha validado contra una serie observada de la DMC.
-- DMC aporta una referencia observada cercana, no una medición dentro del
-  parque; una estación ausente o con más de veinte minutos no se muestra.
-- El punto solicitado sigue siendo una celda de modelo. La distancia al centro
-  se muestra para no presentar la coordenada como una medición hiperlocal.
-- No hay fallback meteorológico activo: otro proveedor requiere credenciales y
-  recalibración antes de poder emitir las mismas bandas.
-- Los encuentros comunitarios no se publican como lugares autorizados ni como
-  coordenadas exactas sin evidencia suficiente.
+- Una celda de modelo no equivale al viento exacto dentro de una plaza o entre
+  edificios. La aplicación lo declara y muestra la distancia correspondiente.
+- La DMC aporta una estación cercana, no una medición en el parque, y no cambia
+  todavía el veredicto del modelo.
+- Los umbrales están calibrados con histórico de Santiago, pero requieren más
+  validación con salidas reales antes de considerarse definitivos.
+- Open-Meteo exige revisar sus condiciones antes de un uso comercial.
+- La orientación del teléfono guía la lectura; no reemplaza comprobar el viento
+  real y depende de los sensores del dispositivo.
+
+## Licencias y atribuciones
+
+Las licencias del estilo y los datos del mapa se conservan en `public/maps/` y
+la atribución permanece visible dentro de MapLibre. El resto del repositorio no
+incluye por ahora una licencia de reutilización; publicar el código permite su
+revisión, no concede derechos adicionales sobre él.

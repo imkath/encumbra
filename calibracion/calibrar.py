@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Reproduce la evidencia de calibración documentada en docs/BITACORA.md.
+Reproduce la evidencia de calibración documentada en docs/ARCHITECTURE.md.
 Sin dependencias: solo stdlib. Uso: python3 calibracion/calibrar.py
 """
 import json, math, urllib.request, statistics as st
