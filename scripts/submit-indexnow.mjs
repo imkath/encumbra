@@ -12,7 +12,7 @@ if (!sitemapResponse.ok) {
 }
 
 const sitemap = await sitemapResponse.text();
-const urls = [...sitemap.matchAll(/<loc>(https:\/\/encumbra\.nvrkth\.com[^<]+)<\/loc>/g)]
+const urls = [...sitemap.matchAll(/<loc>(https:\/\/encumbra\.nvrkth\.com[^<]*)<\/loc>/g)]
   .map((match) => match[1]);
 
 if (urls.length === 0) {
