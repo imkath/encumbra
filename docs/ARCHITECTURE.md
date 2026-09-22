@@ -30,6 +30,8 @@ Las superficies tienen responsabilidades separadas:
 | `/` | Explicar el valor y conducir a la aplicación |
 | `/app` | Explorar parques, planificar una salida y prepararse |
 | `/volar` | Consultar rápidamente el pronóstico y la dirección en terreno |
+| `/guia` | Agrupar contenido estable que explica viento, lugares y seguridad |
+| `/guia/*` | Responder una intención de búsqueda con evidencia y fuentes visibles |
 | `/api/pronostico` | Entregar la última instantánea validada |
 | `/api/ubicacion` | Resolver una consulta puntual y efímera de GPS |
 | `/api/calendario` | Exportar una ventana validada en formato iCalendar |
@@ -197,18 +199,33 @@ No se almacenan cuentas, nombres, correos ni coordenadas personales. Favoritos,
 tema y último pronóstico pueden quedar en el dispositivo. DMC nunca llega con
 sus credenciales al cliente.
 
-## 7. SEO, metadatos y PWA
+## 7. SEO, GEO, metadatos y PWA
 
 - títulos y descripciones por ruta;
 - canonical absoluto, Open Graph y Twitter Card;
 - imagen social generada por Next;
-- `robots.txt` y `sitemap.xml` tipados;
-- JSON-LD con `WebSite` y `WebApplication`, sin valoraciones ficticias;
-- metadatos geográficos para Santiago, sin afirmar geolocalización del usuario;
+- `robots.txt` y `sitemap.xml` tipados, con `lastmod` solo cuando es real;
+- JSON-LD `WebSite`, `WebApplication`, `Article` y `BreadcrumbList`, sin
+  valoraciones ni entidades ficticias;
+- tres guías con texto servido en HTML, autoría, revisión, fuentes primarias y
+  enlaces internos desde la portada;
+- ubicación expresada en el contenido y los datos, sin fingir que Encumbra es
+  un negocio local ni añadir páginas débiles por cada comuna;
+- verificación pública y comando manual de IndexNow para Bing y participantes;
 - manifest instalable, iconos `any` y `maskable`, shortcuts y service worker.
 
-Las APIs quedan fuera del sitemap y se bloquean en robots. Eso reduce indexación
-accidental, pero no se trata como un mecanismo de autorización.
+Las APIs quedan fuera del sitemap y se bloquean en robots. `/volar` usa
+`noindex, follow` y tampoco entra al sitemap porque depende del contexto elegido
+en la aplicación. Eso reduce indexación accidental, pero no se trata como un
+mecanismo de autorización.
+
+GEO se entiende como visibilidad en respuestas generativas, no como una capa de
+marcado separada. La guía vigente de Google no pide `llms.txt`, archivos de IA
+ni schema especial: exige que las páginas sean indexables, enlazables, útiles y
+coherentes entre texto y datos estructurados. Encumbra prioriza información
+propia y citable —bandas, metodología y catálogo con vigencia— sobre contenido
+escalado. Search Console y Bing Webmaster Tools siguen siendo necesarios para
+medir consultas reales y decidir futuras páginas, no se infieren volúmenes.
 
 ## 8. Operación y verificación
 
@@ -231,6 +248,7 @@ pnpm check
 pnpm audit --prod --audit-level high
 pnpm exec opennextjs-cloudflare build
 ENCUMBRA_BASE=http://localhost:3000 python3 scripts/smoke-firefox.py
+pnpm run indexnow # después del despliegue, solo si cambiaron URLs públicas
 ```
 
 El smoke oficial se ejecuta con Firefox visible y cubre consola, overflow,
@@ -258,6 +276,8 @@ actualizaciones de npm semanalmente y de GitHub Actions mensualmente.
 - Probar brújula y permisos en iPhone y Android físicos al aire libre.
 - Medir el costo real del primer JavaScript por ruta y seguir reduciéndolo sin
   retirar información de seguridad.
+- Verificar el dominio en Google Search Console y Bing Webmaster Tools, enviar
+  el sitemap y revisar consultas antes de ampliar el contenido editorial.
 - Confirmar periódicamente vigencia, horarios y autorización de los parques.
 - Revisar condiciones de los proveedores antes de cualquier uso comercial.
 - Dividir los componentes cliente principales cuando una frontera nueva reduzca

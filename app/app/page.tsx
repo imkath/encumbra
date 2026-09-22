@@ -4,7 +4,7 @@ import type { Perfil } from "@/lib/bandas.ts";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Parques y viento",
+  title: "Viento para volantines en parques de Santiago",
   description:
     "Compara el viento de parques de Santiago y planifica una salida según tu tipo de volantín.",
   alternates: { canonical: "/app" },

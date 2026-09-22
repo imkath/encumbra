@@ -24,6 +24,7 @@ La experiencia incluye:
 - observaciones recientes de estaciones DMC como referencia independiente;
 - catálogo y mapa de parques, con autorización y evidencia diferenciadas;
 - planificación para hoy o mañana, calendario y modo de consulta en terreno;
+- guías indexables sobre viento, parques y seguridad, con autoría y fuentes;
 - PWA responsive, tema claro/oscuro y funcionamiento degradado sin conexión.
 
 ## Ingeniería destacada
@@ -41,8 +42,8 @@ La experiencia incluye:
   Cloudflare, rate limit del endpoint de ubicación, timeouts de red, logs
   saneados y actualización automática de dependencias.
 - **Accesibilidad y descubrimiento.** Navegación por teclado, foco visible,
-  movimiento reducido, metadatos sociales, canonical, sitemap, robots,
-  manifest y JSON-LD sin reseñas ni atributos inventados.
+  movimiento reducido, contenido editorial enlazado, metadatos sociales,
+  canonical, sitemap, robots, manifest y JSON-LD verificable.
 
 ## Calidad verificada
 
@@ -56,7 +57,7 @@ en perfil móvil:
 | Best Practices | 100 |
 | SEO | 100 |
 
-La suite actual contiene **145 pruebas**. `pnpm check` ejecuta pruebas, ESLint,
+La suite actual contiene **147 pruebas**. `pnpm check` ejecuta pruebas, ESLint,
 TypeScript y el build optimizado. CI repite esa cadena y rechaza dependencias
 con vulnerabilidades altas conocidas.
 
@@ -115,6 +116,29 @@ El smoke test usa Firefox visible y requiere Playwright para Python:
 ```bash
 ENCUMBRA_BASE=http://localhost:3000 python3 scripts/smoke-firefox.py
 ```
+
+## Descubrimiento orgánico
+
+La portada y `/app` resuelven la consulta actual; `/guia` concentra contenido
+estable para búsquedas sobre volantines, viento, parques de Santiago y
+seguridad. Cada guía tiene título, descripción, canonical, enlaces internos,
+autoría, fecha de revisión, fuentes visibles y JSON-LD `Article` con
+`BreadcrumbList`. El sitemap publica solo URLs canónicas indexables con fechas
+reales; `/volar` permanece disponible, pero usa `noindex` porque es una vista
+contextual de terreno y no una respuesta autónoma.
+
+Después de desplegar contenido nuevo, se puede avisar a Bing y a los buscadores
+que participan en IndexNow:
+
+```bash
+pnpm run indexnow
+```
+
+El alta inicial y la medición requieren verificar el dominio en Google Search
+Console y Bing Webmaster Tools, enviar `https://encumbra.nvrkth.com/sitemap.xml`
+y revisar consultas, impresiones, CTR e indexación. No se añaden archivos
+especiales para IA ni páginas masivas por comuna: Google indica que sus
+experiencias generativas usan los mismos fundamentos SEO y contenido útil.
 
 ## Configuración de Cloudflare
 
