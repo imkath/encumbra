@@ -2,14 +2,16 @@
   "name": "encumbra-v2",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.18.0",
   "type": "module",
   "scripts": {
     "dev": "node scripts/vendor-maplibre.mjs && next dev",
-    "build": "npm run design:sync && node scripts/vendor-maplibre.mjs && next build --webpack",
+    "build": "node scripts/vendor-maplibre.mjs && next build --webpack",
+    "test": "node --test test/*.test.ts",
+    "check": "pnpm test && pnpm lint && pnpm build",
     "start": "next start",
     "lint": "eslint",
     "dev:check": "node scripts/vendor-maplibre.mjs && NEXT_DIST_DIR=.next-check next dev --webpack -p 3005",
-    "design:sync": "node scripts/sync-design-system.mjs",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
@@ -22,15 +24,19 @@
   },
   "devDependencies": {
     "@opennextjs/cloudflare": "^1.20.6",
-    "@tailwindcss/postcss": "^4",
     "@types/geojson": "^7946.0.16",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.4",
-    "tailwindcss": "^4",
     "typescript": "^5",
     "wrangler": "^4.130.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "@babel/core": "7.29.7",
+      "browserslist": "4.29.0"
+    }
   }
 }

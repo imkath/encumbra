@@ -3,6 +3,14 @@ import { Vivo } from "@/components/Vivo.tsx";
 import type { Perfil } from "@/lib/bandas.ts";
 import { getPronostico } from "@/server/pronostico.ts";
 import { ZONAS } from "@/lib/zonas.ts";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Modo de terreno",
+  description:
+    "Consulta en terreno el viento, las rachas, la dirección y el tiempo de luz disponible.",
+  alternates: { canonical: "/volar" },
+};
 
 export const dynamic = "force-dynamic";
 

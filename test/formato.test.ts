@@ -4,6 +4,7 @@ import { describe, test } from "node:test";
 import {
   formatearDesdeAhora,
   formatearHora,
+  formatearUbicacionModelo,
   formatearVelocidad,
   formatearVentana,
   minutosLegibles,
@@ -18,6 +19,13 @@ describe("formato", () => {
   test("redondea la velocidad sin falsa precisión", () => {
     assert.equal(formatearVelocidad(14.4), "14 km/h");
     assert.equal(formatearVelocidad(14.6), "15 km/h");
+  });
+
+  test("explica el punto de modelo sin confundirlo con el GPS", () => {
+    assert.equal(
+      formatearUbicacionModelo("Macul", 1.94),
+      "Macul · modelo a 1,9 km del GPS",
+    );
   });
 
   test("describe una ventana horaria sin librería de fechas", () => {

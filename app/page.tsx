@@ -1,4 +1,6 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
+import { headers } from "next/headers";
 import { VEREDICTOS, COLETILLAS, CONSEJOS, ETIQUETAS } from "@/lib/bandas.ts";
 import {
   formatearHora,
@@ -14,6 +16,7 @@ import { ReglaBandas } from "@/components/ReglaBandas.tsx";
 import { Cielo } from "@/components/Cielo.tsx";
 import { VolantinPapel } from "@/components/VolantinPapel.tsx";
 import { SelectorTema } from "@/components/SelectorTema.tsx";
+import { DATOS_ESTRUCTURADOS, serializarJsonLd } from "@/lib/seo.ts";
 
 export const dynamic = "force-dynamic";
 
@@ -42,7 +45,8 @@ function nombreLugar(p: LecturaParque): string {
 }
 
 export default async function Landing({ searchParams }: Props) {
-  const params = await searchParams;
+  const [params, cabeceras] = await Promise.all([searchParams, headers()]);
+  const nonce = cabeceras.get("x-nonce") ?? undefined;
   // Links shared before the app moved to /app must keep working.
   const heredados = new URLSearchParams();
   for (const clave of DEEP_LINK) {
@@ -68,10 +72,17 @@ export default async function Landing({ searchParams }: Props) {
 
   return (
     <div className="portada">
+      <script
+        type="application/ld+json"
+        nonce={nonce}
+        dangerouslySetInnerHTML={{
+          __html: serializarJsonLd(DATOS_ESTRUCTURADOS),
+        }}
+      />
       <header className="portada-barra">
-        <a className="portada-logo" href="/app" aria-label="Encumbra">
+        <Link className="portada-logo" href="/app" aria-label="Encumbra">
           <Marca />
-        </a>
+        </Link>
         <div className="portada-barra__acciones">
           <span className="portada-ciudad">Santiago, Chile</span>
           <SelectorTema />
@@ -90,10 +101,10 @@ export default async function Landing({ searchParams }: Props) {
             dice en cuál vuela tu volantín, a qué hora y con cuál. En el parque
             sigue funcionando sin señal.
           </p>
-          <a className="portada-accion" href="/app">
+          <Link className="portada-accion" href="/app">
             Ver los parques
             <Icono nombre="flecha" />
-          </a>
+          </Link>
           <p className="portada-firma">El cielo es tuyo.</p>
         </div>
 
@@ -146,7 +157,7 @@ export default async function Landing({ searchParams }: Props) {
         </aside>
       </section>
 
-      <main>
+      <main id="contenido-principal">
         {/* Three steps, because "what do I do with this" is the next question. */}
         <section className="portada-pasos">
           <h2>Cómo se usa</h2>
@@ -192,7 +203,7 @@ export default async function Landing({ searchParams }: Props) {
                 data-paleta={p.banda ?? "sin-datos"}
                 style={{ "--orden": i } as React.CSSProperties}
               >
-                <a href={`/app?parque=${p.id}&zona=${p.zonaId}`}>
+                <Link href={`/app?parque=${p.id}&zona=${p.zonaId}`}>
                   <span className="portada-rombo__papel superficie-mate" aria-hidden="true" />
                   <span className="portada-rombo__dentro">
                     <span className="portada-rombo__puesto">{i + 1}</span>
@@ -204,14 +215,14 @@ export default async function Landing({ searchParams }: Props) {
                       {p.banda ? ETIQUETAS[p.banda] : "sin dato"}
                     </span>
                   </span>
-                </a>
+                </Link>
               </li>
             ))}
           </ol>
-          <a className="portada-vertodos" href="/app">
+          <Link className="portada-vertodos" href="/app">
             Verlos todos en el mapa
             <Icono nombre="flecha" />
-          </a>
+          </Link>
         </section>
 
         <section className="portada-cielo">
@@ -238,10 +249,10 @@ export default async function Landing({ searchParams }: Props) {
       </main>
 
       <footer className="portada-pie">
-        <a className="portada-accion" href="/app">
+        <Link className="portada-accion" href="/app">
           Abrir Encumbra
           <Icono nombre="flecha" />
-        </a>
+        </Link>
         <p>
           Pronóstico de Open-Meteo. Observaciones de la Dirección Meteorológica
           de Chile cuando están disponibles. Cartografía de OpenFreeMap,

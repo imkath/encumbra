@@ -3,6 +3,11 @@ import { distanciaKm, type Coordenadas } from "./coordenadas.ts";
 const NUDOS_A_KMH = 1.852;
 const FRESCURA_OBSERVACION_MS = 20 * 60 * 1000;
 const ESTACIONES_SANTIAGO = new Set(["330019", "330020", "330021"]);
+const NOMBRES_OFICIALES: Readonly<Record<string, string>> = {
+  "330019": "Eulogio Sánchez, Tobalaba Ad.",
+  "330020": "Quinta Normal, Santiago",
+  "330021": "Pudahuel Santiago",
+};
 const NOMBRES_CORTOS: Readonly<Record<string, string>> = {
   "330019": "Tobalaba",
   "330020": "Quinta Normal",
@@ -184,7 +189,7 @@ export function normalizarObservacionesDmc(payload: unknown): ObservacionDmc[] {
           {
             fuente: "DMC",
             codigoEstacion: codigo,
-            nombreEstacion: nombre,
+            nombreEstacion: NOMBRES_OFICIALES[codigo] ?? nombre.trim(),
             lat,
             lon,
             ...ultima,

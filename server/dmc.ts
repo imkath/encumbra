@@ -49,7 +49,8 @@ export async function cargarObservacionesDmc(
         exitos += 1;
         return observaciones;
       } catch (error) {
-        reportarError(error);
+        const detalle = error instanceof Error ? error.name : "Error";
+        reportarError(new Error(`Consulta DMC fallida (${detalle})`));
         return [];
       }
     }),

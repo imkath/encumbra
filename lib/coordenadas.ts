@@ -51,6 +51,9 @@ const texto = (valor: unknown): string | null =>
     ? valor.trim()
     : null;
 
+const TIMEOUT_METEO_MS = 10_000;
+const TIMEOUT_GEOCODIFICACION_MS = 5_000;
+
 export function crearUrlGeocodificacion(coordenadas: Coordenadas): string {
   const reducidas = redondearCoordenadas(coordenadas);
   const parametros = new URLSearchParams({
@@ -150,6 +153,7 @@ export async function cargarComparacionModelos(
   const solicitar = (modelo: "icon_seamless" | "ecmwf_ifs") =>
     fetcher(crearUrlOpenMeteo([punto], { modelo, celda: "nearest" }), {
       next: { revalidate: 600 },
+      signal: AbortSignal.timeout(TIMEOUT_METEO_MS),
     }).catch(() => null);
   const [respuestaIcon, respuestaEcmwf] = await Promise.all([
     solicitar("icon_seamless"),
@@ -264,6 +268,7 @@ export async function cargarPronosticoUbicacion(
   const [respuestaMeteo, comparaciones, respuestaLugar] = await Promise.all([
     fetcher(crearUrlOpenMeteo([punto], { modelo: null, celda: "nearest" }), {
       next: { revalidate: 600 },
+      signal: AbortSignal.timeout(TIMEOUT_METEO_MS),
     }),
     cargarComparacionModelos(fetcher, punto, ahora),
     fetcher(crearUrlGeocodificacion(coordenadas), {
@@ -273,6 +278,7 @@ export async function cargarPronosticoUbicacion(
         "User-Agent": "Encumbra/1.0 (https://encumbra.nvrkth.com)",
       },
       next: { revalidate: 86400 },
+      signal: AbortSignal.timeout(TIMEOUT_GEOCODIFICACION_MS),
     }).catch(() => null),
   ]);
 

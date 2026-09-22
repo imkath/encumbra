@@ -50,6 +50,23 @@ describe("cliente DMC del servidor", () => {
     assert.equal(errores.length, 3);
   });
 
+  test("un error de red nunca expone credenciales en los registros", async () => {
+    const errores: unknown[] = [];
+    const token = "token-que-no-debe-aparecer";
+    await cargarObservacionesDmc(
+      async (entrada) => {
+        throw new Error(`falló ${entrada}`);
+      },
+      { usuario: "correo+privado@example.com", token },
+      (error) => errores.push(error),
+    );
+
+    const registro = errores.map(String).join("\n");
+    assert.doesNotMatch(registro, /correo\+privado/);
+    assert.doesNotMatch(registro, new RegExp(token));
+    assert.match(registro, /DMC/);
+  });
+
   test("consulta solo las tres estaciones de Santiago y conserva éxitos parciales", async () => {
     const solicitadas: string[] = [];
     const resultado = await cargarObservacionesDmc(

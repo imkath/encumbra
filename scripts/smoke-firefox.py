@@ -3,7 +3,11 @@ import os
 import re
 from pathlib import Path
 
-from playwright.sync_api import TimeoutError as PlaywrightTimeoutError, sync_playwright
+from playwright.sync_api import (
+    TimeoutError as PlaywrightTimeoutError,
+    expect,
+    sync_playwright,
+)
 
 
 BASE = os.environ.get("ENCUMBRA_BASE", "http://127.0.0.1:3000").rstrip("/")
@@ -103,21 +107,25 @@ with sync_playwright() as p:
     assert selector_portada_movil.get_attribute("aria-checked") == "false"
     selector_portada_movil.focus()
     pagina.keyboard.press("Space")
-    pagina.wait_for_function("document.documentElement.dataset.theme === 'dark'")
+    expect(pagina.locator("html")).to_have_attribute("data-theme", "dark")
     assert selector_portada_movil.get_attribute("aria-checked") == "true"
-    pagina.wait_for_function(
-        "getComputedStyle(document.querySelector('.selector-tema__luna')).opacity === '1'"
-    )
+    expect(pagina.locator(".selector-tema__luna")).to_have_css("opacity", "1")
     pagina.wait_for_timeout(500)
     pagina.screenshot(path=str(SALIDAS / "portada-mobile-dark.png"), full_page=True)
     pagina.keyboard.press("Space")
-    pagina.wait_for_function("document.documentElement.dataset.theme === 'light'")
+    expect(pagina.locator("html")).to_have_attribute("data-theme", "light")
     movil.close()
 
     escritorio = browser.new_context(
         viewport={"width": 1440, "height": 1000},
         color_scheme="dark",
         locale="es-CL",
+    )
+    # Firefox no aplica siempre la emulación de prefers-color-scheme en macOS.
+    # La preferencia explícita prueba la misma ruta determinista de la app.
+    escritorio.add_init_script(
+        "if (!localStorage.getItem('encumbra:tema')) "
+        "localStorage.setItem('encumbra:tema', 'dark')"
     )
     pagina = escritorio.new_page()
     pagina.on("console", lambda mensaje: errores.append(mensaje.text) if mensaje.type == "error" else None)
@@ -136,9 +144,7 @@ with sync_playwright() as p:
     selector_tema.click()
     assert pagina.locator("html").get_attribute("data-theme") == "light"
     assert selector_tema.get_attribute("aria-checked") == "false"
-    pagina.wait_for_function(
-        "getComputedStyle(document.querySelector('.selector-tema__sol')).opacity === '1'"
-    )
+    expect(pagina.locator(".selector-tema__sol")).to_have_css("opacity", "1")
     assert pagina.locator(".selector-tema__sol").evaluate(
         "elemento => getComputedStyle(elemento).opacity"
     ) == "1"

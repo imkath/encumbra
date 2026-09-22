@@ -27,8 +27,10 @@ export async function GET(request: Request): Promise<Response> {
     return Response.json(adjuntarObservaciones(resultado, observaciones), {
       headers: SIN_CACHE,
     });
-  } catch (error) {
-    console.error("No se pudo cargar el pronóstico para la ubicación", error);
+  } catch {
+    // El error de fetch puede incluir la URL y, con ella, la coordenada reducida.
+    // El mensaje operativo basta para observar el fallo sin registrar ubicación.
+    console.error("No se pudo cargar el pronóstico para la ubicación");
     return Response.json(
       { error: "Pronóstico para la ubicación no disponible" },
       { status: 502, headers: SIN_CACHE },
