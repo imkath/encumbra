@@ -82,9 +82,14 @@ test("acepta solo coordenadas válidas dentro del alcance de Santiago", () => {
 test("carga Best Match y contrasta ICON con ECMWF para la ubicación", async () => {
   assert.equal(typeof coordenadas.cargarPronosticoUbicacion, "function");
   const urls: URL[] = [];
-  const fetcher = async (input: string | URL | Request) => {
+  const senales: (AbortSignal | null | undefined)[] = [];
+  const fetcher = async (
+    input: string | URL | Request,
+    init?: RequestInit,
+  ) => {
     const url = new URL(String(input));
     urls.push(url);
+    senales.push(init?.signal);
     if (url.hostname === "nominatim.openstreetmap.org") {
       return Response.json({
         name: "Macul",
@@ -135,6 +140,8 @@ test("carga Best Match y contrasta ICON con ECMWF para la ubicación", async () 
   assert.equal(resultado.comparaciones.length, 48);
   assert.equal(resultado.comparaciones[0]?.icon.viento, 7.6);
   assert.equal(resultado.comparaciones[0]?.ecmwf.viento, 24);
+  assert.equal(senales.length, 4);
+  assert.ok(senales.every((signal) => signal instanceof AbortSignal));
 });
 
 test("declara incertidumbre solo cuando los modelos cambian la decisión", () => {

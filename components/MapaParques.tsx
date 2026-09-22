@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import "maplibre-gl/dist/maplibre-gl.css";
 import type { Map as Mapa, Marker, GeoJSONSource } from "maplibre-gl";
 import type { FeatureCollection, Point } from "geojson";
 import type { LecturaParque } from "@/lib/salida.ts";
@@ -151,7 +152,12 @@ export default function MapaParques({ parques, seleccionado, ubicacion, elegir }
 
   return (
     <div className="mapa-superficie">
-      <div ref={contenedor} className="mapa-lienzo" aria-label="Mapa de parques de Santiago" />
+      <div
+        ref={contenedor}
+        className="mapa-lienzo"
+        role="region"
+        aria-label="Mapa de parques de Santiago; la lista ofrece la misma selección"
+      />
       {!listo && !error ? <span className="mapa-cargando" role="status">Abriendo Santiago…</span> : null}
       {error ? <div className="mapa-error" role="status">
         <span>El mapa no cargó completo. La lista sigue disponible.</span>

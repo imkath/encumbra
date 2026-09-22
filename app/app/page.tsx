@@ -1,6 +1,14 @@
 import { EncumbraApp } from "@/components/EncumbraApp.tsx";
 import { getPronostico } from "@/server/pronostico.ts";
 import type { Perfil } from "@/lib/bandas.ts";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Parques y viento",
+  description:
+    "Compara el viento de parques de Santiago y planifica una salida según tu tipo de volantín.",
+  alternates: { canonical: "/app" },
+};
 export const dynamic = "force-dynamic";
 type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;

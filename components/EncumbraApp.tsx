@@ -24,8 +24,10 @@ import {
 import {
   formatearDesdeAhora,
   formatearHora,
+  formatearUbicacionModelo,
   formatearVelocidad,
 } from "@/lib/formato.ts";
+import { rutaApp } from "@/lib/navegacion.ts";
 import {
   esPronosticoUbicacion,
   modelosDiscrepan,
@@ -336,7 +338,7 @@ export function EncumbraApp({
       params.set("parque", id);
       params.set("zona", p.zonaId);
     }
-    history.pushState(null, "", `/app?${params}`);
+    history.pushState(null, "", rutaApp(params));
     requestAnimationFrame(() => {
       contenido.current?.scrollTo(0, 0);
       titulo.current?.focus({ preventScroll: true });
@@ -347,7 +349,7 @@ export function EncumbraApp({
     setHoraElegida(null);
     const params = new URLSearchParams(location.search);
     params.set("perfil", p);
-    history.replaceState(null, "", `/?${params}`);
+    history.replaceState(null, "", rutaApp(params));
   }
   function guardar(id: string) {
     const nuevo = favoritos.includes(id)
@@ -520,7 +522,7 @@ export function EncumbraApp({
           <span>Prepararme</span>
         </button>
       </nav>
-      <main className={`app-main app-main--${vista}`}>
+      <main id="contenido-principal" className={`app-main app-main--${vista}`}>
         <div className="app-screen" ref={contenido}>
           {vista === "parques" ? (
             <>
@@ -574,7 +576,12 @@ export function EncumbraApp({
                             : "Viento no disponible por ahora"}
                         </span>
                         <small>
-                          Pronóstico de la celda más cercana. No necesitas elegir un parque.
+                          {detalleUbicacion
+                            ? formatearUbicacionModelo(
+                                detalleUbicacion.lugar.nombre,
+                                detalleUbicacion.distanciaCeldaKm,
+                              )
+                            : "Pronóstico temporal de la celda disponible más cercana."}
                         </small>
                       </div>
                       <span className="donde-estoy__acciones">

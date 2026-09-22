@@ -124,6 +124,25 @@ describe("observaciones DMC", () => {
     );
   });
 
+  test("normaliza el nombre oficial aunque la fuente llegue con mojibake", () => {
+    const tobalaba = payload.datosEstaciones[1]!;
+    const individual = {
+      ...payload,
+      datosEstaciones: {
+        ...tobalaba,
+        estacion: {
+          ...tobalaba.estacion,
+          nombreEstacion: "Eulogio SÃ¡nchez, Tobalaba Ad.",
+        },
+      },
+    };
+
+    assert.equal(
+      normalizarObservacionesDmc(individual)[0]?.nombreEstacion,
+      "Eulogio Sánchez, Tobalaba Ad.",
+    );
+  });
+
   test("elige solo una estación cercana con medición fresca", () => {
     const observaciones = normalizarObservacionesDmc(payload);
     const cercana = observacionMasCercana(

@@ -16,6 +16,13 @@
       "id": "9b198bd8419f4651af5cf849d865c7ce"
     }
   ],
+  "ratelimits": [
+    {
+      "name": "LOCATION_RATE_LIMITER",
+      "namespace_id": "22092601",
+      "simple": { "limit": 30, "period": 60 }
+    }
+  ],
   "triggers": { "crons": ["*/10 * * * *"] },
   "observability": { "enabled": true }
 }

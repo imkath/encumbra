@@ -597,6 +597,7 @@ export function Vivo({
   if (!zona || !hora || !tieneDatos(pronostico)) {
     return (
       <main
+        id="contenido-principal"
         className="vivo vivo--midiendo superficie-mate"
         data-banda="sin-datos"
         data-paleta="sin-datos"
@@ -644,7 +645,7 @@ export function Vivo({
     Date.parse(ventana.hasta) <= Date.parse(luz.fecha);
 
   return (
-    <main className="vivo superficie-mate" data-banda={hora.banda} data-paleta={luz.tipo === "terminada" ? "noche" : hora.banda}>
+    <main id="contenido-principal" className="vivo superficie-mate" data-banda={hora.banda} data-paleta={luz.tipo === "terminada" ? "noche" : hora.banda}>
       <VolantinCampo
         banda={hora.banda}
         perfil={perfilInicial}
