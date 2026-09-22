@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   description:
     "Consulta en terreno el viento, las rachas, la dirección y el tiempo de luz disponible.",
   alternates: { canonical: "/volar" },
+  robots: { index: false, follow: true },
 };
 
 export const dynamic = "force-dynamic";

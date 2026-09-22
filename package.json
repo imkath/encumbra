@@ -14,6 +14,7 @@
     "dev:check": "node scripts/vendor-maplibre.mjs && NEXT_DIST_DIR=.next-check next dev --webpack -p 3005",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "indexnow": "node scripts/submit-indexnow.mjs",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {

@@ -92,6 +92,7 @@ export default async function Landing({ searchParams }: Props) {
       {/* Say what this is before showing what it knows. */}
       <section className="portada-hero">
         <div className="portada-decir">
+          <p className="portada-ceja">Viento para volantines en Santiago</p>
           <h1 className="portada-titular">
             <span className="portada-titular__grito">¿anda</span>
             <span className="portada-titular__hueco">o no anda?</span>
@@ -246,6 +247,35 @@ export default async function Landing({ searchParams }: Props) {
             mira el árbol antes de armar.
           </p>
         </section>
+
+        <section className="portada-aprender" aria-labelledby="aprender-titulo">
+          <div className="portada-aprender__intro">
+            <p className="portada-ceja">Antes de salir</p>
+            <h2 id="aprender-titulo">Viento, lugares y seguridad</h2>
+            <p>
+              Guías cortas, con datos de Encumbra y fuentes oficiales, para
+              entender la recomendación y elegir bien dónde encumbrar.
+            </p>
+          </div>
+          <div className="portada-aprender__enlaces">
+            <Link href="/guia/viento-para-volantines">
+              <span>01 · Viento</span>
+              <strong>¿Cuánto viento necesita un volantín?</strong>
+            </Link>
+            <Link href="/guia/donde-encumbrar-volantines-santiago">
+              <span>02 · Santiago</span>
+              <strong>Dónde encumbrar volantines</strong>
+            </Link>
+            <Link href="/guia/seguridad-al-encumbrar-volantines">
+              <span>03 · Seguridad</span>
+              <strong>Cómo preparar una salida segura</strong>
+            </Link>
+          </div>
+          <Link className="portada-vertodos" href="/guia">
+            Ver todas las guías
+            <Icono nombre="flecha" />
+          </Link>
+        </section>
       </main>
 
       <footer className="portada-pie">
@@ -258,6 +288,9 @@ export default async function Landing({ searchParams }: Props) {
           de Chile cuando están disponibles. Cartografía de OpenFreeMap,
           OpenMapTiles y OpenStreetMap.
         </p>
+        <Link className="portada-contacto" href="/guia">
+          Guías para encumbrar volantines
+        </Link>
         <a className="portada-contacto" href="https://nvrkth.com" target="_blank" rel="noopener noreferrer">
           Contacto y sugerencias · nvrkth ↗
         </a>

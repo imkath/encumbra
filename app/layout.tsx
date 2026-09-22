@@ -17,7 +17,7 @@ const archivo = Archivo({
 export const metadata: Metadata = {
   metadataBase: new URL(SITIO_URL),
   title: {
-    default: "Encumbra | Pronóstico para volantines en Santiago",
+    default: "¿Hay viento para volantines en Santiago? | Encumbra",
     template: "%s · Encumbra",
   },
   description: SITIO_DESCRIPCION,
@@ -25,13 +25,6 @@ export const metadata: Metadata = {
   authors: [{ name: "nvrkth", url: "https://nvrkth.com" }],
   creator: "nvrkth",
   category: "weather",
-  keywords: [
-    "volantines",
-    "viento Santiago",
-    "parques Santiago",
-    "pronóstico de viento",
-    "encumbrar volantines",
-  ],
   robots: {
     index: true,
     follow: true,
@@ -47,12 +40,12 @@ export const metadata: Metadata = {
     locale: "es_CL",
     url: SITIO_URL,
     siteName: "Encumbra",
-    title: "Encumbra | ¿Anda o no anda?",
+    title: "¿Hay viento para volantines en Santiago? | Encumbra",
     description: SITIO_DESCRIPCION,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Encumbra | ¿Anda o no anda?",
+    title: "¿Hay viento para volantines en Santiago? | Encumbra",
     description: SITIO_DESCRIPCION,
   },
   alternates: { canonical: "/" },
@@ -60,10 +53,6 @@ export const metadata: Metadata = {
     capable: true,
     title: "Encumbra",
     statusBarStyle: "black-translucent",
-  },
-  other: {
-    "geo.region": "CL-RM",
-    "geo.placename": "Santiago de Chile",
   },
 };
 
