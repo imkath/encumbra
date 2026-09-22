@@ -12,10 +12,15 @@ Producción: **[encumbra.nvrkth.com/app](https://encumbra.nvrkth.com/app)**
 - 15 recintos con autorización respaldada y parques adicionales elegibles,
   como Araucano, con permiso sin confirmar visible en su ficha. Bicentenario de
   Vitacura consta como confirmado directamente por su administración.
-- Pronóstico horario para seis celdas de ICON en Santiago.
+- Pronóstico horario para seis celdas de ICON en Santiago y, bajo una acción
+  explícita, para el punto de modelo más cercano a la ubicación actual.
 - Perfiles de volantín liviano, tradicional con cola y acrobático.
-- Ubicación explícita como destino propio de «Mi salida», sin asociarla a un
-  parque ni guardar la coordenada.
+- Ubicación explícita como destino propio de «Mi salida», con GPS de alta
+  precisión, comuna visible y coordenada reducida a tres decimales antes de
+  consultar el servidor; no se asocia a un parque ni se persiste.
+- Best Match de Open-Meteo como pronóstico puntual, contrastado hora a hora con
+  ICON y ECMWF. Si ambos modelos cambian la decisión para el volantín elegido,
+  se informa `Pronóstico incierto` en vez de promediarlos.
 - Lista, búsqueda, favoritos y mapa MapLibre diferido.
 - Planificación para hoy o mañana, luz, lluvia y calendario.
 - Modo de terreno que conserva el último dato disponible sin señal y muestra
@@ -32,12 +37,16 @@ Producción: **[encumbra.nvrkth.com/app](https://encumbra.nvrkth.com/app)**
 - Next.js 16, React 19 y TypeScript.
 - Server Components por defecto y exactamente dos fronteras `use client`.
 - Lógica de dominio pura en `lib/`.
-- Open-Meteo `icon_seamless` como fuente de pronóstico y DMC como capa
-  observada opcional; la estación no reemplaza ni recalibra el veredicto.
+- Open-Meteo `icon_seamless` como fuente de las zonas y Best Match como fuente
+  del punto solicitado. ICON y ECMWF se comparan, no se promedian. DMC sigue
+  siendo una capa observada; la estación no reemplaza ni recalibra el veredicto.
 - Cloudflare Cron cada 10 minutos: valida el pronóstico y lo guarda en una sola
   clave de Workers KV junto con las observaciones normalizadas. Las visitas
   productivas solo leen KV.
 - Amanecer y puesta de sol calculados localmente.
+- Una muestra horaria de ICON, ECMWF y DMC por estación se conserva en KV por
+  35 días para validar sesgo y error antes de ponderar modelos. Nunca contiene
+  ubicaciones de usuarios.
 - Pruebas nativas de Node, sin framework adicional.
 - Sin librería de componentes, estado, fechas, gráficos, iconos ni fetch.
 
@@ -126,6 +135,8 @@ no se guardan en el repositorio ni llegan al navegador.
 - ICON aún no se ha validado contra una serie observada de la DMC.
 - DMC aporta una referencia observada cercana, no una medición dentro del
   parque; una estación ausente o con más de veinte minutos no se muestra.
+- El punto solicitado sigue siendo una celda de modelo. La distancia al centro
+  se muestra para no presentar la coordenada como una medición hiperlocal.
 - No hay fallback meteorológico activo: otro proveedor requiere credenciales y
   recalibración antes de poder emitir las mismas bandas.
 - Los encuentros comunitarios no se publican como lugares autorizados ni como

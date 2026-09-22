@@ -86,6 +86,36 @@ test("la salida desde ubicación usa la celda más cercana sin inventar un parqu
   assert.equal(lectura && "permiso" in lectura, false);
 });
 
+test("la salida prioriza el pronóstico solicitado para el GPS", () => {
+  const zonaBase = pronostico.zonas[0]!;
+  const lectura = lecturaUbicacion(
+    {
+      ...pronostico,
+      zonas: [
+        zonaBase,
+        {
+          ...zonaBase,
+          id: "ubicacion",
+          nombre: "Macul",
+          celda: { lat: -33.6, lon: -70.7 },
+          horas: zonaBase.horas.map((hora) => ({
+            ...hora,
+            viento: 22,
+            racha: 30,
+          })),
+        },
+      ],
+    },
+    "estandar",
+    ahora,
+    { lat: -33.402778, lon: -70.575556 },
+  );
+
+  assert.equal(lectura?.zonaId, "ubicacion");
+  assert.equal(lectura?.zonaNombre, "Macul");
+  assert.equal(lectura?.hora?.viento, 22);
+});
+
 test("sin una celda meteorológica no atribuye datos a la ubicación", () => {
   assert.equal(
     lecturaUbicacion(

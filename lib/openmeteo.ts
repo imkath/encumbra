@@ -10,6 +10,18 @@ const TIMEZONE = "America/Santiago";
 const MODELO = "icon_seamless";
 const REVALIDAR_SEGUNDOS = 10 * 60;
 
+export type ZonaSolicitada = {
+  readonly id: string;
+  readonly nombre: string;
+  readonly lat: number;
+  readonly lon: number;
+};
+
+type OpcionesConsulta = {
+  readonly modelo?: string | null;
+  readonly celda?: "land" | "sea" | "nearest";
+};
+
 type FetchPronostico = (
   input: string,
   init: RequestInit & { readonly next: { readonly revalidate: number } },
@@ -196,16 +208,21 @@ function conOffset(fechaLocal: string, offsetSegundos: number): string {
   return `${coincidencia[1]}:${segundos}${signo}${horasOffset}:${minutosOffset}`;
 }
 
-export function crearUrlOpenMeteo(): string {
+export function crearUrlOpenMeteo(
+  zonas: readonly ZonaSolicitada[] = ZONAS,
+  opciones: OpcionesConsulta = {},
+): string {
+  const modelo = opciones.modelo === undefined ? MODELO : opciones.modelo;
   const parametros = new URLSearchParams({
-    latitude: ZONAS.map(({ lat }) => lat).join(","),
-    longitude: ZONAS.map(({ lon }) => lon).join(","),
+    latitude: zonas.map(({ lat }) => lat).join(","),
+    longitude: zonas.map(({ lon }) => lon).join(","),
     hourly:
       "wind_speed_10m,wind_gusts_10m,wind_direction_10m,cloud_cover,weather_code,precipitation_probability",
     forecast_days: "2",
     timezone: TIMEZONE,
-    models: MODELO,
   });
+  if (modelo) parametros.set("models", modelo);
+  if (opciones.celda) parametros.set("cell_selection", opciones.celda);
 
   return `${OPEN_METEO_URL}?${parametros.toString()}`;
 }
@@ -213,14 +230,17 @@ export function crearUrlOpenMeteo(): string {
 export function crearPronostico(
   payload: unknown,
   actualizadoEn: string,
+  zonasSolicitadas: readonly ZonaSolicitada[] = ZONAS,
 ): Pronostico {
-  if (!Array.isArray(payload) || payload.length !== ZONAS.length) {
-    throw new Error("Open-Meteo debe devolver exactamente seis zonas");
+  const respuestas = Array.isArray(payload) ? payload : [payload];
+  if (respuestas.length !== zonasSolicitadas.length) {
+    const cantidad = zonasSolicitadas.length === 6 ? "seis" : zonasSolicitadas.length;
+    throw new Error(`Open-Meteo debe devolver exactamente ${cantidad} zonas`);
   }
 
-  const zonas = payload.map((valor, indice): ZonaPronostico => {
+  const zonas = respuestas.map((valor, indice): ZonaPronostico => {
     const origen = leerZona(valor);
-    const zona = ZONAS[indice];
+    const zona = zonasSolicitadas[indice];
 
     if (!zona) {
       throw new Error("No existe la zona solicitada");

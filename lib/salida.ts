@@ -130,14 +130,17 @@ export function lecturaUbicacion(
   ubicacion: Coordenadas,
   dia?: string,
 ) {
-  const zona = zonaMasCercana(
-    ubicacion,
-    pronostico.zonas.map((dato) => ({
-      ...dato,
-      lat: dato.celda.lat,
-      lon: dato.celda.lon,
-    })),
-  );
+  const solicitada = pronostico.zonas.find(({ id }) => id === "ubicacion");
+  const zona =
+    solicitada ??
+    zonaMasCercana(
+      ubicacion,
+      pronostico.zonas.map((dato) => ({
+        ...dato,
+        lat: dato.celda.lat,
+        lon: dato.celda.lon,
+      })),
+    );
   if (!zona) return null;
 
   return {

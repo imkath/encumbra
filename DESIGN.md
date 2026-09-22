@@ -196,7 +196,10 @@ Mi salida ofrece Hoy / mañana con selector compacto carbón. El día elegido co
 
 Mi salida permite alternar entre «Donde estoy» y «Parque elegido». La
 ubicación usa la misma composición de pronóstico, pero reemplaza permiso y
-direcciones por una explicación de la celda más cercana y su límite. No mostrar
+direcciones por comuna, distancia al punto de modelo y su límite. Cuando ICON
+y ECMWF cambian la banda para el perfil elegido, una alerta secundaria dice
+«Pronóstico incierto»; no compite con el veredicto ni inventa un promedio. La
+observación DMC usa una línea compacta bajo los valores principales. No mostrar
 «Cómo llegar» ni atribuir autorización a una coordenada personal.
 
 

@@ -86,8 +86,12 @@ with sync_playwright() as p:
         )
     pagina.screenshot(path=str(SALIDAS / "app-mobile-ubicacion.png"), full_page=True)
     assert pagina.get_by_text("Cómo llegar", exact=True).count() == 0
+    encabezado_ubicacion = pagina.locator(".salida-screen .app-heading").inner_text()
+    assert "Celda meteorológica" not in encabezado_ubicacion
+    assert "modelo a" in encabezado_ubicacion
+    assert "Best Match" in pagina.locator(".nota-modelo").inner_text()
     resultados.append({
-        "ubicacion": pagina.locator(".salida-screen .app-heading").inner_text(),
+        "ubicacion": encabezado_ubicacion,
         "accion_terreno": pagina.get_by_text("Ya estoy afuera", exact=True).inner_text(),
     })
     pagina.get_by_role("button", name="Parques", exact=True).click()

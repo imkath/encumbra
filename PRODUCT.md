@@ -62,9 +62,14 @@ otros parques con permiso sin confirmar. «Explorar todos los parques», el mapa
 permiso visible. Guardarlos o elegirlos no cambia esa condición.
 
 «Mi salida» acepta dos destinos equivalentes: un parque elegido o «donde
-estoy». El segundo usa la celda ICON más cercana, no hereda permiso ni nombre
-de un parque, no ofrece indicaciones para llegar y vuelve a pedir ubicación al
-recargar porque la coordenada no se guarda.
+estoy». El segundo solicita GPS de alta precisión, reduce la coordenada a tres
+decimales antes de enviarla, muestra la comuna obtenida de OpenStreetMap y usa
+Best Match de Open-Meteo para el punto de modelo más cercano. Contrasta ICON y
+ECMWF sin promediarlos; si ambos producen bandas distintas para el perfil
+elegido, muestra `Pronóstico incierto`. La observación DMC cercana permanece
+separada y visible con estación, distancia y antigüedad. No hereda permiso ni
+nombre de un parque, no ofrece indicaciones para llegar y vuelve a pedir la
+ubicación al recargar porque la coordenada no se guarda.
 
 ## Corrección explícita de experiencia
 El usuario rechazó el formato de página interminable. La superficie principal
