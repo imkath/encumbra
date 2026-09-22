@@ -13,6 +13,7 @@ import {
 } from "./lib/cache-pronostico.ts";
 import { cargarComparacionModelos } from "./lib/coordenadas.ts";
 import type { ObservacionDmc } from "./lib/dmc.ts";
+import { limitarConsultaUbicacion, type Limitador } from "./lib/http.ts";
 import { crearCargadorPronostico } from "./lib/openmeteo.ts";
 import { cargarObservacionesDmc } from "./server/dmc.ts";
 
@@ -27,6 +28,7 @@ type AlmacenPronostico = {
 
 type Entorno = {
   PRONOSTICO: AlmacenPronostico;
+  LOCATION_RATE_LIMITER?: Limitador;
   DMC_USUARIO?: string;
   DMC_TOKEN?: string;
 };
@@ -120,7 +122,27 @@ async function actualizar(env: Entorno): Promise<void> {
 }
 
 const worker = {
-  fetch: handler.fetch,
+  async fetch(
+    request: Request,
+    env: Entorno,
+    ctx: ContextoEjecucion,
+  ): Promise<Response> {
+    if (
+      new URL(request.url).pathname === "/api/ubicacion" &&
+      env.LOCATION_RATE_LIMITER
+    ) {
+      try {
+        const limitada = await limitarConsultaUbicacion(
+          request,
+          env.LOCATION_RATE_LIMITER,
+        );
+        if (limitada) return limitada;
+      } catch {
+        console.error("No se pudo comprobar el límite de ubicación");
+      }
+    }
+    return handler.fetch(request, env, ctx);
+  },
   async scheduled(
     _event: EventoProgramado,
     env: Entorno,

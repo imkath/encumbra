@@ -17,7 +17,7 @@ export default function NotFound() {
           <Marca />
         </Link>
       </header>
-      <main className={styles.main}>
+      <main id="contenido-principal" className={styles.main}>
         <div className={styles.illustration} aria-hidden="true">
           <VolantinPerdido />
           <span className={styles.number}>404</span>

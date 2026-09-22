@@ -1,8 +1,4 @@
-@import "tailwindcss" source(none);
-@import "maplibre-gl/dist/maplibre-gl.css";
 @import "../public/design-tokens.css";
-@source "../app";
-@source "../components";
 
 :root {
   color-scheme: light;
@@ -148,6 +144,23 @@ a svg {
 :focus-visible {
   outline: 3px solid var(--app-action);
   outline-offset: 3px;
+}
+.skip-link {
+  position: fixed;
+  inset-block-start: 0.75rem;
+  inset-inline-start: 0.75rem;
+  z-index: 1000;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-control);
+  background: var(--app-action);
+  color: var(--app-selected-ink);
+  font-weight: 800;
+  text-decoration: none;
+  transform: translateY(calc(-100% - 1rem));
+  transition: transform var(--dur-tap) var(--ease-out);
+}
+.skip-link:focus-visible {
+  transform: translateY(0);
 }
 h1:focus {
   outline: none;

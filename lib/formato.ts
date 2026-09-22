@@ -14,6 +14,16 @@ export function formatearVelocidad(valor: number): string {
   return `${Math.round(valor)} km/h`;
 }
 
+export function formatearUbicacionModelo(
+  nombre: string,
+  distanciaKm: number,
+): string {
+  const distancia = distanciaKm.toLocaleString("es-CL", {
+    maximumFractionDigits: 1,
+  });
+  return `${nombre} · modelo a ${distancia} km del GPS`;
+}
+
 export function formatearVentana(inicio: string, fin: string): string {
   return `${formatearHora(inicio)}–${formatearHora(fin)}`;
 }
