@@ -9,6 +9,7 @@ import {
   empaquetarPronostico,
   leerPronosticoCache,
 } from "../lib/cache-pronostico.ts";
+import * as cache from "../lib/cache-pronostico.ts";
 
 test("la caché usa una sola clave estable", () => {
   assert.equal(CLAVE_PRONOSTICO, "pronostico:santiago:v1");
@@ -142,4 +143,60 @@ test("renueva la observación al llegar y conserva la anterior ante un fallo DMC
       ["330019", "330020"],
     );
   }
+});
+
+test("guarda muestras horarias por día y las vence después de cinco semanas", () => {
+  assert.equal(typeof cache.claveHistorialModelos, "function");
+  assert.equal(typeof cache.actualizarHistorialModelos, "function");
+  assert.equal(cache.HISTORIAL_TTL_SEGUNDOS, 35 * 24 * 60 * 60);
+  assert.equal(
+    cache.claveHistorialModelos("2026-09-22T12:03:00.000Z"),
+    "modelos:santiago:2026-09-22:v1",
+  );
+
+  const muestra = {
+    registradoEn: "2026-09-22T12:03:00.000Z",
+    estaciones: [
+      {
+        codigoEstacion: "330019",
+        nombreEstacion: "Tobalaba",
+        observadoEn: "2026-09-22T11:58:00.000Z",
+        observado: { viento: 12, racha: 18, direccion: 240 },
+        comparaciones: [
+          {
+            fecha: "2026-09-22T12:00:00-03:00",
+            icon: { viento: 10, racha: 16 },
+            ecmwf: { viento: 13, racha: 19 },
+          },
+        ],
+      },
+    ],
+  };
+  const inicial = cache.actualizarHistorialModelos(null, muestra);
+  const reemplazado = cache.actualizarHistorialModelos(
+    JSON.stringify(inicial),
+    { ...muestra, registradoEn: "2026-09-22T12:53:00.000Z" },
+  );
+  const siguiente = cache.actualizarHistorialModelos(
+    JSON.stringify(reemplazado),
+    { ...muestra, registradoEn: "2026-09-22T13:03:00.000Z" },
+  );
+
+  assert.equal(inicial.muestras.length, 1);
+  assert.equal(reemplazado.muestras.length, 1);
+  assert.equal(reemplazado.muestras[0]?.registradoEn, "2026-09-22T12:53:00.000Z");
+  assert.equal(siguiente.muestras.length, 2);
+});
+
+test("descarta un historial de modelos adulterado sin interrumpir el cron", () => {
+  const muestra = {
+    registradoEn: "2026-09-22T14:03:00.000Z",
+    estaciones: [],
+  };
+  const actualizado = cache.actualizarHistorialModelos(
+    JSON.stringify({ version: 1, dia: "2026-09-22", muestras: [{}] }),
+    muestra,
+  );
+
+  assert.deepEqual(actualizado.muestras, [muestra]);
 });

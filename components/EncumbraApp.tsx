@@ -21,7 +21,22 @@ import {
   lecturasParques,
   type LecturaParque,
 } from "@/lib/salida.ts";
-import { formatearHora } from "@/lib/formato.ts";
+import {
+  formatearDesdeAhora,
+  formatearHora,
+  formatearVelocidad,
+} from "@/lib/formato.ts";
+import {
+  esPronosticoUbicacion,
+  modelosDiscrepan,
+  OPCIONES_GEOLOCALIZACION,
+  redondearCoordenadas,
+  type PronosticoUbicacion,
+} from "@/lib/coordenadas.ts";
+import {
+  nombreCortoEstacionDmc,
+  observacionMasCercana,
+} from "@/lib/dmc.ts";
 import { cardinal, fraseDireccion } from "@/lib/viento.ts";
 import {
   leerPronosticoGuardado,
@@ -92,6 +107,8 @@ export function EncumbraApp({
   const [pronostico, setPronostico] = useState(inicial);
   const [ahora, setAhora] = useState(() => new Date(servidoEn));
   const [ubicacion, setUbicacion] = useState<Coordenadas | null>(null);
+  const [detalleUbicacion, setDetalleUbicacion] =
+    useState<PronosticoUbicacion | null>(null);
   const [localizando, setLocalizando] = useState(false);
   const [mensaje, setMensaje] = useState("");
   const [refrescando, setRefrescando] = useState(false);
@@ -154,6 +171,25 @@ export function EncumbraApp({
     addEventListener("popstate", restaurar);
     return () => removeEventListener("popstate", restaurar);
   }, []);
+  const cargarPunto = useCallback(
+    async (coordenadas: Coordenadas): Promise<PronosticoUbicacion> => {
+      const reducidas = redondearCoordenadas(coordenadas);
+      const parametros = new URLSearchParams({
+        lat: String(reducidas.lat),
+        lon: String(reducidas.lon),
+      });
+      const response = await fetch(`/api/ubicacion?${parametros}`, {
+        cache: "no-store",
+      });
+      if (!response.ok) throw new Error("pronóstico del punto no disponible");
+      const resultado: unknown = await response.json();
+      if (!esPronosticoUbicacion(resultado)) {
+        throw new Error("respuesta de ubicación inválida");
+      }
+      return resultado;
+    },
+    [],
+  );
   const actualizar = useCallback(async () => {
     setRefrescando(true);
     try {
@@ -165,6 +201,10 @@ export function EncumbraApp({
       );
       if (!data) throw new Error("sin datos");
       setPronostico(data);
+      if (ubicacion) {
+        const punto = await cargarPunto(ubicacion).catch(() => null);
+        if (punto) setDetalleUbicacion(punto);
+      }
       setAhora(new Date());
       setMensaje("Pronóstico actualizado.");
       try {
@@ -182,7 +222,7 @@ export function EncumbraApp({
     } finally {
       setRefrescando(false);
     }
-  }, []);
+  }, [cargarPunto, ubicacion]);
   useEffect(() => {
     const refrescarVisible = () => {
       if (document.visibilityState === "visible") void actualizar();
@@ -194,12 +234,13 @@ export function EncumbraApp({
       removeEventListener("online", refrescarVisible);
     };
   }, [actualizar]);
+  const pronosticoPunto = detalleUbicacion?.pronostico ?? pronostico;
   const parques = useMemo(
     () => lecturasParques(pronostico, perfil, ahora, ubicacion),
     [pronostico, perfil, ahora, ubicacion],
   );
   const lecturaAqui = ubicacion
-    ? lecturaUbicacion(pronostico, perfil, ahora, ubicacion)
+    ? lecturaUbicacion(pronosticoPunto, perfil, ahora, ubicacion)
     : null;
   const horaAqui = lecturaAqui?.hora ?? null;
   const parque = parques.find((p) => p.id === seleccionado) ?? parques[0]!;
@@ -232,11 +273,12 @@ export function EncumbraApp({
     fechaPlan,
   ).find((p) => p.id === parque.id)!;
   const planUbicacion = ubicacion
-    ? lecturaUbicacion(pronostico, perfil, ahora, ubicacion, fechaPlan)
+    ? lecturaUbicacion(pronosticoPunto, perfil, ahora, ubicacion, fechaPlan)
     : null;
   const plan = destino === "ubicacion" ? planUbicacion : planParque;
-  const actualizado = pronostico.estado === "actual";
-  const zonaElegida = pronostico.zonas.find((z) => z.id === plan?.zonaId);
+  const pronosticoPlan = destino === "ubicacion" ? pronosticoPunto : pronostico;
+  const actualizado = pronosticoPlan.estado === "actual";
+  const zonaElegida = pronosticoPlan.zonas.find((z) => z.id === plan?.zonaId);
   const luzDeHora = (fecha: string) => luzEnHorario(fecha, zonaElegida?.salidaSol ?? [], zonaElegida?.puestaSol ?? []);
   const hora = plan?.horas.find((h) => h.fecha === horaElegida)
     ?? (diaElegido === 0 ? plan?.horas[0] : plan?.horas.find((h) => plan.ventanaDiurna && Date.parse(h.fecha) >= Date.parse(plan.ventanaDiurna.inicio)))
@@ -250,6 +292,21 @@ export function EncumbraApp({
     }
   }, [fechaPlan, hora?.fecha, vista]);
   const contexto = contextoSalida(hora, hora ? luzDeHora(hora.fecha) : null, actualizado);
+  const comparacionHora = detalleUbicacion?.comparaciones.find(
+    ({ fecha }) => fecha === hora?.fecha,
+  );
+  const pronosticoIncierto =
+    destino === "ubicacion" &&
+    comparacionHora !== undefined &&
+    modelosDiscrepan(comparacionHora, perfil);
+  const medicionCercana =
+    destino === "ubicacion" && ubicacion && pronosticoPunto.estado !== "sin-datos"
+      ? observacionMasCercana(
+          pronosticoPunto.observaciones ?? [],
+          ubicacion,
+          ahora,
+        )
+      : null;
   const propuesto =
     orden === "adecuado" && actualizado && !busqueda
       ? ordenados.find((p, i) => i === 0 && p.banda === "ideal" && p.esDeDia)
@@ -315,18 +372,31 @@ export function EncumbraApp({
     setLocalizando(true);
     setMensaje("");
     navigator.geolocation.getCurrentPosition(
-      ({ coords }) => {
+      async ({ coords }) => {
         const coordenadas = { lat: coords.latitude, lon: coords.longitude };
         setUbicacion(coordenadas);
-        setLocalizando(false);
-        if (usarEnSalida) {
-          navegar("salida", seleccionado, "ubicacion", coordenadas);
+        try {
+          const detalle = await cargarPunto(coordenadas);
+          setDetalleUbicacion(detalle);
+          if (usarEnSalida) {
+            navegar("salida", seleccionado, "ubicacion", coordenadas);
+          }
+          setMensaje(
+            usarEnSalida
+              ? `Listo. Usamos el pronóstico para ${detalle.lugar.nombre}.`
+              : "Ubicación lista. Distancias en línea recta.",
+          );
+        } catch {
+          setDetalleUbicacion(null);
+          if (usarEnSalida) {
+            navegar("salida", seleccionado, "ubicacion", coordenadas);
+          }
+          setMensaje(
+            "Te ubicamos, pero no pudimos traer el pronóstico exacto. Mostramos temporalmente la celda disponible más cercana.",
+          );
+        } finally {
+          setLocalizando(false);
         }
-        setMensaje(
-          usarEnSalida
-            ? "Listo. Mi salida usa el pronóstico de la celda más cercana."
-            : "Ubicación lista. Distancias en línea recta.",
-        );
       },
       (err) => {
         setLocalizando(false);
@@ -336,7 +406,7 @@ export function EncumbraApp({
             : "No pudimos ubicarte. Reintenta o busca un parque.",
         );
       },
-      { timeout: 10000, maximumAge: 60000 },
+      OPCIONES_GEOLOCALIZACION,
     );
   }
   const elegirDesdeMapa = (id: string) => navegar("salida", id, "parque");
@@ -739,7 +809,9 @@ export function EncumbraApp({
                   <p>
                     {destino === "ubicacion"
                       ? plan
-                        ? `Celda meteorológica ${plan.zonaNombre}`
+                        ? detalleUbicacion
+                          ? `${detalleUbicacion.lugar.nombre} · modelo a ${distancia(detalleUbicacion.distanciaCeldaKm)} del GPS`
+                          : `Referencia temporal: ${plan.zonaNombre}`
                         : "Activa tu ubicación para preparar esta salida."
                       : `${parque.comuna}${
                           parque.distancia !== null
@@ -764,9 +836,8 @@ export function EncumbraApp({
                   {destino === "ubicacion" ? (
                     <p className="permiso-detalle permiso-detalle--ubicacion">
                       <Icono nombre="ubicacion" />
-                      El pronóstico usa la celda más cercana. No confirma que
-                      este lugar sea abierto, seguro ni autorizado para
-                      encumbrar.
+                      El GPS busca el punto de modelo más cercano. No confirma
+                      que este lugar sea abierto, seguro ni autorizado para encumbrar.
                     </p>
                   ) : (
                     <p className="permiso-detalle" data-permiso={parque.permiso}>
@@ -834,6 +905,16 @@ export function EncumbraApp({
                       <span><strong>{contexto.titulo}</strong>{contexto.detalle}</span>
                     </aside>
                   ) : null}
+                  {pronosticoIncierto ? (
+                    <aside className="contexto-aviso" data-estado="sin-datos">
+                      <Icono nombre="alerta" />
+                      <span>
+                        <strong>Pronóstico incierto</strong>
+                        ICON y ECMWF no coinciden para este volantín a esta
+                        hora. Revisa otra hora y confirma el viento al llegar.
+                      </span>
+                    </aside>
+                  ) : null}
                   <dl className="parte-viento__datos">
                     <div>
                       <dt>Viento</dt>
@@ -857,6 +938,37 @@ export function EncumbraApp({
                       </dd>
                     </div>
                   </dl>
+                  {medicionCercana ? (
+                    <dl
+                      className="medicion-salida"
+                      aria-label="Viento medido por una estación cercana de la Dirección Meteorológica de Chile"
+                    >
+                      <div>
+                        <dt>Medido cerca · DMC</dt>
+                        <dd>
+                          {formatearVelocidad(
+                            medicionCercana.observacion.viento,
+                          )}{" "}
+                          · racha {Math.round(
+                            medicionCercana.observacion.racha,
+                          )}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>Estación</dt>
+                        <dd>
+                          {nombreCortoEstacionDmc(
+                            medicionCercana.observacion.codigoEstacion,
+                          )}{" "}
+                          · a {distancia(medicionCercana.distanciaKm)} ·{" "}
+                          {formatearDesdeAhora(
+                            medicionCercana.observacion.observadoEn,
+                            ahora,
+                          )}
+                        </dd>
+                      </div>
+                    </dl>
+                  ) : null}
                 </section>
                 <div className="salida-plan">
                   <div className="ventana-salida">
@@ -931,15 +1043,16 @@ export function EncumbraApp({
                     </strong>
                   </div>
                   <p className="nota-modelo">
-                    Viento estimado para la zona {plan.zonaNombre}. Los lugares
-                    dentro de esa celda comparten pronóstico.
+                    {destino === "ubicacion" && detalleUbicacion
+                      ? `Pronóstico Best Match para ${detalleUbicacion.lugar.nombre}, contrastado con ICON y ECMWF. Sigue siendo una estimación de modelo; edificios y relieve pueden cambiar el viento en el lugar.`
+                      : `Viento estimado para la zona ${plan.zonaNombre}. Los lugares dentro de esa celda comparten pronóstico.`}
                   </p>
                 </div>
               </div>
               <div className="estado-pronostico">
                 <span>
-                  {pronostico.actualizadoEn
-                    ? `${actualizado ? "Actualizado" : "Último dato"} ${formatearHora(pronostico.actualizadoEn)} · Open-Meteo`
+                  {pronosticoPlan.actualizadoEn
+                    ? `${actualizado ? "Actualizado" : "Último dato"} ${formatearHora(pronosticoPlan.actualizadoEn)} · Open-Meteo`
                     : "Sin pronóstico disponible"}
                 </span>
                 <button
@@ -957,8 +1070,8 @@ export function EncumbraApp({
                   <span><Icono nombre="ubicacion" /></span>
                   <h2>Traigamos el viento hasta donde estás</h2>
                   <p>
-                    Tu ubicación se usa solo ahora para elegir la celda de
-                    pronóstico más cercana. No se guarda.
+                    Tu ubicación se usa solo ahora para pedir el pronóstico del
+                    punto de modelo más cercano. No se guarda.
                   </p>
                   <button
                     type="button"

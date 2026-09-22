@@ -36,6 +36,33 @@ describe("Open-Meteo", () => {
     assert.equal(url.toString().includes("gfs"), false);
   });
 
+  test("consulta una ubicación exacta sin reducirla a las seis zonas", () => {
+    const ubicacion = [
+      { id: "ubicacion", nombre: "Macul", lat: -33.49, lon: -70.6 },
+    ];
+    const url = new URL(
+      crearUrlOpenMeteo(ubicacion, { modelo: null, celda: "nearest" }),
+    );
+
+    assert.equal(url.searchParams.get("latitude"), "-33.49");
+    assert.equal(url.searchParams.get("longitude"), "-70.6");
+    assert.equal(url.searchParams.get("cell_selection"), "nearest");
+    assert.equal(url.searchParams.has("models"), false);
+  });
+
+  test("normaliza una respuesta individual para la ubicación solicitada", () => {
+    const resultado = crearPronostico(
+      fixture[0],
+      "2026-09-22T12:00:00.000Z",
+      [{ id: "ubicacion", nombre: "Macul", lat: -33.49, lon: -70.6 }],
+    );
+
+    assert.equal(resultado.estado, "actual");
+    assert.equal(resultado.zonas.length, 1);
+    assert.equal(resultado.zonas[0]?.id, "ubicacion");
+    assert.equal(resultado.zonas[0]?.nombre, "Macul");
+  });
+
   test("normaliza el payload real en seis zonas con bandas y ventanas", () => {
     const resultado = crearPronostico(fixture, "2026-08-31T12:00:00.000Z");
 

@@ -19,6 +19,13 @@ import {
   nombreCortoEstacionDmc,
   observacionMasCercana,
 } from "@/lib/dmc.ts";
+import {
+  esPronosticoUbicacion,
+  modelosDiscrepan,
+  OPCIONES_GEOLOCALIZACION,
+  redondearCoordenadas,
+  type ComparacionHora,
+} from "@/lib/coordenadas.ts";
 import type { Pronostico, ZonaPronostico } from "@/lib/openmeteo.ts";
 import { adaptarZonaAlPerfil, horaVigente } from "@/lib/planear.ts";
 import {
@@ -305,6 +312,14 @@ export function Vivo({
   const [pronostico, setPronostico] = useState<Pronostico>(inicial);
   const [ahora, setAhora] = useState(() => new Date(servidoEn));
   const [sinSenal, setSinSenal] = useState(inicial.estado !== "actual");
+  const [zonaActiva, setZonaActiva] = useState(zonaInicial);
+  const [coordenadasActuales, setCoordenadasActuales] = useState<{
+    readonly lat: number;
+    readonly lon: number;
+  } | null>(null);
+  const [comparaciones, setComparaciones] = useState<
+    readonly ComparacionHora[]
+  >([]);
   const [estadoBrujula, setEstadoBrujula] =
     useState<EstadoBrujula>("inactiva");
   const [rumboTelefono, setRumboTelefono] = useState<number | null>(null);
@@ -343,6 +358,47 @@ export function Vivo({
     return () => window.clearInterval(intervalo);
   }, []);
 
+  const cargarPunto = useCallback(
+    async (coordenadas: { readonly lat: number; readonly lon: number }) => {
+      const reducidas = redondearCoordenadas(coordenadas);
+      const parametros = new URLSearchParams({
+        lat: String(reducidas.lat),
+        lon: String(reducidas.lon),
+      });
+      const respuesta = await fetch(`/api/ubicacion?${parametros}`, {
+        cache: "no-store",
+      });
+      if (!respuesta.ok) throw new Error("pronóstico no disponible");
+      const resultado: unknown = await respuesta.json();
+      if (!esPronosticoUbicacion(resultado)) {
+        throw new Error("respuesta de ubicación inválida");
+      }
+      return resultado;
+    },
+    [],
+  );
+
+  useEffect(() => {
+    if (!desdeUbicacion || !navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        const coordenadas = { lat: coords.latitude, lon: coords.longitude };
+        setCoordenadasActuales(coordenadas);
+        void cargarPunto(coordenadas)
+          .then((resultado) => {
+            setPronostico(resultado.pronostico);
+            setComparaciones(resultado.comparaciones);
+            setZonaActiva("ubicacion");
+            setSinSenal(false);
+            setAhora(new Date());
+          })
+          .catch(() => undefined);
+      },
+      () => undefined,
+      OPCIONES_GEOLOCALIZACION,
+    );
+  }, [cargarPunto, desdeUbicacion]);
+
   const actualizar = useCallback(async (): Promise<void> => {
     if (document.visibilityState === "hidden") {
       return;
@@ -350,33 +406,48 @@ export function Vivo({
 
     const bandaAnterior = bandaVigente(
       pronosticoRef.current,
-      zonaInicial,
+      zonaActiva,
       new Date(),
       perfilInicial,
     );
 
     try {
-      const respuesta = await fetch("/api/pronostico", { cache: "no-store" });
-      if (!respuesta.ok) {
-        throw new Error("pronóstico no disponible");
+      let nuevo: Pronostico;
+      if (desdeUbicacion && coordenadasActuales) {
+        const resultado = await cargarPunto(coordenadasActuales);
+        nuevo = resultado.pronostico;
+        setComparaciones(resultado.comparaciones);
+      } else {
+        const respuesta = await fetch("/api/pronostico", {
+          cache: "no-store",
+        });
+        if (!respuesta.ok) {
+          throw new Error("pronóstico no disponible");
+        }
+        const crudo: unknown = await respuesta.json();
+        const validado = leerPronosticoGuardado(
+          JSON.stringify({ version: 1, pronostico: crudo }),
+        );
+        if (!validado) throw new Error("pronóstico inválido");
+        nuevo = validado;
       }
-
-      const nuevo: Pronostico = await respuesta.json();
       if (!tieneDatos(nuevo)) {
         throw new Error("pronóstico vacío");
       }
 
-      window.localStorage.setItem(
-        CLAVE_PRONOSTICO,
-        serializarPronostico(nuevo),
-      );
+      if (!desdeUbicacion) {
+        window.localStorage.setItem(
+          CLAVE_PRONOSTICO,
+          serializarPronostico(nuevo),
+        );
+      }
       setPronostico(nuevo);
       setSinSenal(nuevo.estado !== "actual");
       setAhora(new Date());
 
       const bandaNueva = bandaVigente(
         nuevo,
-        zonaInicial,
+        zonaActiva,
         new Date(),
         perfilInicial,
       );
@@ -391,7 +462,13 @@ export function Vivo({
     } catch {
       setSinSenal(true);
     }
-  }, [perfilInicial, zonaInicial]);
+  }, [
+    cargarPunto,
+    coordenadasActuales,
+    desdeUbicacion,
+    perfilInicial,
+    zonaActiva,
+  ]);
 
   useEffect(() => {
     const intervalo = window.setInterval(actualizar, INTERVALO_REFRESCO_MS);
@@ -513,7 +590,7 @@ export function Vivo({
     );
   }
 
-  const zonaBase = buscarZona(pronostico, zonaInicial);
+  const zonaBase = buscarZona(pronostico, zonaActiva);
   const zona = zonaBase ? adaptarZonaAlPerfil(zonaBase, perfilInicial) : null;
   const hora = zona ? horaVigente(zona.horas, ahora) : null;
 
@@ -545,9 +622,15 @@ export function Vivo({
   const ventana = estadoVentana(zona.ventanas, ahora);
   const luz = estadoLuz(zona.puestaSol, ahora);
   const tendencia = tendencia60(zona.horas, ahora);
+  const comparacionActual = comparaciones.find(
+    ({ fecha }) => fecha === hora.fecha,
+  );
+  const pronosticoIncierto =
+    comparacionActual !== undefined &&
+    modelosDiscrepan(comparacionActual, perfilInicial);
   const medicionCercana = observacionMasCercana(
     pronostico.observaciones ?? [],
-    coordenadasParqueInicial ?? zona.celda,
+    coordenadasActuales ?? coordenadasParqueInicial ?? zona.celda,
     ahora,
   );
   const estadoDesactualizado =
@@ -618,6 +701,15 @@ export function Vivo({
             <dd>{tendencia}</dd>
           </div>
         </dl>
+        {pronosticoIncierto ? (
+          <p className="vivo__incertidumbre" role="status">
+            <Icono nombre="alerta" />
+            <span>
+              <strong>Pronóstico incierto.</strong> ICON y ECMWF no coinciden;
+              confirma el viento en el lugar.
+            </span>
+          </p>
+        ) : null}
         {medicionCercana ? (
           <dl
             className="vivo__observacion"
@@ -638,7 +730,7 @@ export function Vivo({
                 {nombreCortoEstacionDmc(
                   medicionCercana.observacion.codigoEstacion,
                 )}
-                {desdeUbicacion
+                {desdeUbicacion && !coordenadasActuales
                   ? " · referencia de la zona"
                   : ` · a ${DISTANCIA.format(medicionCercana.distanciaKm)} km`}
                 {` · ${formatearDesdeAhora(

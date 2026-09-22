@@ -45,8 +45,9 @@ Principios que no se negocian sin evidencia nueva:
 5. Sin rachas no se emite un veredicto de vuelo.
 6. El viento no autoriza un recinto ni certifica que sea seguro.
 7. Ausencia en una lista de permisos no equivale a prohibición.
-8. La ubicación se solicita por una acción explícita, no se persiste y no se
-   presenta con más precisión que la disponible.
+8. La ubicación se solicita por una acción explícita, no se persiste, se reduce
+   a tres decimales antes de consultar el servidor y no se presenta con más
+   precisión que la celda realmente entregada por el modelo.
 
 ## 2. Por qué se descartó la v1
 
@@ -157,17 +158,29 @@ devuelve en Santiago una grilla cercana a múltiplos de 0,125°, de unos 12 ×
 14 km. `lib/zonas.ts` conserva seis consultas verificadas y las nombra por los
 parques que contienen, nunca por puntos cardinales engañosos.
 
-«Ver si anda donde estoy» compara la coordenada del navegador con esas celdas y
-muestra la más cercana. La interfaz dice exactamente eso. No existe `/api/punto`
-ni una consulta arbitraria por usuario: se prefirió precisión declarada y costo
-acotado a fingir un pronóstico exacto.
+«Ver si anda donde estoy» solicita la mayor precisión disponible al navegador.
+La coordenada completa se mantiene en memoria para distancias locales y se
+reduce a tres decimales, aproximadamente 100 m, antes de consultar
+`/api/ubicacion`. Ese endpoint se limita al entorno de Santiago, no se almacena
+en KV ni en el navegador y responde con la comuna, Best Match y la distancia
+al punto de modelo efectivo. El nombre del lugar se obtiene por geocodificación
+inversa de OpenStreetMap con caché; un fallo de nombre no elimina el pronóstico.
+
+La lectura principal del punto usa Best Match de Open-Meteo. En paralelo se
+consultan ICON y ECMWF para la misma coordenada. No se promedian: la interfaz
+recalcula la banda de ambos para el perfil elegido y muestra `Pronóstico
+incierto` cuando las decisiones difieren. DMC se cruza solo como observación
+cercana del presente, con estación, distancia y antigüedad. El modo de terreno
+vuelve a pedir GPS y conserva el punto solicitado en vez de caer a una de las
+seis zonas.
 
 ### Fuentes y fallback
 
-La única fuente de pronóstico es Open-Meteo con `icon_seamless`. DMC puede
-sumarse como observación cercana si sus secretos están configurados, sin emitir
-bandas. La oferta gratuita de Open-Meteo es para uso no comercial; si Encumbra
-se monetiza, hay que revisar el plan antes, no después.
+Open-Meteo con `icon_seamless` sigue siendo la fuente de las seis zonas. Best
+Match es la fuente puntual y se contrasta con ICON y ECMWF. DMC puede sumarse
+como observación cercana si sus secretos están configurados, sin emitir bandas.
+La oferta gratuita de Open-Meteo es para uso no comercial; si Encumbra se
+monetiza, hay que revisar el plan antes, no después.
 
 No hay fallback activo porque un campo llamado «racha» no demuestra equivalencia
 de altura, intervalo, resolución o sesgo con ICON. Antes de dejar que otra
@@ -562,6 +575,22 @@ El ajuste de separación entre búsqueda y ubicación quedó desplegado desde
 `db73342` en la versión Cloudflare `892ed541-53af-4e69-be36-317c4596aad7`.
 El smoke productivo confirmó los 8 px en 390 px y volvió a completar todas las
 rutas de aceptación sin errores ni desbordes.
+
+El 22 de septiembre de 2026 se reemplazó la selección de una de seis celdas
+para «Donde estoy» por una consulta puntual y declarada. El navegador pide alta
+precisión, pero solo transmite al servidor la coordenada reducida a tres
+decimales. `/api/ubicacion` solicita Best Match, ICON y ECMWF, resuelve el
+nombre por OpenStreetMap y adjunta las observaciones DMC ya persistidas. La UI
+muestra comuna, distancia al punto de modelo y una advertencia cuando ICON y
+ECMWF cambian la banda para el perfil elegido. La observación DMC conserva su
+rol separado y nunca corrige el futuro por intuición.
+
+El cron empieza además una serie de validación que no contiene coordenadas de
+usuarios: una vez por hora guarda, por estación DMC disponible, la observación
+y las 48 horas emitidas por ICON y ECMWF. Cada día usa una clave KV distinta,
+reemplaza duplicados de la misma hora y vence a los 35 días. Esa serie existe
+para calcular después sesgo y error por plazo; no autoriza todavía ponderar ni
+promediar modelos.
 
 Comandos de aceptación:
 
