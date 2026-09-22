@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { GuiaArticulo } from "@/components/GuiaArticulo.tsx";
+import { Icono } from "@/components/Icono.tsx";
 import { PERFILES, VIENTO_PELIGRO } from "@/lib/bandas.ts";
 import { GUIAS, metadatosGuia } from "@/lib/seo.ts";
 
@@ -17,7 +18,7 @@ export default function VientoParaVolantines() {
           <strong> {PERFILES.liviano.centro} km/h</strong>, uno tradicional con
           cola cerca de <strong>{PERFILES.estandar.centro} km/h</strong> y uno
           acrobático cerca de <strong>{PERFILES.acrobatico.centro} km/h</strong>.
-          No son mínimos universales: Encumbra evalúa también las rachas, la
+          No son mínimos universales. Encumbra evalúa también las rachas, la
           lluvia, la luz y la estabilidad de las horas siguientes.
         </p>
         <div className="guia-resumen" role="note">
@@ -88,7 +89,8 @@ export default function VientoParaVolantines() {
         </ol>
         <p>
           <Link className="guia-enlace-accion" href="/app">
-            Revisar el viento de Santiago ahora →
+            Revisar el viento de Santiago ahora
+            <Icono nombre="flecha" />
           </Link>
         </p>
       </section>

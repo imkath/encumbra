@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { GuiaArticulo } from "@/components/GuiaArticulo.tsx";
+import { Icono } from "@/components/Icono.tsx";
 import { PARQUES, parquesProponibles } from "@/lib/parques.ts";
 import { GUIAS, metadatosGuia } from "@/lib/seo.ts";
 
@@ -29,11 +30,11 @@ export default function DondeEncumbrar() {
 
       <section>
         <div className="guia-seccion-titulo">
-          <div>
-            <p className="guia-ceja">Selección con fuente</p>
-            <h2>{RECINTOS.length} recintos para revisar en Santiago</h2>
-          </div>
-          <Link href="/app">Comparar viento ahora →</Link>
+          <h2>{RECINTOS.length} recintos para revisar en Santiago</h2>
+          <Link href="/app">
+            Comparar viento ahora
+            <Icono nombre="flecha" />
+          </Link>
         </div>
         <ul className="guia-lugares">
           {RECINTOS.map((parque) => (
@@ -74,12 +75,14 @@ export default function DondeEncumbrar() {
         <ul>
           <li>
             <a href="https://www.minvu.gob.cl/noticia/ministro-montes-informa-sobre-los-parques-metropolitanos-donde-se-pueden-elevar-volantines/" target="_blank" rel="noopener noreferrer">
-              MINVU: parques metropolitanos habilitados y criterios de seguridad ↗
+              MINVU — parques metropolitanos habilitados y criterios de seguridad
+              <Icono nombre="salir" />
             </a>
           </li>
           <li>
             <a href="https://www.instagram.com/p/DdAFJBpAZRn/" target="_blank" rel="noopener noreferrer">
-              Publicación de Parquemet consultada para el catálogo vigente ↗
+              Publicación de Parquemet consultada para el catálogo vigente
+              <Icono nombre="salir" />
             </a>
           </li>
         </ul>
