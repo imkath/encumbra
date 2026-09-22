@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { test } from "node:test";
 
 import {
@@ -58,4 +59,13 @@ test("cada guía declara Article y breadcrumbs que coinciden con su URL", () => 
     assert.equal(datos["@graph"][0].dateModified, guia.reviewedAt);
     assert.ok(!JSON.stringify(datos).includes("aggregateRating"));
   }
+});
+
+test("Cloudflare conserva la extensión de los archivos HTML de verificación", () => {
+  const configuracion = JSON.parse(
+    readFileSync(new URL("../wrangler.jsonc", import.meta.url), "utf8")
+      .replace(/^\s*\/\/.*$/gm, ""),
+  );
+
+  assert.equal(configuracion.assets.html_handling, "none");
 });
