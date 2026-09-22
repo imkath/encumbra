@@ -592,6 +592,16 @@ reemplaza duplicados de la misma hora y vence a los 35 días. Esa serie existe
 para calcular después sesgo y error por plazo; no autoriza todavía ponderar ni
 promediar modelos.
 
+El cambio quedó desplegado desde `fbdd68c` en la versión Cloudflare
+`89604e7a-9ace-4a13-9797-b321b1eb2a0e`. Firefox visible simuló Macul en 390 px:
+mostró `Macul · modelo a 1,9 km del GPS`, incluyó la observación fresca de
+Tobalaba a 6,1 km y conservó el punto al entrar a `/volar`, sin volver a Quinta
+Normal. El smoke productivo completo cubrió 320, 390, 768, 1024 y 1440 px,
+mapa, tema, selección manual, ubicación y brújula, sin errores de consola ni
+desbordes. La suite quedó en 135 pruebas; lint, build Next, build OpenNext y
+Wrangler terminaron verdes. El first load medido fue 161.009 bytes, por lo que
+la deuda del techo original de 120 KB sigue abierta.
+
 Comandos de aceptación:
 
 ```bash
