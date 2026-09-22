@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import type { ReactNode } from "react";
 
 import { Marca } from "@/components/Marca.tsx";
+import { Icono } from "@/components/Icono.tsx";
 import { SelectorTema } from "@/components/SelectorTema.tsx";
 import {
   GUIAS,
@@ -50,7 +51,6 @@ export async function GuiaArticulo({ guia, children }: Props) {
         </nav>
         <article className="guia-articulo">
           <header className="guia-cabecera">
-            <p className="guia-ceja">{guia.eyebrow}</p>
             <h1>{guia.title}</h1>
             <p className="guia-bajada">{guia.intro}</p>
             <p className="guia-revision">
@@ -61,14 +61,14 @@ export async function GuiaArticulo({ guia, children }: Props) {
         </article>
         <aside className="guia-relacionadas" aria-labelledby="otras-guias">
           <h2 id="otras-guias">Sigue preparando tu salida</h2>
-          <div>
+          <nav aria-label="Otras guías">
             {relacionadas.map((item) => (
               <Link key={item.slug} href={`/guia/${item.slug}`}>
-                <span>{item.eyebrow}</span>
                 <strong>{item.title}</strong>
+                <Icono nombre="flecha" />
               </Link>
             ))}
-          </div>
+          </nav>
         </aside>
       </main>
       <footer className="guia-pie">

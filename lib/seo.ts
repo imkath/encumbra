@@ -8,7 +8,6 @@ export type GuiaSeo = {
   readonly slug: string;
   readonly title: string;
   readonly description: string;
-  readonly eyebrow: string;
   readonly intro: string;
   readonly reviewedAt: string;
 };
@@ -19,7 +18,6 @@ export const GUIAS = [
     title: "¿Cuánto viento se necesita para elevar un volantín?",
     description:
       "Rangos de viento y rachas para volantines livianos, tradicionales y acrobáticos, con una forma simple de decidir si conviene salir.",
-    eyebrow: "Guía de viento",
     intro:
       "No existe un único número para todos los volantines. El peso, la forma, la cola y las rachas cambian la respuesta.",
     reviewedAt: "2026-09-22",
@@ -29,7 +27,6 @@ export const GUIAS = [
     title: "Dónde encumbrar volantines en Santiago",
     description:
       "Parques de Santiago para elevar volantines, con comuna, estado de autorización, fuentes y acceso al pronóstico de viento de cada lugar.",
-    eyebrow: "Lugares en Santiago",
     intro:
       "Un buen lugar necesita espacio abierto, distancia de cables y vías, permiso vigente y viento suficiente a la hora de la visita.",
     reviewedAt: "2026-09-22",
@@ -39,7 +36,6 @@ export const GUIAS = [
     title: "Cómo encumbrar volantines de forma segura en Chile",
     description:
       "Qué revisar antes de elevar un volantín: lugar, viento, hilo, cables, calles y reglas chilenas sobre el hilo curado.",
-    eyebrow: "Seguridad",
     intro:
       "La seguridad depende tanto del lugar y del hilo como del viento. Esta lista reúne las precauciones oficiales que conviene revisar antes de salir.",
     reviewedAt: "2026-09-22",

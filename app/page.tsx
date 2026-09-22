@@ -92,7 +92,6 @@ export default async function Landing({ searchParams }: Props) {
       {/* Say what this is before showing what it knows. */}
       <section className="portada-hero">
         <div className="portada-decir">
-          <p className="portada-ceja">Viento para volantines en Santiago</p>
           <h1 className="portada-titular">
             <span className="portada-titular__grito">¿anda</span>
             <span className="portada-titular__hueco">o no anda?</span>
@@ -250,7 +249,6 @@ export default async function Landing({ searchParams }: Props) {
 
         <section className="portada-aprender" aria-labelledby="aprender-titulo">
           <div className="portada-aprender__intro">
-            <p className="portada-ceja">Antes de salir</p>
             <h2 id="aprender-titulo">Viento, lugares y seguridad</h2>
             <p>
               Guías cortas, con datos de Encumbra y fuentes oficiales, para
@@ -259,16 +257,16 @@ export default async function Landing({ searchParams }: Props) {
           </div>
           <div className="portada-aprender__enlaces">
             <Link href="/guia/viento-para-volantines">
-              <span>01 · Viento</span>
               <strong>¿Cuánto viento necesita un volantín?</strong>
+              <Icono nombre="flecha" />
             </Link>
             <Link href="/guia/donde-encumbrar-volantines-santiago">
-              <span>02 · Santiago</span>
               <strong>Dónde encumbrar volantines</strong>
+              <Icono nombre="flecha" />
             </Link>
             <Link href="/guia/seguridad-al-encumbrar-volantines">
-              <span>03 · Seguridad</span>
               <strong>Cómo preparar una salida segura</strong>
+              <Icono nombre="flecha" />
             </Link>
           </div>
           <Link className="portada-vertodos" href="/guia">

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Marca } from "@/components/Marca.tsx";
+import { Icono } from "@/components/Icono.tsx";
 import { SelectorTema } from "@/components/SelectorTema.tsx";
 import { GUIAS } from "@/lib/seo.ts";
 
@@ -31,30 +32,33 @@ export default function Guia() {
       </header>
       <main id="contenido-principal" className="guia-principal">
         <header className="guia-indice__cabecera">
-          <p className="guia-ceja">Aprender antes de salir</p>
           <h1>Guías para encumbrar volantines</h1>
           <p>
-            Lo importante, sin hablar en meteorólogo: cuánto viento sirve,
-            dónde buscar un lugar y qué revisar para elevar de forma segura.
+            Lo importante, sin hablar en meteorólogo. Aprende cuánto viento
+            sirve, dónde buscar un lugar y qué revisar para elevar de forma segura.
           </p>
         </header>
-        <section className="guia-tarjetas" aria-label="Guías de Encumbra">
-          {GUIAS.map((guia, indice) => (
+        <section className="guia-enlaces" aria-label="Guías de Encumbra">
+          {GUIAS.map((guia) => (
             <Link key={guia.slug} href={`/guia/${guia.slug}`}>
-              <span className="guia-tarjetas__numero">0{indice + 1}</span>
-              <span className="guia-ceja">{guia.eyebrow}</span>
               <strong>{guia.title}</strong>
               <p>{guia.description}</p>
-              <span className="guia-tarjetas__accion">Leer la guía →</span>
+              <span className="guia-enlaces__accion">
+                Leer la guía
+                <Icono nombre="flecha" />
+              </span>
             </Link>
           ))}
         </section>
         <div className="guia-llamada">
           <div>
-            <p className="guia-ceja">Datos de hoy</p>
-            <h2>¿Quieres saber si anda ahora?</h2>
+            <h2>Mira si anda ahora</h2>
+            <p>Compara el viento y las rachas de los parques de Santiago.</p>
           </div>
-          <Link href="/app">Ver el viento en los parques</Link>
+          <Link href="/app">
+            Ver el viento en los parques
+            <Icono nombre="flecha" />
+          </Link>
         </div>
       </main>
     </div>
