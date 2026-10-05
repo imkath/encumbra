@@ -211,6 +211,14 @@ sus credenciales al cliente.
   enlaces internos desde la portada;
 - ubicación expresada en el contenido y los datos, sin fingir que Encumbra es
   un negocio local ni añadir páginas débiles por cada comuna;
+- una página indexable por recinto en `/parques/[slug]` (`LUGARES` en
+  `lib/seo.ts`), con viento del momento, estado de permiso y su fuente, tramos
+  y parques cercanos. Es por recinto y no por punto: los seis tramos de Mapocho
+  Río comparten página para no competir entre sí. Los recintos sin permiso
+  confirmado también tienen página, con ese estado dicho, porque son los que la
+  gente más busca;
+- el H1 de la portada abre con "Viento para volantines en Santiago" antes del
+  "¿anda o no anda?", para que el titular diga de qué trata la página;
 - verificación pública y comando manual de IndexNow para Bing y participantes;
 - manifest instalable, iconos `any` y `maskable`, shortcuts y service worker.
 

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { GuiaArticulo } from "@/components/GuiaArticulo.tsx";
 import { Icono } from "@/components/Icono.tsx";
 import { PARQUES, parquesProponibles } from "@/lib/parques.ts";
-import { GUIAS, metadatosGuia } from "@/lib/seo.ts";
+import { GUIAS, LUGARES, metadatosGuia } from "@/lib/seo.ts";
 
 const GUIA = GUIAS[1];
 export const metadata = metadatosGuia(GUIA);
@@ -13,6 +13,10 @@ const RECINTOS = Array.from(
     parquesProponibles(PARQUES).map((parque) => [parque.recintoId, parque]),
   ).values(),
 ).sort((a, b) => a.nombre.localeCompare(b.nombre, "es-CL"));
+
+const slugDe = (recintoId: string) =>
+  LUGARES.find((lugar) => lugar.recintoId === recintoId)!.slug;
+const SIN_PERMISO = LUGARES.filter(({ base }) => base.permiso !== "autorizado");
 
 export default function DondeEncumbrar() {
   return (
@@ -40,7 +44,11 @@ export default function DondeEncumbrar() {
           {RECINTOS.map((parque) => (
             <li key={parque.recintoId}>
               <div>
-                <strong>{parque.nombre.replace(/ · tramo \d+$/, "")}</strong>
+                <strong>
+                  <Link href={`/parques/${slugDe(parque.recintoId)}`}>
+                    {parque.nombre.replace(/ · tramo \d+$/, "")}
+                  </Link>
+                </strong>
                 <span>{parque.comuna}</span>
               </div>
               <Link href={`/app?parque=${parque.id}&zona=${parque.zonaId}`}>
@@ -53,6 +61,26 @@ export default function DondeEncumbrar() {
           Los tramos de Mapocho Río se muestran como un solo recinto en esta
           lista; la aplicación permite revisar sus puntos por separado.
         </p>
+      </section>
+
+      <section>
+        <h2>Parques conocidos sin permiso confirmado</h2>
+        <p>
+          Estos lugares se buscan mucho para encumbrar, pero no aparecen en el
+          listado de Parquemet ni tenemos una autorización confirmada. Puedes
+          revisar su viento; pregunta en el recinto antes de elevar.
+        </p>
+        <ul className="guia-lugares">
+          {SIN_PERMISO.map((lugar) => (
+            <li key={lugar.slug}>
+              <div>
+                <strong>{lugar.nombre}</strong>
+                <span>{lugar.comuna}</span>
+              </div>
+              <Link href={`/parques/${lugar.slug}`}>Ver estado</Link>
+            </li>
+          ))}
+        </ul>
       </section>
 
       <section>

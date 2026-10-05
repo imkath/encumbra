@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { PARQUES } from "./parques.ts";
+
 export const SITIO_URL = "https://encumbra.nvrkth.com";
 export const SITIO_DESCRIPCION =
   "Revisa si hay viento para volantines, compara parques de Santiago y elige una hora segura para encumbrar.";
@@ -121,6 +123,102 @@ export function datosEstructuradosGuia(guia: GuiaSeo) {
             name: guia.title,
             item: url,
           },
+        ],
+      },
+    ],
+  } as const;
+}
+
+// One page per venue, not per point: the six Mapocho Río stretches would be
+// near-duplicate pages competing with each other for the same search.
+export const LUGARES = [...new Set(PARQUES.map((p) => p.recintoId))].map(
+  (recintoId) => {
+    const puntos = PARQUES.filter((p) => p.recintoId === recintoId).sort(
+      (a, b) => a.nombre.localeCompare(b.nombre, "es-CL", { numeric: true }),
+    );
+    const base = puntos[0]!;
+    const corto = base.nombre.replace(/ · tramo \d+$/, "");
+    const tipo = recintoId.startsWith("cerro-") ? "Cerro" : "Parque";
+    return {
+      slug: recintoId.replace(/^parque-/, ""),
+      recintoId,
+      nombre: /^(Parque|Cerro) /.test(corto) ? corto : `${tipo} ${corto}`,
+      comuna: [...new Set(puntos.map((p) => p.comuna))].join(" y "),
+      puntos,
+      base,
+    };
+  },
+);
+
+export type Lugar = (typeof LUGARES)[number];
+
+export function urlLugar(lugar: Lugar): string {
+  return `${SITIO_URL}/parques/${lugar.slug}`;
+}
+
+export function tituloLugar(lugar: Lugar): string {
+  return `Volantines en ${lugar.nombre}, ${lugar.comuna}`;
+}
+
+export function descripcionLugar(lugar: Lugar): string {
+  return lugar.base.permiso === "autorizado"
+    ? `¿Hay viento hoy para encumbrar volantines en ${lugar.nombre}? Pronóstico por hora, rachas y el permiso que lo respalda.`
+    : `Viento por hora para volantines en ${lugar.nombre} y el estado real de su permiso, que Encumbra aún no ha confirmado.`;
+}
+
+export function metadatosLugar(lugar: Lugar): Metadata {
+  const canonical = `/parques/${lugar.slug}`;
+  const title = tituloLugar(lugar);
+  const description = descripcionLugar(lugar);
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: { type: "website", locale: "es_CL", url: canonical, title, description },
+    twitter: { card: "summary_large_image", title, description },
+  };
+}
+
+export function datosEstructuradosLugar(lugar: Lugar) {
+  const url = urlLugar(lugar);
+  const guia = `${SITIO_URL}/guia/donde-encumbrar-volantines-santiago`;
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${url}#webpage`,
+        url,
+        name: tituloLugar(lugar),
+        description: descripcionLugar(lugar),
+        inLanguage: "es-CL",
+        isPartOf: { "@id": `${SITIO_URL}/#website` },
+        about: { "@id": `${url}#lugar` },
+        breadcrumb: { "@id": `${url}#breadcrumb` },
+      },
+      {
+        "@type": lugar.recintoId.startsWith("cerro-") ? "Mountain" : "Park",
+        "@id": `${url}#lugar`,
+        name: lugar.nombre,
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: lugar.comuna,
+          addressRegion: "Región Metropolitana",
+          addressCountry: "CL",
+        },
+        geo: {
+          "@type": "GeoCoordinates",
+          latitude: lugar.base.lat,
+          longitude: lugar.base.lon,
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${url}#breadcrumb`,
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Encumbra", item: SITIO_URL },
+          { "@type": "ListItem", position: 2, name: "Dónde encumbrar", item: guia },
+          { "@type": "ListItem", position: 3, name: lugar.nombre, item: url },
         ],
       },
     ],

@@ -93,6 +93,7 @@ export default async function Landing({ searchParams }: Props) {
       <section className="portada-hero">
         <div className="portada-decir">
           <h1 className="portada-titular">
+            <span className="portada-rubro">Viento para volantines en Santiago</span>
             <span className="portada-titular__grito">¿anda</span>
             <span className="portada-titular__hueco">o no anda?</span>
           </h1>
