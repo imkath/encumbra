@@ -5,7 +5,11 @@ import { test } from "node:test";
 import {
   DATOS_ESTRUCTURADOS,
   GUIAS,
+  LUGARES,
   datosEstructuradosGuia,
+  datosEstructuradosLugar,
+  descripcionLugar,
+  tituloLugar,
   serializarJsonLd,
 } from "../lib/seo.ts";
 
@@ -68,4 +72,36 @@ test("Cloudflare conserva la extensión de los archivos HTML de verificación", 
   );
 
   assert.equal(configuracion.assets.html_handling, "none");
+});
+
+test("cada recinto tiene una sola página, con slug, título y descripción únicos", () => {
+  const recintos = new Set(LUGARES.flatMap(({ puntos }) => puntos.map((p) => p.recintoId)));
+  assert.equal(LUGARES.length, recintos.size);
+  assert.equal(new Set(LUGARES.map(({ slug }) => slug)).size, LUGARES.length);
+  assert.equal(new Set(LUGARES.map(tituloLugar)).size, LUGARES.length);
+  assert.ok(LUGARES.every((lugar) => descripcionLugar(lugar).length <= 160));
+  assert.ok(LUGARES.every(({ slug }) => /^[a-z0-9-]+$/.test(slug)));
+  const mapocho = LUGARES.find(({ slug }) => slug === "mapocho-rio");
+  assert.equal(mapocho?.puntos.length, 6);
+  assert.equal(mapocho?.nombre, "Parque Mapocho Río");
+});
+
+test("un lugar sin permiso confirmado no se describe como autorizado", () => {
+  const sinPermiso = LUGARES.filter(({ base }) => base.permiso !== "autorizado");
+  assert.ok(sinPermiso.length > 0);
+  for (const lugar of sinPermiso) {
+    assert.match(descripcionLugar(lugar), /no ha confirmado/);
+  }
+});
+
+test("los datos estructurados de un parque ubican el lugar y su miga", () => {
+  for (const lugar of LUGARES) {
+    const datos = datosEstructuradosLugar(lugar);
+    assert.deepEqual(
+      datos["@graph"].map((item) => item["@type"]),
+      ["WebPage", lugar.slug === "cerro-san-cristobal" ? "Mountain" : "Park", "BreadcrumbList"],
+    );
+    assert.equal(datos["@graph"][0].url, `https://encumbra.nvrkth.com/parques/${lugar.slug}`);
+    assert.equal(datos["@graph"][1].geo.latitude, lugar.base.lat);
+  }
 });

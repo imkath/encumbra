@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-import { GUIAS, SITIO_URL } from "@/lib/seo.ts";
+import { GUIAS, LUGARES, SITIO_URL } from "@/lib/seo.ts";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
@@ -22,6 +22,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: guia.reviewedAt,
       changeFrequency: "monthly" as const,
       priority: 0.75,
+    })),
+    ...LUGARES.map((lugar) => ({
+      url: `${SITIO_URL}/parques/${lugar.slug}`,
+      changeFrequency: "daily" as const,
+      priority: 0.7,
     })),
   ];
 }

@@ -2274,6 +2274,10 @@ h2,
   text-transform: lowercase;
   color: var(--app-ink);
 }
+.portada-titular .portada-rubro {
+  display: block;
+  line-height: 1.2;
+}
 .portada-titular__grito {
   display: block;
   text-transform: uppercase;
@@ -2810,12 +2814,16 @@ h2,
   gap: 2px;
 }
 .guia-lugares span,
-.guia-lugares a,
+.guia-lugares li > a,
 .guia-nota {
   color: var(--app-muted);
   font-size: 12px !important;
 }
-.guia-lugares a {
+.guia-lugares strong a {
+  color: inherit;
+  text-underline-offset: 3px;
+}
+.guia-lugares li > a {
   min-height: 44px;
   display: inline-flex;
   align-items: center;
