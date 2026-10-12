@@ -186,6 +186,6 @@ docs/         arquitectura, decisiones, seguridad y operación
 ## Licencias y atribuciones
 
 Las licencias del estilo y los datos del mapa se conservan en `public/maps/` y
-la atribución permanece visible dentro de MapLibre. El resto del repositorio no
-incluye por ahora una licencia de reutilización; publicar el código permite su
-revisión, no concede derechos adicionales sobre él.
+la atribución permanece visible dentro de MapLibre. El resto del repositorio se
+rige por [LICENSE](LICENSE): el código es público para revisión y evaluación
+técnica, no para reutilizarlo.
