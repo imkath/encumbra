@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "maplibre-gl": "^6.7.0",
-    "next": "16.3.6",
+    "next": "16.3.8",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   },
@@ -30,14 +30,16 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.3.6",
+    "eslint-config-next": "16.3.8",
     "typescript": "^5",
     "wrangler": "^4.130.0"
   },
   "pnpm": {
     "overrides": {
       "@babel/core": "7.29.7",
-      "browserslist": "4.29.0"
+      "browserslist": "4.29.0",
+      "sharp": ">=0.35.5",
+      "source-map-js": ">=1.2.2"
     }
   }
 }
