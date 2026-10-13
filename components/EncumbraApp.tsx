@@ -251,17 +251,29 @@ export function EncumbraApp({
     proponibles,
     orden === "cerca" ? "cerca" : "adecuado",
   );
+  const catalogo = ordenarParques(
+    parques,
+    orden === "cerca" ? "cerca" : "adecuado",
+  );
+  // Opening the map must not turn «Para ti» into the full catalog: the list
+  // keeps recommending only verified parks.
   const explorarCatalogo =
-    Boolean(busqueda.trim()) || listaCompleta || vistaMapa || orden !== "adecuado";
-  const universo = explorarCatalogo
-    ? ordenarParques(parques, orden === "cerca" ? "cerca" : "adecuado")
-    : ordenados;
+    Boolean(busqueda.trim()) || listaCompleta || orden !== "adecuado";
+  const universo = explorarCatalogo ? catalogo : ordenados;
   const resultados = buscarParques(
     orden === "guardados"
       ? universo.filter((p) => favoritos.includes(p.id))
       : universo,
     busqueda,
   );
+  // The map always consults the whole catalog. In «Para ti» the recommended
+  // parks come first so pin numbers match the list; an empty filter (no saved
+  // parks, no match) falls back to the catalog instead of a blank map.
+  const enMapa = resultados.length
+    ? explorarCatalogo
+      ? resultados
+      : [...resultados, ...catalogo.filter((p) => !resultados.includes(p))]
+    : catalogo;
   const visibles =
     listaCompleta || busqueda || orden === "guardados"
       ? resultados
@@ -669,7 +681,7 @@ export function EncumbraApp({
                 {vistaMapa ? (
                   <div className="explorar-mapa">
                     <Mapa
-                      parques={resultados}
+                      parques={enMapa}
                       seleccionado={seleccionado}
                       ubicacion={ubicacion}
                       elegir={elegirDesdeMapa}
