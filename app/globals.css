@@ -1458,7 +1458,7 @@ h1:focus {
   position: relative;
   isolation: isolate;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  grid-template-rows: auto minmax(0, 1fr) auto auto auto;
   gap: 14px;
   padding: calc(20px + env(safe-area-inset-top))
     max(22px, calc((100vw - 620px) / 2))
@@ -1480,6 +1480,7 @@ h1:focus {
 }
 .vivo__cabecera,
 .vivo__datos,
+.vivo__brujula,
 .vivo__limites,
 .vivo__midiendo,
 .vivo__listo {
@@ -3440,7 +3441,8 @@ h2,
   align-items: center;
   gap: 14px;
   width: min(100%, 560px);
-  margin-top: 18px;
+  /* Grid item now: the row gap already adds 14px above. */
+  margin-top: 4px;
   padding-top: 16px;
   border-top: 1px solid color-mix(in srgb, var(--vivo-tinta) 24%, transparent);
 }
@@ -4089,13 +4091,16 @@ html { caret-color: var(--brand-ink); }
   .perfiles-app label > svg { width: 64px; height: 80px; flex: none; }
   .guia-listo { width: auto; justify-self: start; padding-inline: 28px; }
 }
-/* Outdoor reading gets its own wide layout, rather than a centered phone column. */
+/* Outdoor reading gets its own wide layout, rather than a centered phone column.
+   Verdict on the left, the kite's own stage on the right, and the instruments
+   (compass and the two clocks) as a band across the full width below. */
 @media (min-width: 700px) {
   .vivo {
-    padding: clamp(28px,4vw,56px) max(32px,calc((100vw - 1520px)/2));
+    --vivo-margen: max(32px, calc((100vw - 1440px) / 2));
+    padding: clamp(28px,4vw,56px) var(--vivo-margen);
     grid-template-columns: minmax(0,1.15fr) minmax(0,1fr);
-    grid-template-rows: auto minmax(270px,1fr) auto auto;
-    gap: 24px 40px;
+    grid-template-rows: auto minmax(min-content,1fr) auto auto;
+    gap: 24px clamp(32px,4vw,64px);
   }
   .vivo__cabecera { grid-column: 1/-1; grid-row: 1; }
   .vivo__marca { margin-bottom: 20px; }
@@ -4103,31 +4108,57 @@ html { caret-color: var(--brand-ink); }
   .vivo__zona { font-size: 18px; }
   .vivo__zona span { font-size: 13px; }
   .vivo__frescura { font-size: 13px; }
-  .vivo__datos, .vivo__midiendo { grid-column: 1; grid-row: 2; align-self: center; padding-block: 32px; }
+  .vivo__datos, .vivo__midiendo { grid-column: 1; grid-row: 2; align-self: center; padding-block: 24px 8px; }
   .vivo__frase { font-size: clamp(54px,6.7vw,106px); }
   .vivo__pastillas { margin-top: 32px; gap: 12px; }
   .vivo__pastilla { padding: 18px; border-radius: 20px; }
   .vivo__pastilla dd { font-size: clamp(24px,2.5vw,36px); }
   .vivo__pastilla dt { font-size: 11px; }
-  .vivo__brujula { grid-template-columns: 116px minmax(0,1fr); gap: 16px; }
+  .vivo__brujula {
+    grid-column: 1; grid-row: 3; align-self: start;
+    width: 100%; margin-top: 0; padding-top: 22px;
+    grid-template-columns: 116px minmax(0,1fr); gap: 16px 20px;
+  }
   .brujula-viento { width: 116px; height: 116px; }
   .vivo__brujula-giro strong { font-size: 19px; }
   .vivo__brujula-giro small,
   .vivo__brujula-estado,
   .vivo__posiciones p,
   .vivo__posiciones > small { font-size: 13px; }
-  .vivo__limites { grid-column: 1; grid-row: 3; padding: 22px 0 0; gap: 24px; }
+  .vivo__brujula-lectura > p:first-child { font-size: 13px; }
+  .vivo__brujula-lectura > p:first-child strong { font-size: 15px; }
+  .vivo__brujula-lectura button { font-size: 13px; }
+  .vivo__limites { grid-column: 2; grid-row: 3; align-self: start; padding: 22px 0 0; gap: 24px; }
+  /* Without a compass the clocks take the left slot, under the verdict. */
+  .vivo__datos + .vivo__limites { grid-column: 1; }
   .vivo__limite-valor { font-size: clamp(30px,3vw,44px); }
   .vivo__limite-que, .vivo__limite-glosa { font-size: 12px; }
   .vivo__listo { grid-column: 1; grid-row: 4; font-size: 14px; }
-  .vivo__campo { left: auto; right: max(24px,calc((100vw - 1520px)/2)); width: min(43vw,700px); }
+  /* The kite's stage is the right column above the instruments: an absolute
+     child of the grid takes its grid area as containing block. It bleeds to
+     the screen edge, starts below the freshness label and its line runs down
+     to the band. */
+  .vivo__campo {
+    grid-column: 2; grid-row: 1 / 3;
+    inset: 44px calc(-1 * var(--vivo-margen)) 0 auto;
+    /* The kite scales with this width; capped so it fits the stage height. */
+    width: min(calc(100% + var(--vivo-margen)), 480px);
+    opacity: .84;
+  }
+  /* A big kite may reach past its stage; let it, instead of slicing its tip. */
+  .vivo__campo > svg { overflow: visible; }
 }
 @media (min-width: 700px) and (max-width: 999px) {
-  .vivo { gap: 20px; padding-inline: 28px; grid-template-columns: minmax(0,1.2fr) minmax(0,1fr); }
+  .vivo { gap: 20px 28px; --vivo-margen: 28px; grid-template-columns: minmax(0,1.3fr) minmax(0,1fr); }
   .vivo__pastillas { gap: 7px; flex-wrap: wrap; }
   .vivo__pastilla { padding: 13px 12px; }
   .vivo__pastilla dd { font-size: 23px; }
   .vivo__frase { font-size: clamp(46px,6.8vw,66px); }
+  .vivo__brujula { grid-template-columns: 104px minmax(0,1fr); gap: 14px; }
+  .brujula-viento { width: 104px; height: 104px; }
+  .vivo__brujula-giro strong { font-size: 17px; }
+  .vivo__limites { gap: 18px; }
+  .vivo__limite-valor { font-size: clamp(26px,3.6vw,34px); }
 }
 /* Park identity is a vertical text group, never an inline sentence of metadata. */
 .parque-identidad { display: grid; gap: 5px; flex: 1; min-width: 0; }

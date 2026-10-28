@@ -742,16 +742,18 @@ export function Vivo({
             </div>
           </dl>
         ) : null}
-        {hora.direccion !== null ? (
-          <BrujulaViento
-            direccion={hora.direccion}
-            estado={estadoBrujula}
-            rumboTelefono={rumboTelefono}
-            activar={activarBrujula}
-            desactivar={desactivarBrujula}
-          />
-        ) : null}
       </section>
+
+      {/* Its own grid item, so wide screens can set it beside the time limits. */}
+      {hora.direccion !== null ? (
+        <BrujulaViento
+          direccion={hora.direccion}
+          estado={estadoBrujula}
+          rumboTelefono={rumboTelefono}
+          activar={activarBrujula}
+          desactivar={desactivarBrujula}
+        />
+      ) : null}
 
       {/* Two different clocks run against you. The one that ends first is your limit. */}
       <footer className="vivo__limites">
