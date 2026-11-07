@@ -345,9 +345,15 @@ export function Vivo({
     }
 
     if (guardado) {
-      setPronostico(guardado);
-      setSinSenal(true);
+      // El respaldo vive en localStorage, que solo existe en el navegador: se aplica en el
+      // siguiente ciclo y no durante el efecto.
+      const espera = window.setTimeout(() => {
+        setPronostico(guardado);
+        setSinSenal(true);
+      }, 0);
+      return () => window.clearTimeout(espera);
     }
+    return undefined;
   }, [inicial]);
 
   useEffect(() => {
